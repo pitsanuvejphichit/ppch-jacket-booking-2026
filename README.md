@@ -57,7 +57,8 @@ projects/13-ลงทะเบียนจองเสื้อ/
 
 ## 🌐 การเข้าถึงระบบ (Live Production)
 
-- **GitHub Pages URL**: `https://nickasnick.github.io/ppch-jacket-booking-2026/`
-- **มุมมองคอมพิวเตอร์**: `https://nickasnick.github.io/ppch-jacket-booking-2026/desktop.html`
-- **มุมมองมือถือ**: `https://nickasnick.github.io/ppch-jacket-booking-2026/mobile.html`
-- **แดชบอร์ดสรุปยอด**: `https://nickasnick.github.io/ppch-jacket-booking-2026/summary.html`
+- **GitHub Pages URL**: `https://pitsanuvejphichit.github.io/ppch-jacket-booking-2026/`
+- **มุมมองคอมพิวเตอร์**: `https://pitsanuvejphichit.github.io/ppch-jacket-booking-2026/desktop.html`
+- **มุมมองมือถือ**: `https://pitsanuvejphichit.github.io/ppch-jacket-booking-2026/mobile.html`
+- **แดชบอร์ดสรุปยอด**: `https://pitsanuvejphichit.github.io/ppch-jacket-booking-2026/summary.html`
+- **GitHub Repository**: `https://github.com/pitsanuvejphichit/ppch-jacket-booking-2026`
