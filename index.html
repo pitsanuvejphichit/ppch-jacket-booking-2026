@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบลงทะเบียนจองเสื้อแจ็กเก็ต | รพ.พิษณุเวช พิจิตร</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #0D9488 100%);
+      min-height: 100vh;
+    }
+    .medical-cross-loader {
+      width: 52px;
+      height: 52px;
+      position: relative;
+      animation: spinCross 2s ease-in-out infinite;
+    }
+    .medical-cross-loader::before,
+    .medical-cross-loader::after {
+      content: '';
+      position: absolute;
+      background: #38BDF8;
+      border-radius: 6px;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
+    }
+    .medical-cross-loader::before {
+      width: 16px;
+      height: 52px;
+      left: 18px;
+      top: 0;
+    }
+    .medical-cross-loader::after {
+      width: 52px;
+      height: 16px;
+      left: 0;
+      top: 18px;
+    }
+    @keyframes spinCross {
+      0% { transform: scale(0.9) rotate(0deg); opacity: 0.85; }
+      50% { transform: scale(1.12) rotate(180deg); opacity: 1; }
+      100% { transform: scale(0.9) rotate(360deg); opacity: 0.85; }
+    }
+  </style>
+  <script>
+    (function() {
+      // 1. Check direct query params
+      var params = new URLSearchParams(window.location.search);
+      var forceView = params.get('view');
+      if (forceView === 'desktop') {
+        window.location.replace('desktop.html' + window.location.search);
+        return;
+      }
+      if (forceView === 'mobile') {
+        window.location.replace('mobile.html' + window.location.search);
+        return;
+      }
+      if (forceView === 'summary') {
+        window.location.replace('summary.html' + window.location.search);
+        return;
+      }
+
+      // 2. Check localStorage preference
+      var savedView = localStorage.getItem('ppch_jacket_view_pref');
+      if (savedView === 'desktop') {
+        window.location.replace('desktop.html' + window.location.search);
+        return;
+      }
+      if (savedView === 'mobile') {
+        window.location.replace('mobile.html' + window.location.search);
+        return;
+      }
+
+      // 3. Auto-detect screen & UA
+      var isMobileScreen = window.innerWidth < 1024;
+      var isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+      if (isMobileScreen || isMobileUA) {
+        window.location.replace('mobile.html' + window.location.search);
+      } else {
+        window.location.replace('desktop.html' + window.location.search);
+      }
+    })();
+  </script>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen text-white p-4">
+  <div class="bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-2xl shadow-2xl flex flex-col items-center max-w-sm text-center">
+    <div class="medical-cross-loader mb-6"></div>
+    <h2 class="text-xl font-semibold text-white tracking-wide">กำลังเข้าสู่ระบบลงทะเบียน...</h2>
+    <p class="text-sky-200 text-sm mt-2">เสื้อแจ็กเก็ต PITSANUVEJ PHICHIT 2569</p>
+    <p class="text-slate-300 text-xs mt-1">โรงพยาบาลพิษณุเวช พิจิตร • HRD Suite</p>
+    
+    <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-center gap-3 text-xs text-sky-200">
+      <a href="desktop.html" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">💻 เข้าหน้าคอมพิวเตอร์</a>
+      <a href="mobile.html" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">📱 เข้าหน้ามือถือ</a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สรุปยอดลงทะเบียนจองเสื้อแจ็กเก็ต 2569 | รพ.พิษณุเวช พิจิตร</title>
+  <!-- Google Fonts: Prompt & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      background-color: #F1F5F9;
+      color: #0F172A;
+    }
+    .font-inter {
+      font-family: 'Inter', sans-serif;
+    }
+    .kpi-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+      transition: all 0.2s ease;
+    }
+    .kpi-card:hover {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.06);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Navbar -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+      
+      <div class="flex items-center gap-3.5">
+        <a href="index.html">
+          <img src="assets/logo.png" alt="โลโก้" class="h-10 w-auto object-contain">
+        </a>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-base sm:text-lg text-blue-950">สรุปยอดลงทะเบียนจองเสื้อแจ็กเก็ต 2569</h1>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-900 font-semibold font-inter">Live Dashboard</span>
+          </div>
+          <p class="text-xs text-slate-500">โรงพยาบาลพิษณุเวช พิจิตร (PITSANUVEJ PHICHIT) • HRD AI</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="desktop.html" class="px-3.5 py-1.5 rounded-xl bg-blue-900 hover:bg-blue-800 text-white text-xs font-semibold flex items-center gap-1.5 transition">
+          <i class="ph ph-plus-circle text-base"></i>
+          <span>หน้าลงทะเบียน</span>
+        </a>
+        <button onclick="exportToCSV()" class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-1.5 transition">
+          <i class="ph ph-file-csv text-base"></i>
+          <span>ส่งออก Excel / CSV</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+    
+    <!-- Top KPI Grid (4 Cards) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <!-- Card 1: Total Shirts -->
+      <div class="kpi-card p-5 flex items-center justify-between">
+        <div>
+          <div class="text-xs text-slate-500 font-medium">ยอดสั่งจองเสื้อทั้งหมด</div>
+          <div class="text-3xl font-bold font-inter text-blue-950 mt-1" id="kpiTotalQty">0</div>
+          <div class="text-[11px] text-slate-400 mt-1">เป้าหมายโครงการ 200 ตัว</div>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-800 flex items-center justify-center text-2xl">
+          <i class="ph ph-coat-hanger"></i>
+        </div>
+      </div>
+
+      <!-- Card 2: Total People Registered -->
+      <div class="kpi-card p-5 flex items-center justify-between">
+        <div>
+          <div class="text-xs text-slate-500 font-medium">จำนวนผู้ลงทะเบียน</div>
+          <div class="text-3xl font-bold font-inter text-slate-900 mt-1" id="kpiTotalBookings">0</div>
+          <div class="text-[11px] text-slate-400 mt-1">จากบุคลากรทั้งหมด 209 ท่าน</div>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-800 flex items-center justify-center text-2xl">
+          <i class="ph ph-users-three"></i>
+        </div>
+      </div>
+
+      <!-- Card 3: Total Sales Amount -->
+      <div class="kpi-card p-5 flex items-center justify-between">
+        <div>
+          <div class="text-xs text-slate-500 font-medium">ยอดเงินสั่งจองรวม</div>
+          <div class="text-3xl font-bold font-inter text-blue-900 mt-1" id="kpiTotalAmount">฿0</div>
+          <div class="text-[11px] text-slate-400 mt-1">ราคาตัวละ 390 บาท</div>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center text-2xl">
+          <i class="ph ph-currency-circle-dollar"></i>
+        </div>
+      </div>
+
+      <!-- Card 4: Registration Window Status -->
+      <div class="kpi-card p-5 flex items-center justify-between">
+        <div>
+          <div class="text-xs text-slate-500 font-medium">ระยะเวลารับจอง</div>
+          <div class="text-lg font-bold text-slate-800 mt-1">12 - 19 ต.ค. 69</div>
+          <div class="text-[11px] text-emerald-600 font-medium flex items-center gap-1 mt-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> กำลังเปิดรับจอง
+          </div>
+        </div>
+        <div class="w-12 h-12 rounded-2xl bg-sky-50 text-sky-800 flex items-center justify-center text-2xl">
+          <i class="ph ph-calendar-check"></i>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Size Distribution & Breakdown Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Left: Size Breakdown Chart (7 Cols) -->
+      <section class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-5">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h2 class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
+            <i class="ph ph-chart-donut text-blue-800 text-lg"></i> จำแนกยอดสั่งจองตามไซส์เสื้อ
+          </h2>
+          <span class="text-xs text-slate-400">หน่วย: จำนวนตัว</span>
+        </div>
+
+        <div class="space-y-4" id="sizeBarsContainer">
+          <!-- Rendered via JS -->
+        </div>
+      </section>
+
+      <!-- Right: Department Summary (5 Cols) -->
+      <section class="lg:col-span-5 bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h2 class="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
+            <i class="ph ph-buildings text-blue-800 text-lg"></i> ยอดจองตามแผนก (Top Departments)
+          </h2>
+        </div>
+
+        <div class="max-h-[300px] overflow-y-auto space-y-2 pr-1" id="deptBreakdownContainer">
+          <!-- Rendered via JS -->
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Full Registration Table -->
+    <section class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
+      
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+        <div>
+          <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+            <i class="ph ph-list-dashes text-blue-800 text-lg"></i> รายชื่อผู้สั่งจองทั้งหมดในระบบ
+          </h3>
+          <p class="text-xs text-slate-500 mt-0.5">สามารถค้นหา กรองข้อมูล หรือกดส่งออกรายงานได้ทันที</p>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Search -->
+          <div class="relative">
+            <input type="text" 
+                   id="summaryTableSearch" 
+                   oninput="onTableFilter()" 
+                   placeholder="ค้นหารหัส, ชื่อ, หรือแผนก..." 
+                   class="pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600 w-48 sm:w-60">
+            <i class="ph ph-magnifying-glass absolute left-2.5 top-2 text-slate-400 text-xs"></i>
+          </div>
+
+          <!-- Size Filter Dropdown -->
+          <select id="sizeFilterSelect" onchange="onTableFilter()" class="py-1.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none">
+            <option value="">ทุกไซส์</option>
+            <option value="M">ไซส์ M (อก 40")</option>
+            <option value="L">ไซส์ L (อก 42")</option>
+            <option value="XL">ไซส์ XL (อก 44")</option>
+            <option value="2XL">ไซส์ 2XL (อก 46")</option>
+            <option value="3XL">ไซส์ 3XL (อก 48")</option>
+            <option value="4XL">ไซส์ 4XL (อก 50")</option>
+          </select>
+
+          <!-- Export Button -->
+          <button onclick="exportToCSV()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs flex items-center gap-1 transition" title="ส่งออก CSV">
+            <i class="ph ph-download-simple text-base"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Table View -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
+              <th class="py-3 px-3">#</th>
+              <th class="py-3 px-3">รหัสการจอง</th>
+              <th class="py-3 px-3">วันเวลา</th>
+              <th class="py-3 px-3">รหัสพนักงาน</th>
+              <th class="py-3 px-3">ชื่อ-นามสกุล</th>
+              <th class="py-3 px-3">แผนก</th>
+              <th class="py-3 px-3 text-center">ไซส์</th>
+              <th class="py-3 px-3 text-center">รอบอก</th>
+              <th class="py-3 px-3 text-center">จำนวน</th>
+              <th class="py-3 px-3 text-right">ยอดรวม</th>
+              <th class="py-3 px-3">วิธีชำระ</th>
+              <th class="py-3 px-3">สถานะ</th>
+            </tr>
+          </thead>
+          <tbody id="summaryTableBody" class="divide-y divide-slate-100 text-slate-700">
+            <!-- Dynamic rows -->
+          </tbody>
+        </table>
+
+        <div id="summaryTableEmpty" class="py-12 text-center text-slate-400 text-xs hidden">
+          ยังไม่มีข้อมูลการจองในระบบค่ะ
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-500">
+    <p>ฝ่ายพัฒนาทรัพยากรบุคคล (HRD) • โรงพยาบาลพิษณุเวช พิจิตร (PPCH)</p>
+  </footer>
+
+  <script>
+    const STORAGE_KEY = 'ppch_jacket_bookings_2026';
+    let bookings = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadData();
+    });
+
+    function loadData() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        bookings = stored ? JSON.parse(stored) : [];
+      } catch (e) {
+        bookings = [];
+      }
+      renderDashboard();
+    }
+
+    function renderDashboard() {
+      // 1. Calculate KPI
+      let totalQty = 0;
+      let totalAmount = 0;
+      const sizeCounts = { 'M': 0, 'L': 0, 'XL': 0, '2XL': 0, '3XL': 0, '4XL': 0 };
+      const deptCounts = {};
+
+      bookings.forEach(b => {
+        const q = Number(b.qty) || 1;
+        const p = Number(b.totalPrice) || (q * 390);
+        totalQty += q;
+        totalAmount += p;
+
+        if (sizeCounts[b.size] !== undefined) sizeCounts[b.size] += q;
+        else sizeCounts[b.size] = q;
+
+        const dept = b.department || 'ไม่ระบุ';
+        deptCounts[dept] = (deptCounts[dept] || 0) + q;
+      });
+
+      document.getElementById('kpiTotalQty').innerText = totalQty.toLocaleString();
+      document.getElementById('kpiTotalBookings').innerText = bookings.length.toLocaleString();
+      document.getElementById('kpiTotalAmount').innerText = `฿${totalAmount.toLocaleString()}`;
+
+      // 2. Render Size Bars
+      const sizeBarContainer = document.getElementById('sizeBarsContainer');
+      const sizeDefs = [
+        { size: 'M', chest: 40, max: 26 },
+        { size: 'L', chest: 42, max: 27 },
+        { size: 'XL', chest: 44, max: 28 },
+        { size: '2XL', chest: 46, max: 29 },
+        { size: '3XL', chest: 48, max: 30 },
+        { size: '4XL', chest: 50, max: 31 }
+      ];
+
+      sizeBarContainer.innerHTML = sizeDefs.map(def => {
+        const count = sizeCounts[def.size] || 0;
+        const pct = totalQty > 0 ? Math.round((count / totalQty) * 100) : 0;
+        return `
+          <div class="space-y-1.5">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-slate-800">
+                ไซส์ ${def.size} <span class="font-normal text-slate-500 font-inter">(รอบอก ${def.chest}")</span>
+              </span>
+              <span class="font-inter font-bold text-blue-900">
+                ${count} ตัว <span class="text-slate-400 font-normal">(${pct}%)</span>
+              </span>
+            </div>
+            <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden flex">
+              <div class="bg-gradient-to-r from-blue-700 to-sky-500 h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // 3. Render Department Breakdown
+      const deptContainer = document.getElementById('deptBreakdownContainer');
+      const sortedDepts = Object.entries(deptCounts).sort((a, b) => b[1] - a[1]);
+      if (sortedDepts.length === 0) {
+        deptContainer.innerHTML = '<div class="text-xs text-slate-400 text-center py-6">ยังไม่มีข้อมูล</div>';
+      } else {
+        deptContainer.innerHTML = sortedDepts.map(([dept, count]) => `
+          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between text-xs">
+            <span class="font-medium text-slate-800 truncate max-w-[240px]">${dept}</span>
+            <span class="font-bold font-inter text-blue-900 px-2 py-0.5 rounded bg-blue-100">${count} ตัว</span>
+          </div>
+        `).join('');
+      }
+
+      // 4. Render Table
+      renderTableRows(bookings);
+    }
+
+    function renderTableRows(list) {
+      const tbody = document.getElementById('summaryTableBody');
+      const emptyNotice = document.getElementById('summaryTableEmpty');
+
+      if (!list || list.length === 0) {
+        tbody.innerHTML = '';
+        emptyNotice.classList.remove('hidden');
+        return;
+      }
+
+      emptyNotice.classList.add('hidden');
+      tbody.innerHTML = list.map((b, idx) => `
+        <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+          <td class="py-2.5 px-3 text-slate-400 font-inter">${idx + 1}</td>
+          <td class="py-2.5 px-3 font-semibold text-blue-900 font-inter">${b.bookingId || '-'}</td>
+          <td class="py-2.5 px-3 text-slate-500">${b.timestamp || '-'}</td>
+          <td class="py-2.5 px-3 font-inter font-semibold text-slate-800">${b.empId}</td>
+          <td class="py-2.5 px-3 font-semibold text-slate-900">${b.fullName}</td>
+          <td class="py-2.5 px-3 text-slate-600">${b.department || '-'}</td>
+          <td class="py-2.5 px-3 text-center">
+            <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-900 font-inter font-bold">${b.size}</span>
+          </td>
+          <td class="py-2.5 px-3 text-center text-slate-600 font-inter">${b.chest || '-'}"</td>
+          <td class="py-2.5 px-3 text-center font-bold font-inter text-slate-900">${b.qty}</td>
+          <td class="py-2.5 px-3 text-right font-bold font-inter text-blue-950">฿${(b.totalPrice || 0).toLocaleString()}</td>
+          <td class="py-2.5 px-3 text-slate-600">${b.paymentMethod || '-'}</td>
+          <td class="py-2.5 px-3">
+            <span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-semibold">
+              ${b.paymentStatus || 'รอตรวจสอบ'}
+            </span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function onTableFilter() {
+      const query = document.getElementById('summaryTableSearch').value.toLowerCase().trim();
+      const sizeFilter = document.getElementById('sizeFilterSelect').value;
+
+      const filtered = bookings.filter(b => {
+        const matchesQuery = !query || 
+          (b.fullName && b.fullName.toLowerCase().includes(query)) ||
+          (b.empId && b.empId.toLowerCase().includes(query)) ||
+          (b.department && b.department.toLowerCase().includes(query)) ||
+          (b.bookingId && b.bookingId.toLowerCase().includes(query));
+
+        const matchesSize = !sizeFilter || b.size === sizeFilter;
+
+        return matchesQuery && matchesSize;
+      });
+
+      renderTableRows(filtered);
+    }
+
+    function exportToCSV() {
+      if (!bookings || bookings.length === 0) {
+        alert('ยังไม่มีข้อมูลการจองในระบบเพื่อส่งออกค่ะ');
+        return;
+      }
+
+      const headers = ['รหัสการจอง', 'วันเวลาที่ลงทะเบียน', 'รหัสพนักงาน', 'ชื่อ-นามสกุล', 'แผนก', 'ตำแหน่ง', 'เบอร์โทร', 'ไซส์เสื้อ', 'รอบอก(นิ้ว)', 'จำนวน(ตัว)', 'ราคาต่อตัว', 'ยอดรวม(บาท)', 'วิธีชำระเงิน', 'สถานะ'];
+      
+      const rows = bookings.map(b => [
+        `"${b.bookingId || ''}"`,
+        `"${b.timestamp || ''}"`,
+        `"${b.empId || ''}"`,
+        `"${b.fullName || ''}"`,
+        `"${b.department || ''}"`,
+        `"${b.position || ''}"`,
+        `"${b.phone || ''}"`,
+        `"${b.size || ''}"`,
+        `"${b.chest || ''}"`,
+        `"${b.qty || 1}"`,
+        `"${b.pricePerUnit || 390}"`,
+        `"${b.totalPrice || 390}"`,
+        `"${b.paymentMethod || ''}"`,
+        `"${b.paymentStatus || ''}"`
+      ]);
+
+      const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `PPCH_Jacket_Registrations_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>จองเสื้อแจ็กเก็ต | รพ.พิษณุเวช พิจิตร</title>
+  <!-- Google Fonts: Prompt & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+      -webkit-tap-highlight-color: transparent;
+      padding-bottom: 90px; /* Space for sticky bottom bar */
+    }
+    .font-inter {
+      font-family: 'Inter', sans-serif;
+    }
+    /* Size pill active styling */
+    .size-pill {
+      border: 2px solid #E2E8F0;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .size-pill.active {
+      border-color: #1E3A8A;
+      background: #1E3A8A;
+      color: #FFFFFF;
+      box-shadow: 0 4px 10px rgba(30, 58, 138, 0.25);
+    }
+    .size-pill.active .size-chest {
+      color: #93C5FD;
+    }
+    /* Bottom Sheet slide-up */
+    .bottom-sheet {
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .bottom-sheet.closed {
+      transform: translateY(100%);
+    }
+    /* Print rules */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #mobileSlipContainer, #mobileSlipContainer * {
+        visibility: visible;
+      }
+      #mobileSlipContainer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- Mobile Top Header Bar -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-xs">
+    <div class="flex items-center gap-2.5">
+      <img src="assets/logo.png" alt="โลโก้" class="h-9 w-auto object-contain">
+      <div>
+        <h1 class="font-bold text-sm text-blue-950 leading-tight">รพ.พิษณุเวช พิจิตร</h1>
+        <p class="text-[11px] text-slate-500">จองเสื้อแจ็กเก็ต PPCH 2569</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-1.5">
+      <a href="summary.html" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs flex items-center" title="สรุปยอดจอง">
+        <i class="ph ph-chart-bar text-base"></i>
+      </a>
+      <button onclick="switchView('desktop')" class="px-2.5 py-1.5 rounded-xl bg-sky-50 text-sky-800 text-[11px] font-semibold border border-sky-200">
+        💻 จอคอม
+      </button>
+    </div>
+  </header>
+
+  <!-- Period & Price Notification Bar -->
+  <div class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white px-4 py-2.5 flex items-center justify-between text-xs">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span>เปิดรับจอง: <strong>12 - 19 ต.ค. 69</strong></span>
+    </div>
+    <div class="bg-amber-400 text-slate-950 font-bold px-2 py-0.5 rounded text-[11px]">
+      ฿390 / ตัว
+    </div>
+  </div>
+
+  <!-- Main Mobile Content Area -->
+  <main class="p-4 space-y-5">
+    
+    <!-- 1. Interactive Jacket Visualizer -->
+    <section class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs overflow-hidden">
+      
+      <!-- Toggle Front/Back Buttons -->
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+          <i class="ph ph-coat-hanger text-blue-800 text-base"></i> เสื้อคลุมแจ็กเก็ตกรมท่า
+        </span>
+
+        <div class="inline-flex p-0.5 rounded-xl bg-slate-100 text-xs font-medium">
+          <button id="mBtnFront" onclick="setMobileJacketView('front')" class="px-3 py-1 rounded-lg bg-white text-blue-900 font-bold shadow-xs">
+            ด้านหน้า
+          </button>
+          <button id="mBtnBack" onclick="setMobileJacketView('back')" class="px-3 py-1 rounded-lg text-slate-600">
+            ด้านหลัง
+          </button>
+        </div>
+      </div>
+
+      <!-- Image Display Frame -->
+      <div class="bg-slate-50 border border-slate-100 rounded-xl p-3 flex flex-col items-center justify-center relative min-h-[260px]">
+        <img id="mJacketImg" 
+             src="assets/jacket_front.webp" 
+             onerror="this.src='assets/jacket_front.png'" 
+             alt="แจ็กเก็ตโรงพยาบาลพิษณุเวช พิจิตร" 
+             class="max-h-[240px] w-auto object-contain drop-shadow-md transition-all duration-300">
+        
+        <div id="mJacketCaption" class="mt-2 text-[11px] text-slate-500 text-center font-medium">
+          ปักตราสัญลักษณ์มาตรฐานเครือพริ้นซิเพิล เฮลท์แคร์ บริเวณอกซ้าย
+        </div>
+      </div>
+
+      <div class="mt-3 flex items-center justify-between text-[11px] text-slate-600 bg-blue-50/70 p-2.5 rounded-xl border border-blue-100">
+        <span>ผ้าร่มพรีเมียม สีกรมท่าสุภาพ</span>
+        <span class="font-semibold text-blue-900 font-inter">PITSANUVEJ PHICHIT</span>
+      </div>
+    </section>
+
+    <!-- 2. Step: Choose Size (M = 40, L = 42, XL = 44, 2XL = 46, 3XL = 48, 4XL = 50) -->
+    <section class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3">
+      <div class="flex items-center justify-between">
+        <label class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+          <span class="w-5 h-5 rounded-md bg-blue-900 text-white flex items-center justify-center text-[11px] font-inter">1</span>
+          เลือกไซส์เสื้อ (รอบอก 40" - 50") <span class="text-rose-500">*</span>
+        </label>
+        <span id="mSelectedSizeText" class="text-xs font-bold text-blue-900 bg-blue-100 px-2.5 py-0.5 rounded-full">ไซส์ M (อก 40")</span>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2.5" id="mSizeGrid">
+        
+        <!-- M -->
+        <button type="button" onclick="selectMobileSize('M', 40)" class="size-pill active p-2.5 rounded-xl text-center flex flex-col items-center">
+          <span class="font-inter font-bold text-base">M</span>
+          <span class="size-chest text-[11px] font-semibold font-inter mt-0.5">อก 40"</span>
+          <span class="text-[9px] text-slate-400">ยาว 26"</span>
+        </button>
+
+        <!-- L -->
+        <button type="button" onclick="selectMobileSize('L', 42)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
+          <span class="font-inter font-bold text-base">L</span>
+          <span class="size-chest text-[11px] font-semibold font-inter text-blue-700 mt-0.5">อก 42"</span>
+          <span class="text-[9px] text-slate-400">ยาว 27"</span>
+        </button>
+
+        <!-- XL -->
+        <button type="button" onclick="selectMobileSize('XL', 44)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
+          <span class="font-inter font-bold text-base">XL</span>
+          <span class="size-chest text-[11px] font-semibold font-inter text-blue-700 mt-0.5">อก 44"</span>
+          <span class="text-[9px] text-slate-400">ยาว 28"</span>
+        </button>
+
+        <!-- 2XL -->
+        <button type="button" onclick="selectMobileSize('2XL', 46)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
+          <span class="font-inter font-bold text-base">2XL</span>
+          <span class="size-chest text-[11px] font-semibold font-inter text-blue-700 mt-0.5">อก 46"</span>
+          <span class="text-[9px] text-slate-400">ยาว 29"</span>
+        </button>
+
+        <!-- 3XL -->
+        <button type="button" onclick="selectMobileSize('3XL', 48)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
+          <span class="font-inter font-bold text-base">3XL</span>
+          <span class="size-chest text-[11px] font-semibold font-inter text-blue-700 mt-0.5">อก 48"</span>
+          <span class="text-[9px] text-slate-400">ยาว 30"</span>
+        </button>
+
+        <!-- 4XL -->
+        <button type="button" onclick="selectMobileSize('4XL', 50)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
+          <span class="font-inter font-bold text-base">4XL</span>
+          <span class="size-chest text-[11px] font-semibold font-inter text-blue-700 mt-0.5">อก 50"</span>
+          <span class="text-[9px] text-slate-400">ยาว 31"</span>
+        </button>
+
+      </div>
+
+      <p class="text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-xl border border-amber-200">
+        💡 แนะนำวัดรอบอกจริงแล้วบวกเผื่อ 2 - 4 นิ้ว สำหรับสวมทับเสื้อทำงาน
+      </p>
+    </section>
+
+    <!-- 3. Step: Employee Selection -->
+    <section class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3">
+      <div class="flex items-center justify-between">
+        <label class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+          <span class="w-5 h-5 rounded-md bg-blue-900 text-white flex items-center justify-center text-[11px] font-inter">2</span>
+          ข้อมูลผู้สั่งจอง <span class="text-rose-500">*</span>
+        </label>
+        <button type="button" onclick="openEmployeePickerSheet()" class="text-xs font-semibold text-blue-700 hover:text-blue-900 flex items-center gap-1">
+          <i class="ph ph-magnifying-glass"></i> ค้นหารายชื่อ
+        </button>
+      </div>
+
+      <!-- Trigger Card / Selected Display -->
+      <div id="mEmpCardEmpty" onclick="openEmployeePickerSheet()" class="p-3.5 border-2 border-dashed border-slate-300 rounded-xl bg-slate-50 flex items-center justify-between cursor-pointer active:bg-slate-100 transition">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-lg">
+            <i class="ph ph-user"></i>
+          </div>
+          <div>
+            <div class="text-xs font-semibold text-slate-700">แตะเพื่อค้นหารหัสหรือชื่อพนักงาน</div>
+            <div class="text-[10px] text-slate-400">รายชื่อบุคลากร รพ.พิษณุเวช 209 ท่าน</div>
+          </div>
+        </div>
+        <i class="ph ph-caret-right text-slate-400 text-base"></i>
+      </div>
+
+      <!-- Selected Employee Profile Card -->
+      <div id="mEmpCardSelected" class="hidden p-3.5 border border-blue-200 rounded-xl bg-blue-50/80 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-900 text-white font-bold flex items-center justify-center text-sm shadow-xs" id="mEmpAvatar">
+            PP
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="font-bold text-xs text-slate-900" id="mEmpName">-</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-200 font-inter font-semibold text-blue-900" id="mEmpIdBadge">000000</span>
+            </div>
+            <div class="text-[11px] text-slate-600 mt-0.5" id="mEmpDeptPos">-</div>
+          </div>
+        </div>
+        <button type="button" onclick="openEmployeePickerSheet()" class="text-xs font-semibold text-blue-700 p-1">
+          เปลี่ยน
+        </button>
+      </div>
+
+      <!-- Phone Number Input -->
+      <div class="space-y-1">
+        <label for="mPhoneInput" class="text-xs font-semibold text-slate-700 block">
+          📱 เบอร์โทรศัพท์ติดต่อ <span class="text-rose-500">*</span>
+        </label>
+        <input type="tel" 
+               id="mPhoneInput" 
+               placeholder="เช่น 081-234-5678 หรือเบอร์ภายใน" 
+               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition">
+      </div>
+
+      <!-- Quantity Selector -->
+      <div class="flex items-center justify-between pt-1">
+        <label class="text-xs font-semibold text-slate-700">จำนวนที่ต้องการ (ตัว)</label>
+        <div class="flex items-center">
+          <button type="button" onclick="adjustMobileQty(-1)" class="w-9 h-9 rounded-l-xl bg-slate-100 border border-slate-300 border-r-0 flex items-center justify-center text-base font-bold text-slate-700 active:bg-slate-200">-</button>
+          <input type="number" id="mQtyInput" value="1" min="1" max="10" readonly class="w-12 h-9 text-center bg-slate-50 border border-slate-300 text-sm font-bold font-inter text-slate-900">
+          <button type="button" onclick="adjustMobileQty(1)" class="w-9 h-9 rounded-r-xl bg-slate-100 border border-slate-300 border-l-0 flex items-center justify-center text-base font-bold text-slate-700 active:bg-slate-200">+</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Step: Payment Method -->
+    <section class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2.5">
+      <label class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+        <span class="w-5 h-5 rounded-md bg-blue-900 text-white flex items-center justify-center text-[11px] font-inter">3</span>
+        วิธีชำระเงิน <span class="text-rose-500">*</span>
+      </label>
+
+      <div class="space-y-2">
+        <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50/50 cursor-pointer">
+          <input type="radio" name="mPayment" value="พร้อมเพย์ QR Code" checked class="text-blue-600 focus:ring-blue-500 h-4 w-4">
+          <div class="text-xs">
+            <span class="font-semibold text-slate-900 block">สแกน QR Code พร้อมเพย์</span>
+            <span class="text-[10px] text-slate-500">ชำระผ่านโมบายแบงก์กิ้ง</span>
+          </div>
+        </label>
+
+        <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50/50 cursor-pointer">
+          <input type="radio" name="mPayment" value="หักเงินเดือน (สวัสดิการ)" class="text-blue-600 focus:ring-blue-500 h-4 w-4">
+          <div class="text-xs">
+            <span class="font-semibold text-slate-900 block">หักผ่านเงินเดือน</span>
+            <span class="text-[10px] text-slate-500">สวัสดิการพนักงาน รพ.พิษณุเวช</span>
+          </div>
+        </label>
+
+        <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50/50 cursor-pointer">
+          <input type="radio" name="mPayment" value="เงินสดวันรับเสื้อ" class="text-blue-600 focus:ring-blue-500 h-4 w-4">
+          <div class="text-xs">
+            <span class="font-semibold text-slate-900 block">ชำระเงินสดวันรับเสื้อ</span>
+            <span class="text-[10px] text-slate-500">ฝ่ายทรัพยากรบุคคล (HRD)</span>
+          </div>
+        </label>
+      </div>
+
+      <input type="text" id="mNoteInput" placeholder="หมายเหตุเพิ่มเติม (ถ้ามี)..." class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:bg-white focus:outline-none transition">
+    </section>
+
+  </main>
+
+  <!-- Sticky Bottom Action Bar -->
+  <aside class="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 py-3 flex items-center justify-between shadow-lg">
+    <div>
+      <div class="text-[11px] text-slate-500">ยอดชำระทั้งสิ้น</div>
+      <div class="text-xl font-bold font-inter text-blue-950" id="mTotalPriceDisplay">฿390</div>
+    </div>
+
+    <button type="button" 
+            onclick="submitMobileBooking()" 
+            class="py-3 px-6 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-semibold text-sm flex items-center gap-2 shadow-md active:scale-95 transition">
+      <span>ยืนยันการจอง</span>
+      <i class="ph ph-arrow-right font-bold"></i>
+    </button>
+  </aside>
+
+  <!-- ================= BOTTOM SHEETS & MODALS ================= -->
+
+  <!-- Employee Picker Bottom Sheet -->
+  <div id="employeePickerSheet" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex flex-col justify-end hidden">
+    <!-- Backdrop dismiss -->
+    <div class="flex-1" onclick="closeEmployeePickerSheet()"></div>
+    
+    <!-- Sheet Box -->
+    <div class="bottom-sheet bg-white rounded-t-3xl max-h-[85vh] flex flex-col shadow-2xl border-t border-slate-200">
+      
+      <!-- Drag handle & Header -->
+      <div class="p-4 border-b border-slate-200 flex-shrink-0">
+        <div class="w-10 h-1.5 bg-slate-300 rounded-full mx-auto mb-3"></div>
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-sm text-slate-900 flex items-center gap-2">
+            <i class="ph ph-users text-blue-800 text-lg"></i> เลือกรหัส / รายชื่อพนักงาน
+          </h3>
+          <button onclick="closeEmployeePickerSheet()" class="p-1 rounded-full text-slate-400 hover:text-slate-600">
+            <i class="ph ph-x text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Search Input -->
+        <div class="relative mt-3">
+          <i class="ph ph-magnifying-glass absolute left-3 top-3 text-slate-400 text-base"></i>
+          <input type="text" 
+                 id="mSheetSearchInput" 
+                 oninput="filterSheetEmployees(this.value)" 
+                 placeholder="พิมพ์รหัสพนักงาน หรือชื่อ..." 
+                 class="w-full pl-9 pr-8 py-2.5 bg-slate-100 rounded-xl text-xs border border-transparent focus:border-blue-600 focus:bg-white focus:outline-none transition">
+          <button onclick="document.getElementById('mSheetSearchInput').value=''; filterSheetEmployees('');" class="absolute right-3 top-3 text-slate-400">
+            <i class="ph ph-x-circle text-base"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Employee Scroll List -->
+      <div class="p-3 overflow-y-auto divide-y divide-slate-100 flex-1 space-y-1" id="mSheetEmployeeList">
+        <!-- Rendered by JS -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Booking Confirmation Slip Sheet -->
+  <div id="mobileSlipModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex flex-col justify-end hidden">
+    <div class="flex-1" onclick="closeMobileSlipModal()"></div>
+    
+    <div class="bottom-sheet bg-white rounded-t-3xl max-h-[90vh] overflow-y-auto flex flex-col shadow-2xl p-5" id="mobileSlipContainer">
+      <div class="w-10 h-1.5 bg-slate-300 rounded-full mx-auto mb-3"></div>
+      
+      <div class="text-center pb-3 border-b border-slate-100">
+        <div class="w-11 h-11 bg-blue-900 rounded-2xl mx-auto flex items-center justify-center text-white text-xl mb-2">
+          <i class="ph ph-check-fat font-bold"></i>
+        </div>
+        <h3 class="font-bold text-base text-slate-900">ลงทะเบียนจองเสื้อสำเร็จ!</h3>
+        <p class="text-xs text-slate-500">โรงพยาบาลพิษณุเวช พิจิตร (PPCH 2569)</p>
+        <span class="inline-block mt-2 px-3 py-1 bg-blue-50 text-blue-900 rounded-full font-inter font-bold text-xs" id="mSlipId">
+          JK-20261012-0000
+        </span>
+      </div>
+
+      <!-- Slip Details -->
+      <div class="py-4 space-y-2.5 text-xs text-slate-700">
+        <div class="flex justify-between">
+          <span class="text-slate-400">ผู้สั่งจอง:</span>
+          <span class="font-bold text-slate-900" id="mSlipName">-</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">รหัสพนักงาน:</span>
+          <span class="font-inter font-semibold text-blue-900" id="mSlipEmpId">-</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">แผนก:</span>
+          <span id="mSlipDept">-</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">เบอร์โทรศัพท์:</span>
+          <span class="font-inter" id="mSlipPhone">-</span>
+        </div>
+        <div class="flex justify-between border-t border-dashed border-slate-200 pt-2 font-bold text-slate-900">
+          <span>ขนาดเสื้อ:</span>
+          <span class="text-blue-900 font-inter" id="mSlipSize">ไซส์ M (อก 40") x 1 ตัว</span>
+        </div>
+        <div class="flex justify-between border-b border-dashed border-slate-200 pb-2">
+          <span class="text-slate-400">วิธีชำระ:</span>
+          <span id="mSlipPayMethod">-</span>
+        </div>
+        <div class="flex justify-between items-center bg-blue-50 p-3 rounded-xl border border-blue-100 font-bold text-sm">
+          <span>ยอดชำระทั้งสิ้น:</span>
+          <span class="text-blue-950 font-inter text-lg" id="mSlipPrice">฿390</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="pt-2 space-y-2">
+        <button onclick="window.print()" class="w-full py-3 bg-blue-900 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs">
+          <i class="ph ph-printer text-base"></i> บันทึกภาพ / พิมพ์สลิป
+        </button>
+        <button onclick="closeMobileSlipModal()" class="w-full py-2.5 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold">
+          เสร็จสิ้น
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Message -->
+  <div id="mToast" class="fixed top-5 inset-x-4 z-50 transition-all duration-300 transform -translate-y-20 opacity-0 pointer-events-none">
+    <div class="bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl text-xs font-semibold flex items-center gap-2" id="mToastBox">
+      <i class="ph ph-check-circle text-emerald-400 text-lg"></i>
+      <span id="mToastMsg">ข้อความ</span>
+    </div>
+  </div>
+
+  <!-- Master Employees Script -->
+  <script src="data/employees-data.js"></script>
+
+  <script>
+    const MOBILE_CONFIG = {
+      pricePerUnit: 390,
+      storageKey: 'ppch_jacket_bookings_2026'
+    };
+
+    let mSelectedSize = 'M';
+    let mSelectedChest = 40;
+    let mSelectedEmployee = null;
+    let mQty = 1;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderSheetEmployees(window.PPCH_EMPLOYEES || []);
+      updateMobileTotal();
+    });
+
+    function setMobileJacketView(view) {
+      const img = document.getElementById('mJacketImg');
+      const caption = document.getElementById('mJacketCaption');
+      const btnF = document.getElementById('mBtnFront');
+      const btnB = document.getElementById('mBtnBack');
+
+      if (view === 'front') {
+        img.src = 'assets/jacket_front.webp';
+        btnF.className = 'px-3 py-1 rounded-lg bg-white text-blue-900 font-bold shadow-xs';
+        btnB.className = 'px-3 py-1 rounded-lg text-slate-600';
+        caption.innerText = 'ปักตราสัญลักษณ์มาตรฐานเครือพริ้นซิเพิล เฮลท์แคร์ บริเวณอกซ้าย';
+      } else {
+        img.src = 'assets/jacket_back.webp';
+        btnB.className = 'px-3 py-1 rounded-lg bg-white text-blue-900 font-bold shadow-xs';
+        btnF.className = 'px-3 py-1 rounded-lg text-slate-600';
+        caption.innerText = 'ปักตัวอักษรสีขาวคมชัด PITSANUVEJ PHICHIT ด้านหลัง';
+      }
+    }
+
+    function selectMobileSize(size, chest) {
+      mSelectedSize = size;
+      mSelectedChest = chest;
+      document.getElementById('mSelectedSizeText').innerText = `ไซส์ ${size} (อก ${chest}")`;
+
+      document.querySelectorAll('.size-pill').forEach(pill => {
+        if (pill.innerText.includes(size)) {
+          pill.classList.add('active');
+        } else {
+          pill.classList.remove('active');
+        }
+      });
+      updateMobileTotal();
+    }
+
+    function adjustMobileQty(delta) {
+      mQty += delta;
+      if (mQty < 1) mQty = 1;
+      if (mQty > 10) mQty = 10;
+      document.getElementById('mQtyInput').value = mQty;
+      updateMobileTotal();
+    }
+
+    function updateMobileTotal() {
+      const total = mQty * MOBILE_CONFIG.pricePerUnit;
+      document.getElementById('mTotalPriceDisplay').innerText = `฿${total.toLocaleString()}`;
+    }
+
+    // Employee Bottom Sheet Picker
+    function openEmployeePickerSheet() {
+      document.getElementById('employeePickerSheet').classList.remove('hidden');
+      document.getElementById('mSheetSearchInput').focus();
+    }
+    function closeEmployeePickerSheet() {
+      document.getElementById('employeePickerSheet').classList.add('hidden');
+    }
+
+    function renderSheetEmployees(list) {
+      const container = document.getElementById('mSheetEmployeeList');
+      if (!list || list.length === 0) {
+        container.innerHTML = '<div class="p-6 text-center text-xs text-slate-400">ไม่พบรายชื่อพนักงาน</div>';
+        return;
+      }
+      container.innerHTML = list.map(emp => `
+        <div onclick="selectEmployeeMobile('${emp.id}')" class="p-3 hover:bg-blue-50 active:bg-blue-100 rounded-xl cursor-pointer flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-900 font-bold text-xs flex items-center justify-center font-inter">
+              ${emp.prefix ? emp.prefix.substring(0, 2) : 'PP'}
+            </span>
+            <div>
+              <div class="font-bold text-xs text-slate-900">${emp.fullName}</div>
+              <div class="text-[10px] text-slate-500">${emp.department || '-'}</div>
+            </div>
+          </div>
+          <span class="font-inter text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+            ${emp.id}
+          </span>
+        </div>
+      `).join('');
+    }
+
+    function filterSheetEmployees(query) {
+      const employees = window.PPCH_EMPLOYEES || [];
+      if (!query || query.trim().length === 0) {
+        renderSheetEmployees(employees);
+        return;
+      }
+      const q = query.trim().toLowerCase();
+      const filtered = employees.filter(e => 
+        (e.fullName && e.fullName.toLowerCase().includes(q)) ||
+        (e.id && e.id.toLowerCase().includes(q)) ||
+        (e.department && e.department.toLowerCase().includes(q))
+      );
+      renderSheetEmployees(filtered);
+    }
+
+    function selectEmployeeMobile(empId) {
+      const employees = window.PPCH_EMPLOYEES || [];
+      const emp = employees.find(e => e.id === empId);
+      if (!emp) return;
+
+      mSelectedEmployee = emp;
+      document.getElementById('mEmpName').innerText = emp.fullName;
+      document.getElementById('mEmpIdBadge').innerText = emp.id;
+      document.getElementById('mEmpDeptPos').innerText = `${emp.department || '-'} • ${emp.position || '-'}`;
+      document.getElementById('mEmpAvatar').innerText = emp.prefix ? emp.prefix.substring(0, 2) : 'PP';
+
+      document.getElementById('mEmpCardEmpty').classList.add('hidden');
+      document.getElementById('mEmpCardSelected').classList.remove('hidden');
+      closeEmployeePickerSheet();
+
+      // Check existing booking
+      try {
+        const stored = localStorage.getItem(MOBILE_CONFIG.storageKey);
+        if (stored) {
+          const list = JSON.parse(stored);
+          const found = list.find(b => b.empId === emp.id);
+          if (found) {
+            showMobileToast(`พบประวัติเดิม: ไซส์ ${found.size} (${found.qty} ตัว)`);
+            if (found.size) selectMobileSize(found.size, found.chest || 40);
+            if (found.qty) {
+              mQty = found.qty;
+              document.getElementById('mQtyInput').value = mQty;
+              updateMobileTotal();
+            }
+            if (found.phone) document.getElementById('mPhoneInput').value = found.phone;
+          }
+        }
+      } catch (err) {}
+    }
+
+    // Submit Booking
+    function submitMobileBooking() {
+      if (!mSelectedEmployee) {
+        showMobileToast('กรุณาเลือกรายชื่อพนักงานก่อนค่ะ');
+        openEmployeePickerSheet();
+        return;
+      }
+      const phone = document.getElementById('mPhoneInput').value.trim();
+      if (!phone) {
+        showMobileToast('กรุณากรอกเบอร์โทรศัพท์ติดต่อค่ะ');
+        document.getElementById('mPhoneInput').focus();
+        return;
+      }
+      const paymentMethod = document.querySelector('input[name="mPayment"]:checked')?.value || 'พร้อมเพย์ QR Code';
+      const note = document.getElementById('mNoteInput').value.trim();
+
+      const timestamp = new Date().toLocaleString('th-TH', { 
+        year: 'numeric', month: 'short', day: 'numeric', 
+        hour: '2-digit', minute: '2-digit' 
+      });
+      const bookingId = 'JK-' + new Date().getFullYear() + ('0' + (new Date().getMonth() + 1)).slice(-2) + ('0' + new Date().getDate()).slice(-2) + '-' + Math.floor(1000 + Math.random() * 9000);
+
+      const record = {
+        bookingId: bookingId,
+        timestamp: timestamp,
+        empId: mSelectedEmployee.id,
+        fullName: mSelectedEmployee.fullName,
+        department: mSelectedEmployee.department || '-',
+        position: mSelectedEmployee.position || '-',
+        phone: phone,
+        size: mSelectedSize,
+        chest: mSelectedChest,
+        qty: mQty,
+        pricePerUnit: MOBILE_CONFIG.pricePerUnit,
+        totalPrice: mQty * MOBILE_CONFIG.pricePerUnit,
+        paymentMethod: paymentMethod,
+        paymentStatus: 'รอตรวจสอบการชำระเงิน',
+        note: note
+      };
+
+      // Save to localStorage
+      try {
+        let list = [];
+        const stored = localStorage.getItem(MOBILE_CONFIG.storageKey);
+        if (stored) list = JSON.parse(stored);
+        const idx = list.findIndex(b => b.empId === record.empId);
+        if (idx >= 0) list[idx] = record;
+        else list.unshift(record);
+        localStorage.setItem(MOBILE_CONFIG.storageKey, JSON.stringify(list));
+      } catch (err) {}
+
+      // Show slip
+      displayMobileSlip(record);
+    }
+
+    function displayMobileSlip(r) {
+      document.getElementById('mSlipId').innerText = r.bookingId;
+      document.getElementById('mSlipName').innerText = r.fullName;
+      document.getElementById('mSlipEmpId').innerText = r.empId;
+      document.getElementById('mSlipDept').innerText = r.department;
+      document.getElementById('mSlipPhone').innerText = r.phone;
+      document.getElementById('mSlipSize').innerText = `ไซส์ ${r.size} (อก ${r.chest}") × ${r.qty} ตัว`;
+      document.getElementById('mSlipPayMethod').innerText = r.paymentMethod;
+      document.getElementById('mSlipPrice').innerText = `฿${(r.totalPrice || 0).toLocaleString()}`;
+
+      document.getElementById('mobileSlipModal').classList.remove('hidden');
+    }
+
+    function closeMobileSlipModal() {
+      document.getElementById('mobileSlipModal').classList.add('hidden');
+      // Reset
+      document.getElementById('mPhoneInput').value = '';
+      document.getElementById('mNoteInput').value = '';
+      showMobileToast('บันทึกการจองเรียบร้อยแล้วค่ะ');
+    }
+
+    function showMobileToast(msg) {
+      const toast = document.getElementById('mToast');
+      document.getElementById('mToastMsg').innerText = msg;
+      toast.classList.remove('-translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('-translate-y-20', 'opacity-0');
+      }, 3500);
+    }
+
+    function switchView(view) {
+      localStorage.setItem('ppch_jacket_view_pref', view);
+      window.location.href = view === 'desktop' ? 'desktop.html' : 'mobile.html';
+    }
+  </script>
+</body>
+</html>
