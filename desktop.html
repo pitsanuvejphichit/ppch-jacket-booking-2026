@@ -700,15 +700,6 @@
       // Update badge
       document.getElementById('selectedSizeSummaryBadge').innerText = `เลือกไซส์ ${size} (รอบอก ${chest}")`;
 
-      // Update size guide cards (in left column)
-      document.querySelectorAll('.size-card').forEach(card => {
-        if (card.innerText.includes(size)) {
-          card.classList.add('active');
-        } else {
-          card.classList.remove('active');
-        }
-      });
-
       // Update form cards (in form)
       document.querySelectorAll('.form-size-card').forEach(card => {
         if (card.dataset.size === size) {

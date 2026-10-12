@@ -145,37 +145,37 @@
       <div class="grid grid-cols-3 gap-2.5" id="mSizeGrid">
         
         <!-- M -->
-        <button type="button" onclick="selectMobileSize('M', 40)" class="size-pill active p-2.5 rounded-xl text-center flex flex-col items-center">
+        <button type="button" data-size="M" onclick="selectMobileSize('M', 40)" class="size-pill active p-2.5 rounded-xl text-center flex flex-col items-center">
           <span class="font-inter font-bold text-base">M</span>
           <span class="size-chest text-[11px] font-semibold font-inter mt-1">อก 40"</span>
         </button>
 
         <!-- L -->
-        <button type="button" onclick="selectMobileSize('L', 42)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
+        <button type="button" data-size="L" onclick="selectMobileSize('L', 42)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
           <span class="font-inter font-bold text-base">L</span>
           <span class="size-chest text-[11px] font-semibold font-inter text-blue-700 mt-1">อก 42"</span>
         </button>
 
         <!-- XL -->
-        <button type="button" onclick="selectMobileSize('XL', 44)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
+        <button type="button" data-size="XL" onclick="selectMobileSize('XL', 44)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
           <span class="font-inter font-bold text-base">XL</span>
           <span class="size-chest text-[11px] font-semibold font-inter text-blue-700 mt-1">อก 44"</span>
         </button>
 
         <!-- 2XL -->
-        <button type="button" onclick="selectMobileSize('2XL', 46)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
+        <button type="button" data-size="2XL" onclick="selectMobileSize('2XL', 46)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
           <span class="font-inter font-bold text-base">2XL</span>
           <span class="size-chest text-[11px] font-semibold font-inter text-blue-700 mt-1">อก 46"</span>
         </button>
 
         <!-- 3XL -->
-        <button type="button" onclick="selectMobileSize('3XL', 48)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
+        <button type="button" data-size="3XL" onclick="selectMobileSize('3XL', 48)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
           <span class="font-inter font-bold text-base">3XL</span>
           <span class="size-chest text-[11px] font-semibold font-inter text-blue-700 mt-1">อก 48"</span>
         </button>
 
         <!-- 4XL -->
-        <button type="button" onclick="selectMobileSize('4XL', 50)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
+        <button type="button" data-size="4XL" onclick="selectMobileSize('4XL', 50)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
           <span class="font-inter font-bold text-base">4XL</span>
           <span class="size-chest text-[11px] font-semibold font-inter text-blue-700 mt-1">อก 50"</span>
         </button>
@@ -264,7 +264,7 @@
     <div class="flex-1" onclick="closeEmployeePickerSheet()"></div>
     
     <!-- Sheet Box -->
-    <div class="bottom-sheet bg-white rounded-t-3xl max-h-[85vh] flex flex-col shadow-2xl border-t border-slate-200">
+    <div class="bottom-sheet bg-white rounded-t-3xl flex flex-col shadow-2xl border-t border-slate-200 overflow-hidden" style="height: 85vh; height: 85dvh; max-height: 85dvh;">
       
       <!-- Drag handle & Header -->
       <div class="p-4 border-b border-slate-200 flex-shrink-0">
@@ -411,7 +411,7 @@
       document.getElementById('mSelectedSizeText').innerText = `ไซส์ ${size} (อก ${chest}")`;
 
       document.querySelectorAll('.size-pill').forEach(pill => {
-        if (pill.innerText.includes(size)) {
+        if (pill.dataset.size === size) {
           pill.classList.add('active');
         } else {
           pill.classList.remove('active');
@@ -436,22 +436,39 @@
     // Employee Bottom Sheet Picker
     function openEmployeePickerSheet() {
       document.getElementById('employeePickerSheet').classList.remove('hidden');
-      document.getElementById('mSheetSearchInput').focus();
+      const listEl = document.getElementById('mSheetEmployeeList');
+      if (listEl) listEl.scrollTop = 0;
+      setTimeout(() => {
+        const input = document.getElementById('mSheetSearchInput');
+        if (input) input.focus();
+      }, 150);
     }
     function closeEmployeePickerSheet() {
       document.getElementById('employeePickerSheet').classList.add('hidden');
     }
 
-    function renderSheetEmployees(list) {
+    function renderSheetEmployees(list, query = '') {
       const container = document.getElementById('mSheetEmployeeList');
+      container.scrollTop = 0;
       if (!list || list.length === 0) {
-        container.innerHTML = '<div class="p-6 text-center text-xs text-slate-400">ไม่พบรายชื่อพนักงาน</div>';
+        container.innerHTML = `
+          <div class="p-8 text-center text-xs text-slate-400">
+            <i class="ph ph-user-minus text-3xl text-slate-300 block mb-2"></i>
+            ไม่พบรายชื่อที่ตรงกับ "${query}"
+          </div>`;
         return;
       }
-      container.innerHTML = list.map(emp => `
-        <div onclick="selectEmployeeMobile('${emp.id}')" class="p-3 hover:bg-blue-50 active:bg-blue-100 rounded-xl cursor-pointer flex items-center justify-between">
+
+      const badge = query ? `
+        <div class="px-2.5 py-1.5 mb-1.5 text-[11px] text-blue-900 bg-blue-50 rounded-lg font-medium flex items-center justify-between border border-blue-100">
+          <span>พบรายชื่อที่ตรงกัน:</span>
+          <span class="font-bold font-inter">${list.length} ท่าน</span>
+        </div>` : '';
+
+      container.innerHTML = badge + list.map(emp => `
+        <div onclick="selectEmployeeMobile('${emp.id}')" class="p-3 hover:bg-blue-50 active:bg-blue-100 rounded-xl cursor-pointer flex items-center justify-between transition">
           <div class="flex items-center gap-2.5">
-            <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-900 font-bold text-xs flex items-center justify-center font-inter">
+            <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-900 font-bold text-xs flex items-center justify-center font-inter flex-shrink-0">
               ${emp.prefix ? emp.prefix.substring(0, 2) : 'PP'}
             </span>
             <div>
@@ -459,7 +476,7 @@
               <div class="text-[10px] text-slate-500">${emp.department || '-'}</div>
             </div>
           </div>
-          <span class="font-inter text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+          <span class="font-inter text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700 flex-shrink-0">
             ${emp.id}
           </span>
         </div>
@@ -478,7 +495,7 @@
         (e.id && e.id.toLowerCase().includes(q)) ||
         (e.department && e.department.toLowerCase().includes(q))
       );
-      renderSheetEmployees(filtered);
+      renderSheetEmployees(filtered, query.trim());
     }
 
     function selectEmployeeMobile(empId) {
