@@ -62,14 +62,15 @@ function getTargetSheet() {
 }
 
 /**
- * ตั้งค่าหัวตาราง Sheet
+ * ตั้งค่าหัวตาราง Sheet (แยกคอลัมน์ ชื่อ, นามสกุล และฟอร์แมตรหัสพนักงาน 6 หลัก)
  */
 function applySheetHeaders(sheet) {
   const headers = [
     'รหัสการจอง',
     'วันเวลาที่ลงทะเบียน',
     'รหัสพนักงาน',
-    'ชื่อ-นามสกุล',
+    'ชื่อ',
+    'นามสกุล',
     'แผนก',
     'ตำแหน่ง',
     'ไซส์เสื้อ',
@@ -80,6 +81,15 @@ function applySheetHeaders(sheet) {
     'สถานะ'
   ];
   
+  // ตรวจสอบข้อมูลแถวเดิม หากเป็นโครงสร้างเก่าที่มี 'ชื่อ-นามสกุล' ให้แปลงข้อมูลเดิมอัตโนมัติ
+  if (sheet.getLastRow() >= 1) {
+    const maxCols = Math.max(sheet.getLastColumn(), 1);
+    const headerRow = sheet.getRange(1, 1, 1, Math.min(maxCols, 15)).getValues()[0];
+    if (headerRow.includes('ชื่อ-นามสกุล')) {
+      migrateOldColumnsToSeparateName(sheet);
+    }
+  }
+  
   const range = sheet.getRange(1, 1, 1, headers.length);
   range.setValues([headers]);
   range.setBackground('#1E3A8A');
@@ -87,8 +97,58 @@ function applySheetHeaders(sheet) {
   range.setFontWeight('bold');
   range.setHorizontalAlignment('center');
   
+  // กฎเหล็ก: กำหนดคอลัมน์ C (รหัสพนักงาน) เป็น Plain Text ('@') เสมอ เพื่อรักษาเลข 6 หลัก (เช่น 000023)
+  sheet.getRange("C:C").setNumberFormat('@');
+  
   sheet.setFrozenRows(1);
   sheet.autoResizeColumns(1, headers.length);
+}
+
+/**
+ * แปลงข้อมูลโครงสร้างเก่า (ชื่อ-นามสกุล คอลัมน์เดียว) เป็นแยก ชื่อ และ นามสกุล
+ */
+function migrateOldColumnsToSeparateName(sheet) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return;
+  
+  const allValues = sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).getValues();
+  const newRows = [];
+  
+  for (let r = 0; r < allValues.length; r++) {
+    const row = allValues[r];
+    const rawEmpId = String(row[2] || '').trim();
+    const empId6 = /^\d+$/.test(rawEmpId) ? rawEmpId.padStart(6, '0') : rawEmpId;
+    const oldFullName = String(row[3] || '').trim();
+    
+    // แยกชื่อ และ นามสกุล
+    const parts = oldFullName.split(/\s+/);
+    const firstName = parts[0] || '';
+    const lastName = parts.slice(1).join(' ') || '';
+    
+    newRows.push([
+      row[0] || '', // รหัสการจอง
+      row[1] || '', // วันเวลาที่ลงทะเบียน
+      empId6,       // รหัสพนักงาน (6 หลัก)
+      firstName,    // ชื่อ
+      lastName,     // นามสกุล
+      row[4] || '', // แผนก
+      row[5] || '', // ตำแหน่ง
+      row[6] || '', // ไซส์เสื้อ
+      row[7] || '', // รอบอก (นิ้ว)
+      row[8] || '', // จำนวน (ตัว)
+      row[9] || '', // ราคาต่อตัว
+      row[10] || '', // ยอดประมาณการ (บาท)
+      row[11] || 'จองสำเร็จ' // สถานะ
+    ]);
+  }
+  
+  sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).clearContent();
+  const targetRange = sheet.getRange(2, 1, newRows.length, 13);
+  sheet.getRange(2, 3, newRows.length, 1).setNumberFormat('@');
+  targetRange.setValues(newRows);
+  for (let i = 0; i < newRows.length; i++) {
+    sheet.getRange(2 + i, 3).setNumberFormat('@').setValue(newRows[i][2]);
+  }
 }
 
 /**
@@ -98,7 +158,7 @@ function setupSheetHeaders() {
   const sheet = getTargetSheet();
   applySheetHeaders(sheet);
   try {
-    SpreadsheetApp.getUi().alert('สำเร็จ', 'จัดรูปแบบหัวตารางเรียบร้อยแล้วค่ะ!', SpreadsheetApp.getUi().ButtonSet.OK);
+    SpreadsheetApp.getUi().alert('สำเร็จ', 'จัดรูปแบบหัวตาราง (แยก ชื่อ-นามสกุล, รหัสพนักงาน 6 หลัก) เรียบร้อยแล้วค่ะ!', SpreadsheetApp.getUi().ButtonSet.OK);
   } catch (e) {}
 }
 
@@ -109,7 +169,7 @@ function onOpen() {
   try {
     const ui = SpreadsheetApp.getUi();
     ui.createMenu('🧥 ระบบลงทะเบียนจองเสื้อ')
-      .addItem('⚙️ 1. จัดรูปแบบหัวตารางอัตโนมัติ (Setup)', 'setupSheetHeaders')
+      .addItem('⚙️ 1. จัดรูปแบบหัวตารางอัตโนมัติ (Setup 13 คอลัมน์)', 'setupSheetHeaders')
       .addItem('📊 2. สรุปยอดการจองตามไซส์ (Summary)', 'showSummaryDialog')
       .addSeparator()
       .addItem('🌐 3. เปิดหน้าเว็บลงทะเบียน (GitHub Pages)', 'openWebUrl')
@@ -131,7 +191,7 @@ function doGet(e) {
     setupSheetHeaders();
     return ContentService.createTextOutput(JSON.stringify({
       status: 'success',
-      message: 'Sheet headers initialized successfully'
+      message: 'Sheet headers initialized with 13 columns successfully'
     })).setMimeType(ContentService.MimeType.JSON);
   }
   
@@ -178,7 +238,7 @@ function processBooking(data) {
     // ล็อก 30 วินาที ป้องกันบันทึกแถวทับกัน
     lock.waitLock(30000);
     
-    if (!data.empId || !data.fullName || !data.size) {
+    if (!data.empId || (!data.fullName && !data.firstName) || !data.size) {
       return ContentService.createTextOutput(JSON.stringify({
         success: false,
         message: 'กรุณากรอกข้อมูลให้ครบถ้วน (รหัสพนักงาน, ชื่อ, ไซส์)'
@@ -187,10 +247,31 @@ function processBooking(data) {
     
     const sheet = getTargetSheet();
     
+    // ตรวจสอบและอัปเดตหัวตารางหากยังเป็นแบบเดิมที่มี 'ชื่อ-นามสกุล' คอลัมน์เดียว
+    const maxCols = Math.max(sheet.getLastColumn(), 1);
+    const headerRow = sheet.getRange(1, 1, 1, Math.min(maxCols, 15)).getValues()[0];
+    if (headerRow.includes('ชื่อ-นามสกุล')) {
+      applySheetHeaders(sheet);
+    }
+    
     const now = new Date();
     const timestampStr = Utilities.formatDate(now, 'Asia/Bangkok', 'yyyy-MM-dd HH:mm:ss');
     const randomHex = Math.floor(1000 + Math.random() * 9000);
     const bookingId = data.bookingId || ('JK-' + Utilities.formatDate(now, 'Asia/Bangkok', 'yyyyMMdd-') + randomHex);
+    
+    // ⭐️ กฎเหล็ก: รหัสพนักงานต้องครบ 6 หลักเสมอ (เช่น 000023)
+    let rawEmpId = String(data.empId || '').trim();
+    const empIdStr = /^\d+$/.test(rawEmpId) ? rawEmpId.padStart(6, '0') : rawEmpId;
+    
+    // ⭐️ แยกคอลัมน์ ชื่อ และ นามสกุล
+    let firstName = String(data.firstName || '').trim();
+    let lastName = String(data.lastName || '').trim();
+    if (!firstName && data.fullName) {
+      const parts = String(data.fullName).trim().split(/\s+/);
+      firstName = parts[0] || '';
+      lastName = parts.slice(1).join(' ') || '';
+    }
+    const fullNameStr = (firstName + ' ' + lastName).trim();
     
     const chestSizes = {
       'M': 40,
@@ -207,12 +288,14 @@ function processBooking(data) {
     const pricePerUnitDesc = 'ราคาไม่เกิน 500 บาท / ตัว';
     const totalPrice = qty * 500;
     
-    // ตรวจสอบประวัติการจองเดิม หากมีรหัสพนักงานนี้แล้วให้อัปเดตบรรทัดเดิม
+    // ตรวจสอบประวัติการจองเดิม หากมีรหัสพนักงาน 6 หลักนี้แล้วให้อัปเดตบรรทัดเดิม
     const values = sheet.getDataRange().getValues();
     let existingRow = -1;
     
     for (let i = 1; i < values.length; i++) {
-      if (String(values[i][2]).trim() === String(data.empId).trim()) {
+      const rowEmpId = String(values[i][2] || '').trim();
+      const rowEmpIdPadded = /^\d+$/.test(rowEmpId) ? rowEmpId.padStart(6, '0') : rowEmpId;
+      if (rowEmpIdPadded === empIdStr) {
         existingRow = i + 1;
         break;
       }
@@ -221,8 +304,9 @@ function processBooking(data) {
     const rowData = [
       bookingId,
       timestampStr,
-      String(data.empId).trim(),
-      String(data.fullName).trim(),
+      empIdStr,
+      firstName,
+      lastName,
       String(data.department || '').trim(),
       String(data.position || '').trim(),
       size,
@@ -230,13 +314,19 @@ function processBooking(data) {
       qty,
       pricePerUnitDesc,
       totalPrice,
-      'รอสรุปยอดหลังปิดรับจอง'
+      'จองสำเร็จ'
     ];
+    
+    // บังคับฟอร์แมตคอลัมน์ C ให้เป็น Plain Text ก่อนบันทึก
+    sheet.getRange("C:C").setNumberFormat('@');
     
     if (existingRow > 0) {
       sheet.getRange(existingRow, 1, 1, rowData.length).setValues([rowData]);
+      sheet.getRange(existingRow, 3).setNumberFormat('@').setValue(empIdStr);
     } else {
-      sheet.appendRow(rowData);
+      const newRow = sheet.getLastRow() + 1;
+      sheet.getRange(newRow, 1, 1, rowData.length).setValues([rowData]);
+      sheet.getRange(newRow, 3).setNumberFormat('@').setValue(empIdStr);
     }
     
     return ContentService.createTextOutput(JSON.stringify({
@@ -244,8 +334,10 @@ function processBooking(data) {
       isUpdate: existingRow > 0,
       bookingId: bookingId,
       timestamp: timestampStr,
-      empId: data.empId,
-      fullName: data.fullName,
+      empId: empIdStr,
+      firstName: firstName,
+      lastName: lastName,
+      fullName: fullNameStr,
       department: data.department || '-',
       position: data.position || '-',
       size: size,
@@ -266,7 +358,7 @@ function processBooking(data) {
 }
 
 /**
- * ดึงรายการจองและสรุปผลจาก Google Sheet
+ * ดึงรายการจองและสรุปผลจาก Google Sheet (รองรับทั้ง 12 และ 13 คอลัมน์)
  */
 function handleGetRegistrations() {
   const sheet = getTargetSheet();
@@ -287,25 +379,64 @@ function handleGetRegistrations() {
   let totalQty = 0;
   let totalAmount = 0;
   
+  const is13Cols = values[0].length >= 13 || values[0][4] === 'นามสกุล';
+  
   for (let i = 1; i < values.length; i++) {
     const row = values[i];
-    const size = String(row[6] || '').trim().toUpperCase();
-    const qty = Number(row[8]) || 0;
-    const price = Number(row[10]) || 0;
+    const rawEmpId = String(row[2] || '').trim();
+    const empId = /^\d+$/.test(rawEmpId) ? rawEmpId.padStart(6, '0') : rawEmpId;
+    
+    let firstName = '';
+    let lastName = '';
+    let fullName = '';
+    let dept = '';
+    let pos = '';
+    let size = '';
+    let chest = 0;
+    let qty = 0;
+    let pricePerUnit = '';
+    let price = 0;
+    let status = 'จองสำเร็จ';
+    
+    if (is13Cols) {
+      firstName = String(row[3] || '').trim();
+      lastName = String(row[4] || '').trim();
+      fullName = (firstName + ' ' + lastName).trim();
+      dept = row[5] || '';
+      pos = row[6] || '';
+      size = String(row[7] || '').trim().toUpperCase();
+      chest = row[8];
+      qty = Number(row[9]) || 0;
+      pricePerUnit = row[10];
+      price = Number(row[11]) || 0;
+      status = row[12] || 'จองสำเร็จ';
+    } else {
+      fullName = String(row[3] || '').trim();
+      dept = row[4] || '';
+      pos = row[5] || '';
+      size = String(row[6] || '').trim().toUpperCase();
+      chest = row[7];
+      qty = Number(row[8]) || 0;
+      pricePerUnit = row[9];
+      price = Number(row[10]) || 0;
+      status = row[11] || 'จองสำเร็จ';
+    }
     
     const item = {
       bookingId: row[0],
       timestamp: row[1],
-      empId: row[2],
-      fullName: row[3],
-      department: row[4],
-      position: row[5],
+      empId: empId,
+      firstName: firstName,
+      lastName: lastName,
+      fullName: fullName,
+      department: dept,
+      position: pos,
       size: size,
-      chest: row[7],
+      chest: chest,
       qty: qty,
-      pricePerUnit: row[9],
+      pricePerUnit: pricePerUnit,
       totalPrice: price,
-      paymentStatus: row[11] || 'รอสรุปยอด'
+      paymentStatus: status
     };
     items.push(item);
     
@@ -341,14 +472,15 @@ function showSummaryDialog() {
     return;
   }
   
+  const is13Cols = values[0].length >= 13 || values[0][4] === 'นามสกุล';
   const summary = { 'M': 0, 'L': 0, 'XL': 0, '2XL': 0, '3XL': 0, '4XL': 0 };
   let totalQty = 0;
   let totalAmount = 0;
   
   for (let i = 1; i < values.length; i++) {
-    const size = values[i][6];
-    const qty = Number(values[i][8]) || 0;
-    const price = Number(values[i][10]) || 0;
+    const size = is13Cols ? values[i][7] : values[i][6];
+    const qty = Number(is13Cols ? values[i][9] : values[i][8]) || 0;
+    const price = Number(is13Cols ? values[i][11] : values[i][10]) || 0;
     if (summary[size] !== undefined) {
       summary[size] += qty;
     } else if (size) {

@@ -4,6 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ระบบลงทะเบียนจองเสื้อแจ็กเก็ต 2569 | โรงพยาบาลพิษณุเวช พิจิตร</title>
+  <script>
+    (function() {
+      // ตรวจจับหน้าจอมือถืออัตโนมัติ (ไม่ต้องกดสลับ)
+      var isMobileScreen = window.innerWidth < 1024;
+      var isMobileUA = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (isMobileScreen || isMobileUA) {
+        window.location.replace('mobile.html' + window.location.search);
+      }
+    })();
+  </script>
   <!-- Google Fonts: Prompt & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -121,24 +131,12 @@
       <!-- Action status & Quick links -->
       <div class="flex items-center gap-3">
         <!-- Period Badge & Timer -->
-        <div class="hidden xl:flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-1.5 rounded-xl text-xs font-medium">
+        <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 px-3.5 py-1.5 rounded-xl text-xs font-medium shadow-xs">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span>เปิดรับจอง: 12 - 19 ต.ค. 2569</span>
           <span class="text-slate-300">|</span>
           <span id="countdownTimer" class="font-inter font-semibold text-emerald-900">กำลังนับเวลา...</span>
         </div>
-
-        <!-- Database / Dashboard Link -->
-        <a href="summary.html" class="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-blue-900 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl transition shadow-xs">
-          <i class="ph ph-database text-base"></i>
-          <span>ฐานข้อมูล / สรุปยอดจอง</span>
-        </a>
-
-        <!-- Switch View -->
-        <button onclick="switchView('mobile')" title="สลับเป็นมุมมองหน้าจอมือถือ" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-lg transition">
-          <i class="ph ph-device-mobile text-sm"></i>
-          <span>จอมือถือ</span>
-        </button>
       </div>
 
     </div>
@@ -307,6 +305,8 @@
 
               <!-- Hidden inputs for form data -->
               <input type="hidden" id="empId" name="empId" required>
+              <input type="hidden" id="firstName" name="firstName">
+              <input type="hidden" id="lastName" name="lastName">
               <input type="hidden" id="fullName" name="fullName" required>
               <input type="hidden" id="department" name="department">
               <input type="hidden" id="position" name="position">
@@ -443,10 +443,6 @@
                    class="pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-600">
             <i class="ph ph-magnifying-glass absolute left-2.5 top-2 text-slate-400 text-xs"></i>
           </div>
-
-          <a href="summary.html" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-900 text-xs font-semibold rounded-lg border border-blue-200 transition flex items-center gap-1">
-            ดูตารางทั้งหมด <i class="ph ph-arrow-right text-xs"></i>
-          </a>
         </div>
       </div>
 
@@ -811,15 +807,22 @@
 
       selectedEmployee = emp;
 
+      const rawEmpId = String(emp.id || '').trim();
+      const empId6 = /^\d+$/.test(rawEmpId) ? rawEmpId.padStart(6, '0') : rawEmpId;
+      const firstNameWithPrefix = (emp.prefix ? emp.prefix : '') + (emp.firstName || '');
+      const lastName = emp.lastName || '';
+
       // Fill form values
-      document.getElementById('empId').value = emp.id;
+      document.getElementById('empId').value = empId6;
+      document.getElementById('firstName').value = firstNameWithPrefix;
+      document.getElementById('lastName').value = lastName;
       document.getElementById('fullName').value = emp.fullName;
       document.getElementById('department').value = emp.department || '';
       document.getElementById('position').value = emp.position || '';
 
       // Update Card UI
       document.getElementById('empDisplayFullName').innerText = emp.fullName;
-      document.getElementById('empDisplayId').innerText = emp.id;
+      document.getElementById('empDisplayId').innerText = empId6;
       document.getElementById('empDisplayDept').innerText = emp.department || '-';
       document.getElementById('empDisplayPosition').innerText = emp.position || '-';
       document.getElementById('empAvatar').innerText = emp.prefix ? emp.prefix.substring(0, 2) : 'PP';
@@ -829,7 +832,7 @@
       document.getElementById('empSearchInput').value = '';
 
       // Check if already registered in local storage and notify user
-      const existing = allBookings.find(b => b.empId === emp.id);
+      const existing = allBookings.find(b => b.empId === empId6 || b.empId === emp.id);
       if (existing) {
         showToast(`พบประวัติเดิม: ไซส์ ${existing.size} (${existing.qty} ตัว) สามารถแก้ไขข้อมูลได้ค่ะ`, 'info');
         if (existing.size) selectSize(existing.size, existing.chest || 40);
@@ -841,6 +844,8 @@
     function clearSelectedEmployee() {
       selectedEmployee = null;
       document.getElementById('empId').value = '';
+      document.getElementById('firstName').value = '';
+      document.getElementById('lastName').value = '';
       document.getElementById('fullName').value = '';
       document.getElementById('department').value = '';
       document.getElementById('position').value = '';
@@ -854,11 +859,14 @@
     async function handleFormSubmit(e) {
       e.preventDefault();
 
-      const empId = document.getElementById('empId').value;
+      const rawEmpId = document.getElementById('empId').value;
+      const empId6 = /^\d+$/.test(rawEmpId) ? rawEmpId.padStart(6, '0') : rawEmpId;
+      const firstName = document.getElementById('firstName').value;
+      const lastName = document.getElementById('lastName').value;
       const fullName = document.getElementById('fullName').value;
       const qty = parseInt(document.getElementById('quantity').value, 10) || 1;
 
-      if (!empId || !fullName) {
+      if (!empId6 || !fullName) {
         showToast('กรุณาเลือกรายชื่อพนักงานก่อนค่ะ', 'error');
         document.getElementById('empSearchInput').focus();
         return;
@@ -877,7 +885,9 @@
       showLoading(true, 'กำลังบันทึกข้อมูลลงฐานข้อมูล Google Sheets...');
 
       const bookingPayload = {
-        empId: empId,
+        empId: empId6,
+        firstName: firstName,
+        lastName: lastName,
         fullName: fullName,
         department: document.getElementById('department').value || '-',
         position: document.getElementById('position').value || '-',
@@ -900,6 +910,8 @@
           const params = new URLSearchParams({
             action: 'book',
             empId: bookingPayload.empId,
+            firstName: bookingPayload.firstName,
+            lastName: bookingPayload.lastName,
             fullName: bookingPayload.fullName,
             department: bookingPayload.department,
             position: bookingPayload.position,
@@ -1071,11 +1083,6 @@
       setTimeout(() => {
         toast.classList.add('translate-y-20', 'opacity-0');
       }, 3500);
-    }
-
-    function switchView(view) {
-      localStorage.setItem('ppch_jacket_view_pref', view);
-      window.location.href = view === 'mobile' ? 'mobile.html' : 'desktop.html';
     }
   </script>
 </body>

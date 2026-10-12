@@ -64,18 +64,7 @@
         return;
       }
 
-      // 2. Check localStorage preference
-      var savedView = localStorage.getItem('ppch_jacket_view_pref');
-      if (savedView === 'desktop') {
-        window.location.replace('desktop.html' + window.location.search);
-        return;
-      }
-      if (savedView === 'mobile') {
-        window.location.replace('mobile.html' + window.location.search);
-        return;
-      }
-
-      // 3. Auto-detect screen & UA
+      // Auto-detect screen & UA (ตรวจจับอัตโนมัติ 100%)
       var isMobileScreen = window.innerWidth < 1024;
       var isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
@@ -93,11 +82,6 @@
     <h2 class="text-xl font-semibold text-white tracking-wide">กำลังเข้าสู่ระบบลงทะเบียน...</h2>
     <p class="text-sky-200 text-sm mt-2">เสื้อแจ็กเก็ต PITSANUVEJ PHICHIT 2569</p>
     <p class="text-slate-300 text-xs mt-1">โรงพยาบาลพิษณุเวช พิจิตร • HRD Suite</p>
-    
-    <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-center gap-3 text-xs text-sky-200">
-      <a href="desktop.html" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">💻 เข้าหน้าคอมพิวเตอร์</a>
-      <a href="mobile.html" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">📱 เข้าหน้ามือถือ</a>
-    </div>
   </div>
 </body>
 </html>

@@ -4,6 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>จองเสื้อแจ็กเก็ต | รพ.พิษณุเวช พิจิตร</title>
+  <script>
+    (function() {
+      // ตรวจจับหน้าจอคอมพิวเตอร์อัตโนมัติ (ไม่ต้องกดสลับ)
+      var isDesktopScreen = window.innerWidth >= 1024;
+      var isMobileUA = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (isDesktopScreen && !isMobileUA) {
+        window.location.replace('desktop.html' + window.location.search);
+      }
+    })();
+  </script>
   <!-- Google Fonts: Prompt & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -74,14 +84,10 @@
       </div>
     </div>
 
-    <div class="flex items-center gap-1.5">
-      <a href="summary.html" class="px-2.5 py-1.5 rounded-xl bg-blue-50 text-blue-900 text-[11px] font-semibold border border-blue-200 flex items-center gap-1" title="ฐานข้อมูลสรุปยอด">
-        <i class="ph ph-database text-sm"></i>
-        <span>ฐานข้อมูล</span>
-      </a>
-      <button onclick="switchView('desktop')" class="px-2.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-[11px] font-semibold">
-        💻 จอคอม
-      </button>
+    <!-- Simple Active Period Badge -->
+    <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-medium">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span>12-19 ต.ค. 69</span>
     </div>
   </header>
 
@@ -507,8 +513,15 @@
 
       showMobileToast('กำลังส่งข้อมูลลง Google Sheets...');
 
+      const rawEmpId = String(mSelectedEmployee.id || '').trim();
+      const empId6 = /^\d+$/.test(rawEmpId) ? rawEmpId.padStart(6, '0') : rawEmpId;
+      const firstNameWithPrefix = (mSelectedEmployee.prefix ? mSelectedEmployee.prefix : '') + (mSelectedEmployee.firstName || '');
+      const lastName = mSelectedEmployee.lastName || '';
+
       const bookingPayload = {
-        empId: mSelectedEmployee.id,
+        empId: empId6,
+        firstName: firstNameWithPrefix,
+        lastName: lastName,
         fullName: mSelectedEmployee.fullName,
         department: mSelectedEmployee.department || '-',
         position: mSelectedEmployee.position || '-',
@@ -531,6 +544,8 @@
           const params = new URLSearchParams({
             action: 'book',
             empId: bookingPayload.empId,
+            firstName: bookingPayload.firstName,
+            lastName: bookingPayload.lastName,
             fullName: bookingPayload.fullName,
             department: bookingPayload.department,
             position: bookingPayload.position,
@@ -546,7 +561,9 @@
           const confirmedRecord = {
             bookingId: result.bookingId,
             timestamp: result.timestamp,
-            empId: result.empId || mSelectedEmployee.id,
+            empId: result.empId || empId6,
+            firstName: result.firstName || firstNameWithPrefix,
+            lastName: result.lastName || lastName,
             fullName: result.fullName || mSelectedEmployee.fullName,
             department: result.department || mSelectedEmployee.department || '-',
             position: result.position || mSelectedEmployee.position || '-',
@@ -590,11 +607,6 @@
       setTimeout(() => {
         toast.classList.add('-translate-y-20', 'opacity-0');
       }, 3500);
-    }
-
-    function switchView(view) {
-      localStorage.setItem('ppch_jacket_view_pref', view);
-      window.location.href = view === 'desktop' ? 'desktop.html' : 'mobile.html';
     }
   </script>
 </body>
