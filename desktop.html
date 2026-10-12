@@ -374,91 +374,156 @@
               <input type="hidden" id="position" name="position">
             </div>
 
-            <!-- Quantity Field -->
-            <div class="space-y-1.5 max-w-xs">
-              <label for="quantity" class="block text-xs font-semibold text-slate-700">
-                🔢 จำนวนที่ต้องการสั่งจอง (ตัว) <span class="text-rose-500">*</span>
-              </label>
-              <div class="flex items-center">
-                <button type="button" onclick="adjustQty(-1)" class="w-10 h-10 rounded-l-xl bg-slate-100 border border-slate-300 border-r-0 hover:bg-slate-200 flex items-center justify-center text-slate-700 text-lg font-bold">
-                  -
-                </button>
-                <input type="number" 
-                       id="quantity" 
-                       name="quantity" 
-                       value="1" 
-                       min="1" 
-                       max="10" 
-                       onchange="onQtyChange()" 
-                       class="w-20 text-center py-2.5 bg-slate-50 border border-slate-300 text-sm font-bold font-inter focus:bg-white focus:outline-none">
-                <button type="button" onclick="adjustQty(1)" class="w-10 h-10 rounded-r-xl bg-slate-100 border border-slate-300 border-l-0 hover:bg-slate-200 flex items-center justify-center text-slate-700 text-lg font-bold">
-                  +
-                </button>
+            <!-- Existing Booking Mode Banner (Shows when an existing employee is selected) -->
+            <div id="existingBookingBanner" class="hidden rounded-2xl border p-3.5 text-xs transition">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div class="flex items-center gap-2.5">
+                  <span id="bannerModeIcon" class="w-7 h-7 rounded-xl bg-blue-900 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                    <i class="ph ph-pencil-simple-line"></i>
+                  </span>
+                  <div>
+                    <div class="font-bold text-xs" id="bannerModeTitle">โหมด: เปลี่ยนแปลงข้อมูลการจอง</div>
+                    <div class="text-[11px] opacity-80" id="bannerModeDesc">รายการใหม่จะบันทึกแทนที่ข้อมูลเดิม</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 self-end sm:self-auto">
+                  <button type="button" id="btnToggleMode" onclick="toggleBookingMode()" class="px-3 py-1 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 font-semibold text-[11px] shadow-2xs transition">
+                    สลับเป็นโหมดสั่งเพิ่ม
+                  </button>
+                  <button type="button" onclick="openExistingBookingModal()" class="px-2 py-1 rounded-lg text-slate-500 hover:text-slate-800 text-[11px]">
+                    ดูประวัติเดิม
+                  </button>
+                </div>
               </div>
             </div>
 
-            <!-- Size Selection Section -->
-            <div class="space-y-2">
-              <label class="block text-xs font-semibold text-slate-700 flex items-center justify-between">
-                <span>👕 เลือกขนาดไซส์เสื้อ (40-50 คือรอบอก) <span class="text-rose-500">*</span></span>
-                <span id="selectedSizeSummaryBadge" class="text-xs font-bold text-blue-900 bg-blue-100 px-2.5 py-0.5 rounded-full">ยังไม่ได้เลือกไซส์</span>
-              </label>
+            <!-- Size Selection & Quantity Section (Multi-size ordering) -->
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <label class="block text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                  <span class="w-5 h-5 rounded-md bg-blue-900 text-white flex items-center justify-center text-[11px] font-inter">2</span>
+                  <span>เลือกไซส์และจำนวนเสื้อ (สั่งได้มากกว่า 1 ไซส์) <span class="text-rose-500">*</span></span>
+                </label>
+                <span id="selectedSizeSummaryBadge" class="text-xs font-bold text-blue-900 bg-blue-100 px-2.5 py-0.5 rounded-full">รวม 0 ตัว</span>
+              </div>
 
-              <!-- Size selector button radio cards -->
+              <!-- Size selector cards with individual steppers -->
               <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="formSizeCards">
                 
-                <div class="form-size-card p-3.5 rounded-xl border-2 border-slate-200 hover:border-blue-300 cursor-pointer transition text-center flex flex-col items-center" data-size="M" data-chest="40" onclick="selectSize('M', 40)">
-                  <span class="font-bold font-inter text-base text-slate-800">ไซส์ M</span>
-                  <span class="text-xs font-semibold text-blue-800 font-inter mt-1">รอบอก 40 นิ้ว</span>
+                <!-- M -->
+                <div class="form-size-card p-3 rounded-xl border-2 border-slate-200 hover:border-blue-300 transition text-center flex flex-col items-center justify-between select-none cursor-pointer" id="sizeCard_M" onclick="onCardClick('M')">
+                  <div class="pointer-events-none">
+                    <div class="font-bold font-inter text-base text-slate-800 flex items-center justify-center gap-1">
+                      <span>ไซส์ M</span>
+                      <span id="cardBadge_M" class="hidden text-[10px] px-1.5 py-0.5 rounded-full bg-blue-900 text-white font-inter font-bold">0</span>
+                    </div>
+                    <div class="text-xs font-semibold text-blue-800 font-inter mt-0.5">รอบอก 40 นิ้ว</div>
+                  </div>
+                  <div class="mt-2.5 flex items-center justify-center gap-1.5 w-full" onclick="event.stopPropagation()">
+                    <button type="button" onclick="adjustSizeQty('M', -1)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm flex items-center justify-center transition active:scale-95">-</button>
+                    <span id="qtyDisplay_M" class="w-7 text-center font-inter font-bold text-base text-slate-900">0</span>
+                    <button type="button" onclick="adjustSizeQty('M', 1)" class="w-7 h-7 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-900 font-bold text-sm flex items-center justify-center transition active:scale-95">+</button>
+                  </div>
                 </div>
 
-                <div class="form-size-card p-3.5 rounded-xl border-2 border-slate-200 hover:border-blue-300 cursor-pointer transition text-center flex flex-col items-center" data-size="L" data-chest="42" onclick="selectSize('L', 42)">
-                  <span class="font-bold font-inter text-base text-slate-800">ไซส์ L</span>
-                  <span class="text-xs font-semibold text-blue-800 font-inter mt-1">รอบอก 42 นิ้ว</span>
+                <!-- L -->
+                <div class="form-size-card p-3 rounded-xl border-2 border-slate-200 hover:border-blue-300 transition text-center flex flex-col items-center justify-between select-none cursor-pointer" id="sizeCard_L" onclick="onCardClick('L')">
+                  <div class="pointer-events-none">
+                    <div class="font-bold font-inter text-base text-slate-800 flex items-center justify-center gap-1">
+                      <span>ไซส์ L</span>
+                      <span id="cardBadge_L" class="hidden text-[10px] px-1.5 py-0.5 rounded-full bg-blue-900 text-white font-inter font-bold">0</span>
+                    </div>
+                    <div class="text-xs font-semibold text-blue-800 font-inter mt-0.5">รอบอก 42 นิ้ว</div>
+                  </div>
+                  <div class="mt-2.5 flex items-center justify-center gap-1.5 w-full" onclick="event.stopPropagation()">
+                    <button type="button" onclick="adjustSizeQty('L', -1)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm flex items-center justify-center transition active:scale-95">-</button>
+                    <span id="qtyDisplay_L" class="w-7 text-center font-inter font-bold text-base text-slate-900">0</span>
+                    <button type="button" onclick="adjustSizeQty('L', 1)" class="w-7 h-7 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-900 font-bold text-sm flex items-center justify-center transition active:scale-95">+</button>
+                  </div>
                 </div>
 
-                <div class="form-size-card p-3.5 rounded-xl border-2 border-slate-200 hover:border-blue-300 cursor-pointer transition text-center flex flex-col items-center" data-size="XL" data-chest="44" onclick="selectSize('XL', 44)">
-                  <span class="font-bold font-inter text-base text-slate-800">ไซส์ XL</span>
-                  <span class="text-xs font-semibold text-blue-800 font-inter mt-1">รอบอก 44 นิ้ว</span>
+                <!-- XL -->
+                <div class="form-size-card p-3 rounded-xl border-2 border-slate-200 hover:border-blue-300 transition text-center flex flex-col items-center justify-between select-none cursor-pointer" id="sizeCard_XL" onclick="onCardClick('XL')">
+                  <div class="pointer-events-none">
+                    <div class="font-bold font-inter text-base text-slate-800 flex items-center justify-center gap-1">
+                      <span>ไซส์ XL</span>
+                      <span id="cardBadge_XL" class="hidden text-[10px] px-1.5 py-0.5 rounded-full bg-blue-900 text-white font-inter font-bold">0</span>
+                    </div>
+                    <div class="text-xs font-semibold text-blue-800 font-inter mt-0.5">รอบอก 44 นิ้ว</div>
+                  </div>
+                  <div class="mt-2.5 flex items-center justify-center gap-1.5 w-full" onclick="event.stopPropagation()">
+                    <button type="button" onclick="adjustSizeQty('XL', -1)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm flex items-center justify-center transition active:scale-95">-</button>
+                    <span id="qtyDisplay_XL" class="w-7 text-center font-inter font-bold text-base text-slate-900">0</span>
+                    <button type="button" onclick="adjustSizeQty('XL', 1)" class="w-7 h-7 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-900 font-bold text-sm flex items-center justify-center transition active:scale-95">+</button>
+                  </div>
                 </div>
 
-                <div class="form-size-card p-3.5 rounded-xl border-2 border-slate-200 hover:border-blue-300 cursor-pointer transition text-center flex flex-col items-center" data-size="2XL" data-chest="46" onclick="selectSize('2XL', 46)">
-                  <span class="font-bold font-inter text-base text-slate-800">ไซส์ 2XL</span>
-                  <span class="text-xs font-semibold text-blue-800 font-inter mt-1">รอบอก 46 นิ้ว</span>
+                <!-- 2XL -->
+                <div class="form-size-card p-3 rounded-xl border-2 border-slate-200 hover:border-blue-300 transition text-center flex flex-col items-center justify-between select-none cursor-pointer" id="sizeCard_2XL" onclick="onCardClick('2XL')">
+                  <div class="pointer-events-none">
+                    <div class="font-bold font-inter text-base text-slate-800 flex items-center justify-center gap-1">
+                      <span>ไซส์ 2XL</span>
+                      <span id="cardBadge_2XL" class="hidden text-[10px] px-1.5 py-0.5 rounded-full bg-blue-900 text-white font-inter font-bold">0</span>
+                    </div>
+                    <div class="text-xs font-semibold text-blue-800 font-inter mt-0.5">รอบอก 46 นิ้ว</div>
+                  </div>
+                  <div class="mt-2.5 flex items-center justify-center gap-1.5 w-full" onclick="event.stopPropagation()">
+                    <button type="button" onclick="adjustSizeQty('2XL', -1)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm flex items-center justify-center transition active:scale-95">-</button>
+                    <span id="qtyDisplay_2XL" class="w-7 text-center font-inter font-bold text-base text-slate-900">0</span>
+                    <button type="button" onclick="adjustSizeQty('2XL', 1)" class="w-7 h-7 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-900 font-bold text-sm flex items-center justify-center transition active:scale-95">+</button>
+                  </div>
                 </div>
 
-                <div class="form-size-card p-3.5 rounded-xl border-2 border-slate-200 hover:border-blue-300 cursor-pointer transition text-center flex flex-col items-center" data-size="3XL" data-chest="48" onclick="selectSize('3XL', 48)">
-                  <span class="font-bold font-inter text-base text-slate-800">ไซส์ 3XL</span>
-                  <span class="text-xs font-semibold text-blue-800 font-inter mt-1">รอบอก 48 นิ้ว</span>
+                <!-- 3XL -->
+                <div class="form-size-card p-3 rounded-xl border-2 border-slate-200 hover:border-blue-300 transition text-center flex flex-col items-center justify-between select-none cursor-pointer" id="sizeCard_3XL" onclick="onCardClick('3XL')">
+                  <div class="pointer-events-none">
+                    <div class="font-bold font-inter text-base text-slate-800 flex items-center justify-center gap-1">
+                      <span>ไซส์ 3XL</span>
+                      <span id="cardBadge_3XL" class="hidden text-[10px] px-1.5 py-0.5 rounded-full bg-blue-900 text-white font-inter font-bold">0</span>
+                    </div>
+                    <div class="text-xs font-semibold text-blue-800 font-inter mt-0.5">รอบอก 48 นิ้ว</div>
+                  </div>
+                  <div class="mt-2.5 flex items-center justify-center gap-1.5 w-full" onclick="event.stopPropagation()">
+                    <button type="button" onclick="adjustSizeQty('3XL', -1)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm flex items-center justify-center transition active:scale-95">-</button>
+                    <span id="qtyDisplay_3XL" class="w-7 text-center font-inter font-bold text-base text-slate-900">0</span>
+                    <button type="button" onclick="adjustSizeQty('3XL', 1)" class="w-7 h-7 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-900 font-bold text-sm flex items-center justify-center transition active:scale-95">+</button>
+                  </div>
                 </div>
 
-                <div class="form-size-card p-3.5 rounded-xl border-2 border-slate-200 hover:border-blue-300 cursor-pointer transition text-center flex flex-col items-center" data-size="4XL" data-chest="50" onclick="selectSize('4XL', 50)">
-                  <span class="font-bold font-inter text-base text-slate-800">ไซส์ 4XL</span>
-                  <span class="text-xs font-semibold text-blue-800 font-inter mt-1">รอบอก 50 นิ้ว</span>
+                <!-- 4XL -->
+                <div class="form-size-card p-3 rounded-xl border-2 border-slate-200 hover:border-blue-300 transition text-center flex flex-col items-center justify-between select-none cursor-pointer" id="sizeCard_4XL" onclick="onCardClick('4XL')">
+                  <div class="pointer-events-none">
+                    <div class="font-bold font-inter text-base text-slate-800 flex items-center justify-center gap-1">
+                      <span>ไซส์ 4XL</span>
+                      <span id="cardBadge_4XL" class="hidden text-[10px] px-1.5 py-0.5 rounded-full bg-blue-900 text-white font-inter font-bold">0</span>
+                    </div>
+                    <div class="text-xs font-semibold text-blue-800 font-inter mt-0.5">รอบอก 50 นิ้ว</div>
+                  </div>
+                  <div class="mt-2.5 flex items-center justify-center gap-1.5 w-full" onclick="event.stopPropagation()">
+                    <button type="button" onclick="adjustSizeQty('4XL', -1)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm flex items-center justify-center transition active:scale-95">-</button>
+                    <span id="qtyDisplay_4XL" class="w-7 text-center font-inter font-bold text-base text-slate-900">0</span>
+                    <button type="button" onclick="adjustSizeQty('4XL', 1)" class="w-7 h-7 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-900 font-bold text-sm flex items-center justify-center transition active:scale-95">+</button>
+                  </div>
                 </div>
 
               </div>
-
-              <!-- Hidden size input -->
-              <input type="hidden" id="selectedSize" name="selectedSize" required>
-              <input type="hidden" id="selectedChest" name="selectedChest">
             </div>
 
             <!-- Order Total & Summary Callout Card -->
             <div class="p-4 rounded-2xl bg-gradient-to-r from-blue-900 to-indigo-950 text-white shadow-md flex items-center justify-between">
               <div>
-                <span class="text-xs text-blue-200 block">สรุปการลงทะเบียนจองเสื้อ</span>
+                <span class="text-xs text-blue-200 block" id="summaryBoxTitle">สรุปการลงทะเบียนจองเสื้อ</span>
                 <div class="text-xs text-slate-200 mt-1">
-                  <span id="summaryCalculationText">ไซส์ M (อก 40") • จำนวน 1 ตัว</span>
+                  <span id="summaryCalculationText">กรุณาเลือกไซส์และจำนวนที่ต้องการ</span>
                 </div>
-                <div class="text-[11px] text-amber-300 mt-0.5 font-medium">
+                <div class="text-[11px] text-amber-300 mt-0.5 font-medium" id="summarySubDetail">
                   ราคาไม่เกิน 500 บาท / ตัว
                 </div>
               </div>
 
               <div class="text-right">
-                <span class="text-xl sm:text-2xl font-bold text-amber-300" id="totalPriceDisplay">ไม่เกิน 500 บาท</span>
-                <span class="text-[11px] text-blue-200 block" id="totalPriceSubText">(ยอดรวมตามจริงไม่เกิน 500 บ.)</span>
+                <span class="text-xl sm:text-2xl font-bold text-amber-300" id="totalPriceDisplay">0 บาท</span>
+                <span class="text-[11px] text-blue-200 block" id="totalPriceSubText">(ยอดรวมตามจริงไม่เกิน 500 บ./ตัว)</span>
               </div>
             </div>
 
@@ -468,7 +533,7 @@
                       id="btnSubmit" 
                       class="flex-1 tactile-btn py-3.5 px-6 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-semibold text-sm flex items-center justify-center gap-2 transition cursor-pointer">
                 <i class="ph ph-check-circle text-lg"></i>
-                <span>ยืนยันการลงทะเบียนสั่งจอง ➔</span>
+                <span id="btnSubmitText">ยืนยันการลงทะเบียนสั่งจอง ➔</span>
               </button>
 
               <button type="button" 
@@ -524,12 +589,16 @@
       <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto mb-4 shadow-xs">
         <i class="ph ph-check-circle-fill"></i>
       </div>
-      <h3 class="text-lg font-bold text-slate-900">บันทึกการจองสำเร็จ!</h3>
-      <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+      <h3 class="text-lg font-bold text-slate-900" id="successModalTitle">บันทึกการจองสำเร็จ!</h3>
+      <p class="text-xs text-slate-600 mt-1.5 leading-relaxed" id="successModalDesc">
         ข้อมูลการจองเสื้อแจ็กเก็ตได้ถูกบันทึกลงในระบบ <strong>Google Sheets</strong> ของโรงพยาบาลเรียบร้อยแล้วค่ะ
       </p>
       
       <div class="mt-4 p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-left space-y-1.5">
+        <div class="flex justify-between">
+          <span class="text-slate-400">สถานะรายการ:</span>
+          <span class="font-bold text-emerald-700" id="successStatusTag">จองสำเร็จ</span>
+        </div>
         <div class="flex justify-between">
           <span class="text-slate-400">ผู้สั่งจอง:</span>
           <span class="font-bold text-slate-900" id="successEmpName">-</span>
@@ -538,12 +607,12 @@
           <span class="text-slate-400">รหัสพนักงาน:</span>
           <span class="font-inter font-semibold text-blue-900" id="successEmpId">-</span>
         </div>
-        <div class="flex justify-between">
-          <span class="text-slate-400">ขนาดเสื้อ:</span>
-          <span class="font-bold text-blue-900" id="successSize">-</span>
+        <div class="flex justify-between items-start gap-2">
+          <span class="text-slate-400 flex-shrink-0">รายการเสื้อ:</span>
+          <span class="font-bold text-blue-900 text-right" id="successSize">-</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-slate-400">จำนวน:</span>
+          <span class="text-slate-400">จำนวนรวม:</span>
           <span class="font-semibold text-slate-800" id="successQty">1 ตัว</span>
         </div>
         <div class="flex justify-between border-t border-slate-200 pt-1.5">
@@ -559,6 +628,87 @@
         <a href="roster.html" class="flex-1 py-3 bg-blue-900 hover:bg-blue-800 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs transition">
           <i class="ph ph-table text-base"></i> ตรวจสอบรายชื่อ
         </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Existing Booking Decision Modal -->
+  <div id="existingBookingModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl border border-slate-100 space-y-4" style="animation: loaderPop 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;">
+      <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-blue-100 text-blue-900 flex items-center justify-center text-xl flex-shrink-0">
+            <i class="ph ph-user-check"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base text-slate-900">พบประวัติการสั่งจองเดิมในระบบ</h3>
+            <p class="text-xs text-slate-500">กรุณาเลือกรูปแบบที่ท่านต้องการดำเนินการค่ะ</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeExistingBookingModal()" class="text-slate-400 hover:text-slate-600 p-1">
+          <i class="ph ph-x text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Existing order summary box -->
+      <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-1.5">
+        <div class="flex justify-between">
+          <span class="text-slate-500">ผู้สั่งจอง:</span>
+          <span class="font-bold text-slate-900" id="modalExistingEmpName">-</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">รหัสพนักงาน:</span>
+          <span class="font-inter font-semibold text-blue-900" id="modalExistingEmpId">000000</span>
+        </div>
+        <div class="flex justify-between items-start gap-2">
+          <span class="text-slate-500 flex-shrink-0">รายการที่สั่งจองไว้เดิม:</span>
+          <span class="font-bold text-blue-900 text-right font-inter" id="modalExistingSizes">-</span>
+        </div>
+        <div class="flex justify-between border-t border-slate-200 pt-1.5">
+          <span class="text-slate-500">ยอดรวมเดิม:</span>
+          <span class="font-bold text-emerald-700" id="modalExistingTotal">-</span>
+        </div>
+      </div>
+
+      <!-- Action Choice Buttons -->
+      <div class="space-y-2.5 pt-1">
+        <!-- Button 1: Update existing booking -->
+        <button type="button" onclick="confirmExistingBookingMode('update')" class="w-full p-4 rounded-2xl border-2 border-amber-300 bg-amber-50/70 hover:bg-amber-100/90 text-left transition flex items-start gap-3.5 group cursor-pointer">
+          <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-2xs group-hover:scale-105 transition">
+            <i class="ph ph-pencil-simple-line"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-amber-950 text-sm">เปลี่ยนแปลงข้อมูลการจอง</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200 text-amber-900">แทนที่เดิม</span>
+            </div>
+            <p class="text-xs text-amber-900/80 mt-0.5">
+              แก้ไขขนาดไซส์หรือจำนวนเสื้อใหม่ โดยระบบจะบันทึก <strong>แทนที่</strong> รายการเดิมทั้งหมด
+            </p>
+          </div>
+        </button>
+
+        <!-- Button 2: Add more shirts -->
+        <button type="button" onclick="confirmExistingBookingMode('add_more')" class="w-full p-4 rounded-2xl border-2 border-emerald-300 bg-emerald-50/70 hover:bg-emerald-100/90 text-left transition flex items-start gap-3.5 group cursor-pointer">
+          <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-2xs group-hover:scale-105 transition">
+            <i class="ph ph-plus-circle"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-emerald-950 text-sm">ต้องการสั่งเพิ่ม</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-900">บวกเพิ่ม</span>
+            </div>
+            <p class="text-xs text-emerald-900/80 mt-0.5">
+              สั่งเสื้อเพิ่มเติม โดยระบบจะนำจำนวนใหม่ไป <strong>บวกเพิ่ม</strong> เข้ากับยอดเดิมในระบบ
+            </p>
+          </div>
+        </button>
+      </div>
+
+      <div class="text-center pt-1">
+        <button type="button" onclick="closeExistingBookingModal()" class="text-xs text-slate-400 hover:text-slate-600">
+          ยกเลิก / ปิดหน้าต่าง
+        </button>
       </div>
     </div>
   </div>
@@ -605,8 +755,10 @@
       }
     };
 
-    let selectedSize = 'M';
-    let selectedChest = 40;
+    let sizeQuantities = { M: 0, L: 0, XL: 0, '2XL': 0, '3XL': 0, '4XL': 0 };
+    const SIZE_CHEST_MAP = { M: 40, L: 42, XL: 44, '2XL': 46, '3XL': 48, '4XL': 50 };
+    let currentBookingMode = 'new'; // 'new', 'update', 'add_more'
+    let existingBookingRecord = null;
     let selectedEmployee = null;
     let currentJacketView = 'front';
     let allBookings = [];
@@ -615,7 +767,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       initCountdownTimer();
       loadBookings();
-      selectSize('M', 40);
+      updateAllSizeCardsUI();
       updateTotalCalculation();
     });
 
@@ -632,7 +784,6 @@
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const secs = Math.floor((diff % (1000 * 60)) / 1000);
         timerEl.innerText = `เหลืออีก ${days} วัน ${hours} ชม. ${mins} นาที`;
       }
       update();
@@ -674,57 +825,113 @@
       document.getElementById('zoomModalImg').src = view === 'front' ? 'assets/jacket_front.webp' : 'assets/jacket_back.webp';
     }
 
-    // Size Selection Handler
-    function selectSize(size, chest) {
-      selectedSize = size;
-      selectedChest = chest;
-      document.getElementById('selectedSize').value = size;
-      document.getElementById('selectedChest').value = chest;
+    // ================= MULTI-SIZE HANDLERS =================
+    function onCardClick(size) {
+      if ((sizeQuantities[size] || 0) === 0) {
+        adjustSizeQty(size, 1);
+      }
+    }
 
-      // Update badge
-      document.getElementById('selectedSizeSummaryBadge').innerText = `เลือกไซส์ ${size} (รอบอก ${chest}")`;
+    function adjustSizeQty(size, delta) {
+      let current = sizeQuantities[size] || 0;
+      current += delta;
+      if (current < 0) current = 0;
+      if (current > 10) current = 10;
+      sizeQuantities[size] = current;
 
-      // Update form cards (in form)
-      document.querySelectorAll('.form-size-card').forEach(card => {
-        if (card.dataset.size === size) {
-          card.classList.add('border-blue-900', 'bg-blue-50/80', 'shadow-xs');
-          card.classList.remove('border-slate-200');
+      updateSizeCardUI(size);
+      updateTotalCalculation();
+    }
+
+    function updateSizeCardUI(size) {
+      const qty = sizeQuantities[size] || 0;
+      const displayEl = document.getElementById(`qtyDisplay_${size}`);
+      const cardEl = document.getElementById(`sizeCard_${size}`);
+      const badgeEl = document.getElementById(`cardBadge_${size}`);
+
+      if (displayEl) displayEl.innerText = qty;
+
+      if (cardEl) {
+        if (qty > 0) {
+          cardEl.className = 'form-size-card p-3 rounded-xl border-2 border-blue-900 bg-blue-50/90 shadow-sm transition text-center flex flex-col items-center justify-between select-none cursor-pointer';
+          if (badgeEl) {
+            badgeEl.innerText = `${qty} ตัว`;
+            badgeEl.classList.remove('hidden');
+          }
         } else {
-          card.classList.remove('border-blue-900', 'bg-blue-50/80', 'shadow-xs');
-          card.classList.add('border-slate-200');
+          cardEl.className = 'form-size-card p-3 rounded-xl border-2 border-slate-200 hover:border-blue-300 bg-white transition text-center flex flex-col items-center justify-between select-none cursor-pointer';
+          if (badgeEl) {
+            badgeEl.classList.add('hidden');
+          }
+        }
+      }
+    }
+
+    function updateAllSizeCardsUI() {
+      ['M', 'L', 'XL', '2XL', '3XL', '4XL'].forEach(s => updateSizeCardUI(s));
+    }
+
+    function updateTotalCalculation() {
+      let totalQty = 0;
+      const summaryParts = [];
+
+      ['M', 'L', 'XL', '2XL', '3XL', '4XL'].forEach(s => {
+        const q = sizeQuantities[s] || 0;
+        if (q > 0) {
+          totalQty += q;
+          summaryParts.push(`ไซส์ ${s} (${q} ตัว)`);
         }
       });
 
-      updateTotalCalculation();
+      const maxTotal = totalQty * APP_CONFIG.maxPricePerUnit;
+      const calcEl = document.getElementById('summaryCalculationText');
+      const badgeEl = document.getElementById('selectedSizeSummaryBadge');
+      const totalDisplay = document.getElementById('totalPriceDisplay');
+      const subText = document.getElementById('totalPriceSubText');
+      const subDetail = document.getElementById('summarySubDetail');
+
+      if (badgeEl) {
+        badgeEl.innerText = totalQty > 0 ? `รวม ${totalQty} ตัว` : 'ยังไม่ได้ระบุจำนวน';
+        badgeEl.className = totalQty > 0 
+          ? 'text-xs font-bold text-white bg-blue-900 px-2.5 py-0.5 rounded-full' 
+          : 'text-xs font-bold text-slate-500 bg-slate-200 px-2.5 py-0.5 rounded-full';
+      }
+
+      if (currentBookingMode === 'add_more' && existingBookingRecord) {
+        const prevQty = Number(existingBookingRecord.qty) || 0;
+        const grandTotalQty = prevQty + totalQty;
+        const grandPrice = grandTotalQty * 500;
+
+        calcEl.innerHTML = totalQty > 0 
+          ? `<strong class="text-emerald-300">สั่งเพิ่ม:</strong> ${summaryParts.join(', ')} (${totalQty} ตัว) • <span class="text-slate-300">เดิม ${prevQty} ตัว = รวมสุทธิ ${grandTotalQty} ตัว</span>`
+          : `<span class="text-amber-200">กรุณาเลือกจำนวนที่ต้องการสั่งเพิ่ม (ยอดเดิม ${prevQty} ตัว)</span>`;
+
+        totalDisplay.innerText = totalQty > 0 ? `+${maxTotal.toLocaleString()} บ.` : '0 บาท';
+        subText.innerText = `(รวมสุทธิเดิม+ใหม่ ${grandTotalQty} ตัว • ไม่เกิน ${grandPrice.toLocaleString()} บ.)`;
+        if (subDetail) subDetail.innerText = `โหมดสั่งเพิ่ม: บวกยอดใหม่เข้ากับยอดเดิม ${prevQty} ตัว`;
+
+      } else if (currentBookingMode === 'update' && existingBookingRecord) {
+        const prevQty = Number(existingBookingRecord.qty) || 0;
+        calcEl.innerHTML = totalQty > 0 
+          ? `<strong class="text-amber-300">แก้ไขเป็น:</strong> ${summaryParts.join(', ')} (รวม ${totalQty} ตัว)`
+          : `<span class="text-rose-200">กรุณาเลือกไซส์และจำนวนใหม่เพื่อแทนที่ข้อมูลเดิม</span>`;
+
+        totalDisplay.innerText = `ไม่เกิน ${maxTotal.toLocaleString()} บาท`;
+        subText.innerText = `(แทนที่ยอดเดิม ${prevQty} ตัว • ไม่เกิน 500 บ./ตัว)`;
+        if (subDetail) subDetail.innerText = `โหมดเปลี่ยนแปลงข้อมูล: จะบันทึกทับข้อมูลเดิม`;
+
+      } else {
+        calcEl.innerText = totalQty > 0 
+          ? `${summaryParts.join(', ')} • รวม ${totalQty} ตัว`
+          : 'กรุณาเลือกไซส์และจำนวนที่ต้องการสั่งจอง';
+
+        totalDisplay.innerText = totalQty > 0 ? `ไม่เกิน ${maxTotal.toLocaleString()} บาท` : '0 บาท';
+        subText.innerText = totalQty > 0 ? `(${totalQty} ตัว • ราคาไม่เกิน 500 บ./ตัว)` : '(ยังไม่ได้เลือกจำนวน)';
+        if (subDetail) subDetail.innerText = 'ราคาไม่เกิน 500 บาท / ตัว';
+      }
     }
 
-    // Quantity Adjuster
-    function adjustQty(delta) {
-      const input = document.getElementById('quantity');
-      let val = parseInt(input.value, 10) || 1;
-      val += delta;
-      if (val < 1) val = 1;
-      if (val > 10) val = 10;
-      input.value = val;
-      onQtyChange();
-    }
-
-    function onQtyChange() {
-      updateTotalCalculation();
-    }
-
-    // Price Calculation
-    function updateTotalCalculation() {
-      const qtyInput = document.getElementById('quantity');
-      const qty = parseInt(qtyInput.value, 10) || 1;
-      const maxTotal = qty * APP_CONFIG.maxPricePerUnit;
-      
-      document.getElementById('totalPriceDisplay').innerText = `ไม่เกิน ${maxTotal.toLocaleString()} บาท`;
-      document.getElementById('totalPriceSubText').innerText = `(${qty} ตัว • ราคาไม่เกิน 500 บ./ตัว)`;
-      document.getElementById('summaryCalculationText').innerText = `ไซส์ ${selectedSize} (อก ${selectedChest}") • จำนวน ${qty} ตัว`;
-    }
-
-    // Employee Autocomplete Search
+    // ================= EMPLOYEE AUTOCOMPLETE =================
     function onSearchEmployee(query) {
       const dropdown = document.getElementById('autocompleteDropdown');
       const resultsContainer = document.getElementById('autocompleteResults');
@@ -754,22 +961,31 @@
           </div>
         `;
       } else {
-        resultsContainer.innerHTML = matches.map(emp => `
+        resultsContainer.innerHTML = matches.map(emp => {
+          const rawId = String(emp.id || '').trim();
+          const empId6 = /^\d+$/.test(rawId) ? rawId.padStart(6, '0') : rawId;
+          const isBooked = allBookings.some(b => b.empId === empId6 || b.empId === emp.id);
+
+          return `
           <div onclick="selectEmployee('${emp.id}')" class="p-2.5 hover:bg-blue-50 cursor-pointer flex items-center justify-between rounded-lg transition">
             <div class="flex items-center gap-2.5">
-              <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-900 font-bold font-inter text-xs flex items-center justify-center">
+              <span class="w-8 h-8 rounded-lg ${isBooked ? 'bg-amber-100 text-amber-900' : 'bg-blue-100 text-blue-900'} font-bold font-inter text-xs flex items-center justify-center">
                 ${emp.prefix ? emp.prefix.replace(/นางสาว|นาย|นาง/g, '') || 'PP' : 'PP'}
               </span>
               <div>
-                <div class="font-semibold text-xs text-slate-900">${emp.fullName}</div>
+                <div class="font-semibold text-xs text-slate-900 flex items-center gap-1.5">
+                  <span>${emp.fullName}</span>
+                  ${isBooked ? '<span class="text-[10px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 font-semibold">จองแล้ว</span>' : ''}
+                </div>
                 <div class="text-[11px] text-slate-500">${emp.department || '-'} • ${emp.position || '-'}</div>
               </div>
             </div>
             <span class="font-inter text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
-              ${emp.id}
+              ${empId6}
             </span>
           </div>
-        `).join('');
+        `;
+        }).join('');
       }
 
       dropdown.classList.remove('hidden');
@@ -806,18 +1022,32 @@
       document.getElementById('autocompleteDropdown').classList.add('hidden');
       document.getElementById('empSearchInput').value = '';
 
-      // Check if already registered in local storage and notify user
+      // Check if already registered in Google Sheets
       const existing = allBookings.find(b => b.empId === empId6 || b.empId === emp.id);
       if (existing) {
-        showToast(`พบประวัติเดิม: ไซส์ ${existing.size} (${existing.qty} ตัว) สามารถแก้ไขข้อมูลได้ค่ะ`, 'info');
-        if (existing.size) selectSize(existing.size, existing.chest || 40);
-        if (existing.qty) document.getElementById('quantity').value = existing.qty;
+        existingBookingRecord = existing;
+        document.getElementById('modalExistingEmpName').innerText = emp.fullName;
+        document.getElementById('modalExistingEmpId').innerText = empId6;
+        document.getElementById('modalExistingSizes').innerText = existing.sizeSummary || (existing.size ? `${existing.size} (${existing.qty} ตัว)` : '-');
+        document.getElementById('modalExistingTotal').innerText = `${existing.qty || 1} ตัว (ไม่เกิน ${((existing.qty || 1) * 500).toLocaleString()} บาท)`;
+
+        // Show decision modal to prompt "เปลี่ยนแปลงข้อมูล" or "ต้องการสั่งเพิ่ม"
+        openExistingBookingModal();
+        setBookingMode('update'); // Default into update mode
+      } else {
+        existingBookingRecord = null;
+        setBookingMode('new');
+        // Reset sizes to default for new order
+        sizeQuantities = { M: 0, L: 0, XL: 0, '2XL': 0, '3XL': 0, '4XL': 0 };
+        sizeQuantities.M = 1; // Default 1 M
+        updateAllSizeCardsUI();
         updateTotalCalculation();
       }
     }
 
     function clearSelectedEmployee() {
       selectedEmployee = null;
+      existingBookingRecord = null;
       document.getElementById('empId').value = '';
       document.getElementById('firstName').value = '';
       document.getElementById('lastName').value = '';
@@ -828,9 +1058,97 @@
       document.getElementById('empSearchInput').value = '';
       document.getElementById('btnClearSearch').classList.add('hidden');
       document.getElementById('autocompleteDropdown').classList.add('hidden');
+      setBookingMode('new');
     }
 
-    // Submit Booking Handler (บันทึกลง Google Sheets เท่านั้น ไม่บันทึก localstore)
+    // ================= EXISTING BOOKING MODAL & MODES =================
+    function openExistingBookingModal() {
+      document.getElementById('existingBookingModal').classList.remove('hidden');
+    }
+
+    function closeExistingBookingModal() {
+      document.getElementById('existingBookingModal').classList.add('hidden');
+    }
+
+    function confirmExistingBookingMode(mode) {
+      setBookingMode(mode);
+      closeExistingBookingModal();
+      showToast(`เปิดโหมด: ${mode === 'update' ? 'เปลี่ยนแปลงข้อมูลการจอง' : 'ต้องการสั่งเพิ่ม'} แล้วค่ะ`, 'info');
+    }
+
+    function toggleBookingMode() {
+      if (currentBookingMode === 'update') {
+        setBookingMode('add_more');
+      } else {
+        setBookingMode('update');
+      }
+    }
+
+    function setBookingMode(mode) {
+      currentBookingMode = mode;
+      const banner = document.getElementById('existingBookingBanner');
+      const icon = document.getElementById('bannerModeIcon');
+      const title = document.getElementById('bannerModeTitle');
+      const desc = document.getElementById('bannerModeDesc');
+      const btnToggle = document.getElementById('btnToggleMode');
+      const btnSubmitText = document.getElementById('btnSubmitText');
+
+      if (mode === 'new') {
+        if (banner) banner.classList.add('hidden');
+        if (btnSubmitText) btnSubmitText.innerText = 'ยืนยันการลงทะเบียนสั่งจอง ➔';
+      } else if (mode === 'update') {
+        if (banner) {
+          banner.className = 'rounded-2xl border border-amber-300 bg-amber-50/80 p-3.5 text-xs text-amber-950 transition';
+          icon.className = 'w-7 h-7 rounded-xl bg-amber-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0';
+          icon.innerHTML = '<i class="ph ph-pencil-simple-line"></i>';
+          title.innerText = 'โหมด: เปลี่ยนแปลงข้อมูลการจอง';
+          desc.innerText = 'รายการใหม่จะบันทึก "แทนที่" ข้อมูลเดิมทั้งหมดในระบบ';
+          btnToggle.innerText = 'สลับเป็น: สั่งเพิ่ม';
+          banner.classList.remove('hidden');
+        }
+        if (btnSubmitText) btnSubmitText.innerText = 'บันทึกการเปลี่ยนแปลงข้อมูล ➔';
+
+        // Pre-fill quantities from existing record
+        if (existingBookingRecord) {
+          sizeQuantities = { M: 0, L: 0, XL: 0, '2XL': 0, '3XL': 0, '4XL': 0 };
+          const hasMulti = existingBookingRecord.qtyM !== undefined || existingBookingRecord.qtyL !== undefined;
+          if (hasMulti) {
+            sizeQuantities.M = Number(existingBookingRecord.qtyM) || 0;
+            sizeQuantities.L = Number(existingBookingRecord.qtyL) || 0;
+            sizeQuantities.XL = Number(existingBookingRecord.qtyXL) || 0;
+            sizeQuantities['2XL'] = Number(existingBookingRecord.qty2XL) || 0;
+            sizeQuantities['3XL'] = Number(existingBookingRecord.qty3XL) || 0;
+            sizeQuantities['4XL'] = Number(existingBookingRecord.qty4XL) || 0;
+          } else {
+            const s = (existingBookingRecord.size || 'M').toUpperCase();
+            if (sizeQuantities[s] !== undefined) sizeQuantities[s] = Number(existingBookingRecord.qty) || 1;
+            else sizeQuantities.M = 1;
+          }
+        }
+        updateAllSizeCardsUI();
+        updateTotalCalculation();
+
+      } else if (mode === 'add_more') {
+        const prevQty = existingBookingRecord ? (Number(existingBookingRecord.qty) || 0) : 0;
+        if (banner) {
+          banner.className = 'rounded-2xl border border-emerald-300 bg-emerald-50/80 p-3.5 text-xs text-emerald-950 transition';
+          icon.className = 'w-7 h-7 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0';
+          icon.innerHTML = '<i class="ph ph-plus-circle"></i>';
+          title.innerText = 'โหมด: ต้องการสั่งเพิ่ม';
+          desc.innerText = `รายการใหม่จะนำไป "บวกเพิ่ม" เข้ากับยอดเดิม (${prevQty} ตัว)`;
+          btnToggle.innerText = 'สลับเป็น: เปลี่ยนแปลงข้อมูล';
+          banner.classList.remove('hidden');
+        }
+        if (btnSubmitText) btnSubmitText.innerText = 'ยืนยันการสั่งเสื้อเพิ่ม ➔';
+
+        // Reset inputs to 0 ready to add more
+        sizeQuantities = { M: 0, L: 0, XL: 0, '2XL': 0, '3XL': 0, '4XL': 0 };
+        updateAllSizeCardsUI();
+        updateTotalCalculation();
+      }
+    }
+
+    // ================= SUBMIT BOOKING HANDLER =================
     async function handleFormSubmit(e) {
       e.preventDefault();
 
@@ -839,15 +1157,25 @@
       const firstName = document.getElementById('firstName').value;
       const lastName = document.getElementById('lastName').value;
       const fullName = document.getElementById('fullName').value;
-      const qty = parseInt(document.getElementById('quantity').value, 10) || 1;
 
       if (!empId6 || !fullName) {
         showToast('กรุณาเลือกรายชื่อพนักงานก่อนค่ะ', 'error');
         document.getElementById('empSearchInput').focus();
         return;
       }
-      if (!selectedSize) {
-        showToast('กรุณาเลือกไซส์เสื้อก่อนค่ะ', 'error');
+
+      let totalSelectedQty = 0;
+      const sizeSummaryParts = [];
+      ['M', 'L', 'XL', '2XL', '3XL', '4XL'].forEach(s => {
+        const q = sizeQuantities[s] || 0;
+        if (q > 0) {
+          totalSelectedQty += q;
+          sizeSummaryParts.push(`ไซส์ ${s} (${q} ตัว)`);
+        }
+      });
+
+      if (totalSelectedQty <= 0) {
+        showToast('กรุณาเลือกจำนวนและไซส์เสื้อที่ต้องการสั่งอย่างน้อย 1 ตัวค่ะ', 'error');
         return;
       }
 
@@ -857,18 +1185,28 @@
         return;
       }
 
-      showLoading(true, 'กำลังบันทึกข้อมูลลงฐานข้อมูล Google Sheets...');
+      showLoading(true, currentBookingMode === 'add_more' 
+        ? 'กำลังส่งข้อมูลการสั่งเสื้อเพิ่มลง Google Sheets...' 
+        : (currentBookingMode === 'update' 
+          ? 'กำลังบันทึกการเปลี่ยนแปลงข้อมูลลง Google Sheets...' 
+          : 'กำลังบันทึกข้อมูลการจองลง Google Sheets...'));
 
       const bookingPayload = {
+        bookingMode: currentBookingMode,
         empId: empId6,
         firstName: firstName,
         lastName: lastName,
         fullName: fullName,
         department: document.getElementById('department').value || '-',
         position: document.getElementById('position').value || '-',
-        size: selectedSize,
-        chest: selectedChest,
-        qty: qty
+        qtyM: sizeQuantities.M,
+        qtyL: sizeQuantities.L,
+        qtyXL: sizeQuantities.XL,
+        qty2XL: sizeQuantities['2XL'],
+        qty3XL: sizeQuantities['3XL'],
+        qty4XL: sizeQuantities['4XL'],
+        size: sizeSummaryParts.join(', '),
+        qty: totalSelectedQty
       };
 
       try {
@@ -884,14 +1222,20 @@
           // Fallback via GET action=book
           const params = new URLSearchParams({
             action: 'book',
+            bookingMode: bookingPayload.bookingMode,
             empId: bookingPayload.empId,
             firstName: bookingPayload.firstName,
             lastName: bookingPayload.lastName,
             fullName: bookingPayload.fullName,
             department: bookingPayload.department,
             position: bookingPayload.position,
+            qtyM: bookingPayload.qtyM,
+            qtyL: bookingPayload.qtyL,
+            qtyXL: bookingPayload.qtyXL,
+            qty2XL: bookingPayload.qty2XL,
+            qty3XL: bookingPayload.qty3XL,
+            qty4XL: bookingPayload.qty4XL,
             size: bookingPayload.size,
-            chest: bookingPayload.chest,
             qty: bookingPayload.qty
           });
           const getRes = await fetch(`${endpoint}?${params.toString()}`);
@@ -900,22 +1244,27 @@
 
         if (result && result.success) {
           showLoading(false);
-          showToast('บันทึกข้อมูลลง Google Sheets สำเร็จแล้วค่ะ!', 'success');
+          const toastMsg = currentBookingMode === 'add_more'
+            ? 'สั่งเสื้อเพิ่มสำเร็จ บันทึกลง Google Sheets แล้วค่ะ!'
+            : (currentBookingMode === 'update'
+              ? 'แก้ไขข้อมูลการจองสำเร็จ บันทึกลง Google Sheets แล้วค่ะ!'
+              : 'บันทึกการจองลง Google Sheets สำเร็จแล้วค่ะ!');
+          showToast(toastMsg, 'success');
 
           const confirmedRecord = {
+            bookingMode: result.bookingMode || currentBookingMode,
             bookingId: result.bookingId,
             timestamp: result.timestamp,
             empId: result.empId || empId6,
             fullName: result.fullName || fullName,
             department: result.department || document.getElementById('department').value || '-',
             position: result.position || document.getElementById('position').value || '-',
-            size: result.size || selectedSize,
-            chest: result.chest || selectedChest,
-            qty: result.qty || qty,
-            totalPrice: result.totalPrice || (qty * 500)
+            sizeSummary: result.sizeSummary || sizeSummaryParts.join(', '),
+            totalQty: result.totalQty || totalSelectedQty,
+            totalPrice: result.totalPrice || (totalSelectedQty * 500),
+            status: result.status || 'จองสำเร็จ'
           };
 
-          // แสดงกล่องสำเร็จเมื่อบันทึกจริงลง Google Sheet สำเร็จแล้วเท่านั้น
           showSuccessModal(confirmedRecord);
           resetBookingForm();
           loadBookings();
@@ -952,11 +1301,38 @@
 
     // Success Modal
     function showSuccessModal(record) {
+      const titleEl = document.getElementById('successModalTitle');
+      const descEl = document.getElementById('successModalDesc');
+      const statusTag = document.getElementById('successStatusTag');
+
+      if (record.bookingMode === 'add_more') {
+        if (titleEl) titleEl.innerText = 'สั่งเสื้อเพิ่มสำเร็จ!';
+        if (descEl) descEl.innerText = 'ข้อมูลการสั่งเสื้อเพิ่มถูกบันทึกและรวมเข้ากับยอดเดิมใน Google Sheets เรียบร้อยแล้วค่ะ';
+        if (statusTag) {
+          statusTag.innerText = 'สั่งเพิ่มสำเร็จ';
+          statusTag.className = 'font-bold text-emerald-700 font-inter';
+        }
+      } else if (record.bookingMode === 'update') {
+        if (titleEl) titleEl.innerText = 'เปลี่ยนแปลงข้อมูลสำเร็จ!';
+        if (descEl) descEl.innerText = 'ข้อมูลการจองเดิมได้รับการอัปเดตแทนที่ใน Google Sheets เรียบร้อยแล้วค่ะ';
+        if (statusTag) {
+          statusTag.innerText = 'แก้ไขข้อมูลสำเร็จ';
+          statusTag.className = 'font-bold text-amber-700 font-inter';
+        }
+      } else {
+        if (titleEl) titleEl.innerText = 'บันทึกการจองสำเร็จ!';
+        if (descEl) descEl.innerText = 'ข้อมูลการจองเสื้อแจ็กเก็ตได้ถูกบันทึกลงในระบบ Google Sheets เรียบร้อยแล้วค่ะ';
+        if (statusTag) {
+          statusTag.innerText = 'จองสำเร็จ';
+          statusTag.className = 'font-bold text-blue-900 font-inter';
+        }
+      }
+
       document.getElementById('successEmpName').innerText = record.fullName || '-';
       document.getElementById('successEmpId').innerText = record.empId || '-';
-      document.getElementById('successSize').innerText = `ไซส์ ${record.size} (อก ${record.chest}")`;
-      document.getElementById('successQty').innerText = `${record.qty} ตัว`;
-      document.getElementById('successPrice').innerText = `ไม่เกิน ${(record.totalPrice || (record.qty * 500)).toLocaleString()} บาท`;
+      document.getElementById('successSize').innerText = record.sizeSummary || '-';
+      document.getElementById('successQty').innerText = `${record.totalQty} ตัว`;
+      document.getElementById('successPrice').innerText = `ไม่เกิน ${(record.totalPrice || (record.totalQty * 500)).toLocaleString()} บาท`;
       document.getElementById('successModal').classList.remove('hidden');
     }
 
@@ -966,8 +1342,9 @@
 
     function resetBookingForm() {
       clearSelectedEmployee();
-      document.getElementById('quantity').value = '1';
-      selectSize('M', 40);
+      sizeQuantities = { M: 0, L: 0, XL: 0, '2XL': 0, '3XL': 0, '4XL': 0 };
+      sizeQuantities.M = 1; // Default 1 M
+      updateAllSizeCardsUI();
       updateTotalCalculation();
     }
 

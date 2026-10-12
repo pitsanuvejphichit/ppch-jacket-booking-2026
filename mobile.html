@@ -166,62 +166,11 @@
       </div>
     </section>
 
-    <!-- 2. Step: Choose Size (M = 40, L = 42, XL = 44, 2XL = 46, 3XL = 48, 4XL = 50) -->
+    <!-- 2. Step: Employee Selection -->
     <section class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3">
       <div class="flex items-center justify-between">
         <label class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
           <span class="w-5 h-5 rounded-md bg-blue-900 text-white flex items-center justify-center text-[11px] font-inter">1</span>
-          เลือกไซส์เสื้อ (40-50 คือรอบอก) <span class="text-rose-500">*</span>
-        </label>
-        <span id="mSelectedSizeText" class="text-xs font-bold text-blue-900 bg-blue-100 px-2.5 py-0.5 rounded-full">ไซส์ M (อก 40")</span>
-      </div>
-
-      <div class="grid grid-cols-3 gap-2.5" id="mSizeGrid">
-        
-        <!-- M -->
-        <button type="button" data-size="M" onclick="selectMobileSize('M', 40)" class="size-pill active p-2.5 rounded-xl text-center flex flex-col items-center">
-          <span class="font-inter font-bold text-base">M</span>
-          <span class="size-chest text-[11px] font-semibold font-inter mt-1">อก 40"</span>
-        </button>
-
-        <!-- L -->
-        <button type="button" data-size="L" onclick="selectMobileSize('L', 42)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
-          <span class="font-inter font-bold text-base">L</span>
-          <span class="size-chest text-[11px] font-semibold font-inter text-blue-700 mt-1">อก 42"</span>
-        </button>
-
-        <!-- XL -->
-        <button type="button" data-size="XL" onclick="selectMobileSize('XL', 44)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
-          <span class="font-inter font-bold text-base">XL</span>
-          <span class="size-chest text-[11px] font-semibold font-inter text-blue-700 mt-1">อก 44"</span>
-        </button>
-
-        <!-- 2XL -->
-        <button type="button" data-size="2XL" onclick="selectMobileSize('2XL', 46)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
-          <span class="font-inter font-bold text-base">2XL</span>
-          <span class="size-chest text-[11px] font-semibold font-inter text-blue-700 mt-1">อก 46"</span>
-        </button>
-
-        <!-- 3XL -->
-        <button type="button" data-size="3XL" onclick="selectMobileSize('3XL', 48)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
-          <span class="font-inter font-bold text-base">3XL</span>
-          <span class="size-chest text-[11px] font-semibold font-inter text-blue-700 mt-1">อก 48"</span>
-        </button>
-
-        <!-- 4XL -->
-        <button type="button" data-size="4XL" onclick="selectMobileSize('4XL', 50)" class="size-pill p-2.5 rounded-xl text-center flex flex-col items-center">
-          <span class="font-inter font-bold text-base">4XL</span>
-          <span class="size-chest text-[11px] font-semibold font-inter text-blue-700 mt-1">อก 50"</span>
-        </button>
-
-      </div>
-    </section>
-
-    <!-- 3. Step: Employee Selection -->
-    <section class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3">
-      <div class="flex items-center justify-between">
-        <label class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-          <span class="w-5 h-5 rounded-md bg-blue-900 text-white flex items-center justify-center text-[11px] font-inter">2</span>
           ข้อมูลผู้สั่งจอง <span class="text-rose-500">*</span>
         </label>
         <button type="button" onclick="openEmployeePickerSheet()" class="text-xs font-semibold text-blue-700 hover:text-blue-900 flex items-center gap-1">
@@ -261,15 +210,144 @@
           เปลี่ยน
         </button>
       </div>
+    </section>
 
-      <!-- Quantity Selector -->
-      <div class="flex items-center justify-between pt-1">
-        <label class="text-xs font-semibold text-slate-700">จำนวนที่ต้องการ (ตัว)</label>
-        <div class="flex items-center">
-          <button type="button" onclick="adjustMobileQty(-1)" class="w-9 h-9 rounded-l-xl bg-slate-100 border border-slate-300 border-r-0 flex items-center justify-center text-base font-bold text-slate-700 active:bg-slate-200">-</button>
-          <input type="number" id="mQtyInput" value="1" min="1" max="10" readonly class="w-12 h-9 text-center bg-slate-50 border border-slate-300 text-sm font-bold font-inter text-slate-900">
-          <button type="button" onclick="adjustMobileQty(1)" class="w-9 h-9 rounded-r-xl bg-slate-100 border border-slate-300 border-l-0 flex items-center justify-center text-base font-bold text-slate-700 active:bg-slate-200">+</button>
+    <!-- Mode Banner (Displays when employee has an existing reservation) -->
+    <div id="mExistingBookingBanner" class="hidden rounded-2xl border p-3 text-xs transition">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 min-w-0">
+          <span id="mBannerModeIcon" class="w-6 h-6 rounded-lg bg-blue-900 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+            <i class="ph ph-pencil-simple-line"></i>
+          </span>
+          <div class="min-w-0">
+            <div class="font-bold text-xs truncate" id="mBannerModeTitle">โหมด: เปลี่ยนแปลงข้อมูลการจอง</div>
+            <div class="text-[10px] opacity-80 truncate" id="mBannerModeDesc">รายการใหม่จะบันทึกแทนที่เดิม</div>
+          </div>
         </div>
+        <div class="flex items-center gap-1.5 flex-shrink-0">
+          <button type="button" id="mBtnToggleMode" onclick="toggleMobileBookingMode()" class="px-2 py-1 rounded-lg bg-white border border-slate-300 font-semibold text-[10px] shadow-2xs">
+            สลับโหมด
+          </button>
+          <button type="button" onclick="openMobileExistingBookingModal()" class="text-slate-500 hover:text-slate-800 text-[10px] p-0.5">
+            ประวัติ
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Step: Choose Size & Quantities (Multi-size ordering) -->
+    <section class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3">
+      <div class="flex items-center justify-between">
+        <label class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+          <span class="w-5 h-5 rounded-md bg-blue-900 text-white flex items-center justify-center text-[11px] font-inter">2</span>
+          <span>เลือกไซส์และจำนวน (สั่งได้มากกว่า 1 ไซส์) <span class="text-rose-500">*</span></span>
+        </label>
+        <span id="mSelectedSizeText" class="text-xs font-bold text-blue-900 bg-blue-100 px-2.5 py-0.5 rounded-full">รวม 0 ตัว</span>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="mSizeGrid">
+        
+        <!-- M -->
+        <div id="mCard_M" onclick="onMobileCardClick('M')" class="p-2.5 rounded-xl border-2 border-slate-200 bg-white transition flex flex-col items-center justify-between cursor-pointer select-none">
+          <div class="text-center pointer-events-none">
+            <div class="flex items-center justify-center gap-1">
+              <span class="font-inter font-bold text-base text-slate-800">M</span>
+              <span id="mBadge_M" class="hidden text-[9px] px-1.5 py-0.2 rounded-full bg-blue-900 text-white font-inter font-bold">0</span>
+            </div>
+            <span class="text-[11px] font-semibold text-blue-800 font-inter block">อก 40"</span>
+          </div>
+          <div class="mt-2 flex items-center justify-center gap-1 w-full" onclick="event.stopPropagation()">
+            <button type="button" onclick="adjustMobileSizeQty('M', -1)" class="w-7 h-7 rounded-lg bg-slate-100 active:bg-slate-200 text-slate-700 font-bold text-sm flex items-center justify-center">-</button>
+            <span id="mDisplay_M" class="w-6 text-center font-inter font-bold text-sm text-slate-900">0</span>
+            <button type="button" onclick="adjustMobileSizeQty('M', 1)" class="w-7 h-7 rounded-lg bg-blue-100 active:bg-blue-200 text-blue-900 font-bold text-sm flex items-center justify-center">+</button>
+          </div>
+        </div>
+
+        <!-- L -->
+        <div id="mCard_L" onclick="onMobileCardClick('L')" class="p-2.5 rounded-xl border-2 border-slate-200 bg-white transition flex flex-col items-center justify-between cursor-pointer select-none">
+          <div class="text-center pointer-events-none">
+            <div class="flex items-center justify-center gap-1">
+              <span class="font-inter font-bold text-base text-slate-800">L</span>
+              <span id="mBadge_L" class="hidden text-[9px] px-1.5 py-0.2 rounded-full bg-blue-900 text-white font-inter font-bold">0</span>
+            </div>
+            <span class="text-[11px] font-semibold text-blue-800 font-inter block">อก 42"</span>
+          </div>
+          <div class="mt-2 flex items-center justify-center gap-1 w-full" onclick="event.stopPropagation()">
+            <button type="button" onclick="adjustMobileSizeQty('L', -1)" class="w-7 h-7 rounded-lg bg-slate-100 active:bg-slate-200 text-slate-700 font-bold text-sm flex items-center justify-center">-</button>
+            <span id="mDisplay_L" class="w-6 text-center font-inter font-bold text-sm text-slate-900">0</span>
+            <button type="button" onclick="adjustMobileSizeQty('L', 1)" class="w-7 h-7 rounded-lg bg-blue-100 active:bg-blue-200 text-blue-900 font-bold text-sm flex items-center justify-center">+</button>
+          </div>
+        </div>
+
+        <!-- XL -->
+        <div id="mCard_XL" onclick="onMobileCardClick('XL')" class="p-2.5 rounded-xl border-2 border-slate-200 bg-white transition flex flex-col items-center justify-between cursor-pointer select-none">
+          <div class="text-center pointer-events-none">
+            <div class="flex items-center justify-center gap-1">
+              <span class="font-inter font-bold text-base text-slate-800">XL</span>
+              <span id="mBadge_XL" class="hidden text-[9px] px-1.5 py-0.2 rounded-full bg-blue-900 text-white font-inter font-bold">0</span>
+            </div>
+            <span class="text-[11px] font-semibold text-blue-800 font-inter block">อก 44"</span>
+          </div>
+          <div class="mt-2 flex items-center justify-center gap-1 w-full" onclick="event.stopPropagation()">
+            <button type="button" onclick="adjustMobileSizeQty('XL', -1)" class="w-7 h-7 rounded-lg bg-slate-100 active:bg-slate-200 text-slate-700 font-bold text-sm flex items-center justify-center">-</button>
+            <span id="mDisplay_XL" class="w-6 text-center font-inter font-bold text-sm text-slate-900">0</span>
+            <button type="button" onclick="adjustMobileSizeQty('XL', 1)" class="w-7 h-7 rounded-lg bg-blue-100 active:bg-blue-200 text-blue-900 font-bold text-sm flex items-center justify-center">+</button>
+          </div>
+        </div>
+
+        <!-- 2XL -->
+        <div id="mCard_2XL" onclick="onMobileCardClick('2XL')" class="p-2.5 rounded-xl border-2 border-slate-200 bg-white transition flex flex-col items-center justify-between cursor-pointer select-none">
+          <div class="text-center pointer-events-none">
+            <div class="flex items-center justify-center gap-1">
+              <span class="font-inter font-bold text-base text-slate-800">2XL</span>
+              <span id="mBadge_2XL" class="hidden text-[9px] px-1.5 py-0.2 rounded-full bg-blue-900 text-white font-inter font-bold">0</span>
+            </div>
+            <span class="text-[11px] font-semibold text-blue-800 font-inter block">อก 46"</span>
+          </div>
+          <div class="mt-2 flex items-center justify-center gap-1 w-full" onclick="event.stopPropagation()">
+            <button type="button" onclick="adjustMobileSizeQty('2XL', -1)" class="w-7 h-7 rounded-lg bg-slate-100 active:bg-slate-200 text-slate-700 font-bold text-sm flex items-center justify-center">-</button>
+            <span id="mDisplay_2XL" class="w-6 text-center font-inter font-bold text-sm text-slate-900">0</span>
+            <button type="button" onclick="adjustMobileSizeQty('2XL', 1)" class="w-7 h-7 rounded-lg bg-blue-100 active:bg-blue-200 text-blue-900 font-bold text-sm flex items-center justify-center">+</button>
+          </div>
+        </div>
+
+        <!-- 3XL -->
+        <div id="mCard_3XL" onclick="onMobileCardClick('3XL')" class="p-2.5 rounded-xl border-2 border-slate-200 bg-white transition flex flex-col items-center justify-between cursor-pointer select-none">
+          <div class="text-center pointer-events-none">
+            <div class="flex items-center justify-center gap-1">
+              <span class="font-inter font-bold text-base text-slate-800">3XL</span>
+              <span id="mBadge_3XL" class="hidden text-[9px] px-1.5 py-0.2 rounded-full bg-blue-900 text-white font-inter font-bold">0</span>
+            </div>
+            <span class="text-[11px] font-semibold text-blue-800 font-inter block">อก 48"</span>
+          </div>
+          <div class="mt-2 flex items-center justify-center gap-1 w-full" onclick="event.stopPropagation()">
+            <button type="button" onclick="adjustMobileSizeQty('3XL', -1)" class="w-7 h-7 rounded-lg bg-slate-100 active:bg-slate-200 text-slate-700 font-bold text-sm flex items-center justify-center">-</button>
+            <span id="mDisplay_3XL" class="w-6 text-center font-inter font-bold text-sm text-slate-900">0</span>
+            <button type="button" onclick="adjustMobileSizeQty('3XL', 1)" class="w-7 h-7 rounded-lg bg-blue-100 active:bg-blue-200 text-blue-900 font-bold text-sm flex items-center justify-center">+</button>
+          </div>
+        </div>
+
+        <!-- 4XL -->
+        <div id="mCard_4XL" onclick="onMobileCardClick('4XL')" class="p-2.5 rounded-xl border-2 border-slate-200 bg-white transition flex flex-col items-center justify-between cursor-pointer select-none">
+          <div class="text-center pointer-events-none">
+            <div class="flex items-center justify-center gap-1">
+              <span class="font-inter font-bold text-base text-slate-800">4XL</span>
+              <span id="mBadge_4XL" class="hidden text-[9px] px-1.5 py-0.2 rounded-full bg-blue-900 text-white font-inter font-bold">0</span>
+            </div>
+            <span class="text-[11px] font-semibold text-blue-800 font-inter block">อก 50"</span>
+          </div>
+          <div class="mt-2 flex items-center justify-center gap-1 w-full" onclick="event.stopPropagation()">
+            <button type="button" onclick="adjustMobileSizeQty('4XL', -1)" class="w-7 h-7 rounded-lg bg-slate-100 active:bg-slate-200 text-slate-700 font-bold text-sm flex items-center justify-center">-</button>
+            <span id="mDisplay_4XL" class="w-6 text-center font-inter font-bold text-sm text-slate-900">0</span>
+            <button type="button" onclick="adjustMobileSizeQty('4XL', 1)" class="w-7 h-7 rounded-lg bg-blue-100 active:bg-blue-200 text-blue-900 font-bold text-sm flex items-center justify-center">+</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick Summary note in section -->
+      <div class="text-[11px] text-slate-500 bg-slate-50 p-2.5 rounded-xl border border-slate-100" id="mSummaryNote">
+        แตะที่ไซส์เพื่อสั่ง 1 ตัว หรือกดปุ่ม +/- เพื่อปรับจำนวน
       </div>
     </section>
 
@@ -278,14 +356,15 @@
   <!-- Sticky Bottom Action Bar -->
   <aside class="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-4 py-3 flex items-center justify-between shadow-lg">
     <div>
-      <div class="text-[11px] text-slate-500">ยอดชำระประมาณการ</div>
-      <div class="text-base font-bold font-inter text-blue-950" id="mTotalPriceDisplay">ไม่เกิน 500 บาท</div>
+      <div class="text-[11px] text-slate-500" id="mTotalLabel">ยอดชำระประมาณการ</div>
+      <div class="text-base font-bold font-inter text-blue-950" id="mTotalPriceDisplay">0 บาท</div>
     </div>
 
     <button type="button" 
             onclick="submitMobileBooking()" 
-            class="py-3 px-6 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-semibold text-sm flex items-center gap-2 shadow-md active:scale-95 transition">
-      <span>ยืนยันการจอง</span>
+            id="mBtnSubmit"
+            class="py-3 px-5 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-md active:scale-95 transition">
+      <span id="mBtnSubmitText">ยืนยันการจอง</span>
       <i class="ph ph-arrow-right font-bold"></i>
     </button>
   </aside>
@@ -340,10 +419,14 @@
       <div class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto mb-3 shadow-xs">
         <i class="ph ph-check-circle-fill"></i>
       </div>
-      <h3 class="text-base font-bold text-slate-900">บันทึกการจองสำเร็จ!</h3>
-      <p class="text-xs text-slate-500 mt-1">ข้อมูลถูกบันทึกลงในระบบ Google Sheets เรียบร้อยแล้วค่ะ</p>
+      <h3 class="text-base font-bold text-slate-900" id="mSuccessModalTitle">บันทึกการจองสำเร็จ!</h3>
+      <p class="text-xs text-slate-500 mt-1" id="mSuccessModalDesc">ข้อมูลถูกบันทึกลงในระบบ Google Sheets เรียบร้อยแล้วค่ะ</p>
       
       <div class="mt-4 p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-left space-y-1.5">
+        <div class="flex justify-between">
+          <span class="text-slate-400">สถานะรายการ:</span>
+          <span class="font-bold text-emerald-700" id="mSuccessStatusTag">จองสำเร็จ</span>
+        </div>
         <div class="flex justify-between">
           <span class="text-slate-400">ผู้สั่งจอง:</span>
           <span class="font-bold text-slate-900 truncate max-w-[150px]" id="mSuccessName">-</span>
@@ -352,12 +435,12 @@
           <span class="text-slate-400">รหัสพนักงาน:</span>
           <span class="font-inter font-semibold text-blue-900" id="mSuccessEmpId">-</span>
         </div>
-        <div class="flex justify-between">
-          <span class="text-slate-400">ขนาดเสื้อ:</span>
-          <span class="font-bold text-blue-900" id="mSuccessSize">-</span>
+        <div class="flex justify-between items-start gap-1">
+          <span class="text-slate-400 flex-shrink-0">รายการเสื้อ:</span>
+          <span class="font-bold text-blue-900 text-right font-inter" id="mSuccessSize">-</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-slate-400">จำนวน:</span>
+          <span class="text-slate-400">จำนวนรวม:</span>
           <span class="font-semibold text-slate-800" id="mSuccessQty">1 ตัว</span>
         </div>
         <div class="flex justify-between border-t border-slate-200 pt-1.5">
@@ -374,6 +457,78 @@
           ปิดหน้าต่าง
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal: Mobile Existing Booking Decision Modal -->
+  <div id="mExistingBookingModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-5 max-w-xs w-full text-center shadow-2xl border border-slate-100 space-y-3.5" style="animation: loaderPop 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;">
+      <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-900 flex items-center justify-center text-2xl mx-auto shadow-2xs">
+        <i class="ph ph-user-check"></i>
+      </div>
+      <div>
+        <h3 class="font-bold text-sm text-slate-900">พบประวัติการจองเดิมในระบบ</h3>
+        <p class="text-[11px] text-slate-500 mt-0.5">กรุณาเลือกรูปแบบที่ต้องการดำเนินการค่ะ</p>
+      </div>
+
+      <!-- Existing order summary box -->
+      <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-[11px] text-left space-y-1">
+        <div class="flex justify-between">
+          <span class="text-slate-400">ผู้สั่งจอง:</span>
+          <span class="font-bold text-slate-900 truncate max-w-[130px]" id="mModalExistingEmpName">-</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">รหัสพนักงาน:</span>
+          <span class="font-inter font-semibold text-blue-900" id="mModalExistingEmpId">000000</span>
+        </div>
+        <div class="flex justify-between items-start gap-1">
+          <span class="text-slate-400 flex-shrink-0">รายการเดิม:</span>
+          <span class="font-bold text-blue-900 text-right font-inter" id="mModalExistingSizes">-</span>
+        </div>
+        <div class="flex justify-between border-t border-slate-200 pt-1">
+          <span class="text-slate-400">ยอดรวมเดิม:</span>
+          <span class="font-bold text-emerald-700" id="mModalExistingTotal">-</span>
+        </div>
+      </div>
+
+      <!-- Action Choice Buttons -->
+      <div class="space-y-2 pt-1 text-left">
+        <!-- Button 1: Update -->
+        <button type="button" onclick="confirmMobileBookingMode('update')" class="w-full p-3 rounded-2xl border-2 border-amber-300 bg-amber-50/80 active:bg-amber-100 transition flex items-start gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center text-lg flex-shrink-0 mt-0.5">
+            <i class="ph ph-pencil-simple-line"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-amber-950 text-xs">เปลี่ยนแปลงข้อมูลการจอง</span>
+              <span class="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-amber-200 text-amber-900">แทนที่เดิม</span>
+            </div>
+            <p class="text-[10px] text-amber-900/80 mt-0.5 leading-tight">
+              แก้ไขขนาดหรือจำนวน โดยจะบันทึก <strong>แทนที่</strong> รายการเดิมทั้งหมด
+            </p>
+          </div>
+        </button>
+
+        <!-- Button 2: Add More -->
+        <button type="button" onclick="confirmMobileBookingMode('add_more')" class="w-full p-3 rounded-2xl border-2 border-emerald-300 bg-emerald-50/80 active:bg-emerald-100 transition flex items-start gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-lg flex-shrink-0 mt-0.5">
+            <i class="ph ph-plus-circle"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-emerald-950 text-xs">ต้องการสั่งเพิ่ม</span>
+              <span class="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-200 text-emerald-900">บวกเพิ่ม</span>
+            </div>
+            <p class="text-[10px] text-emerald-900/80 mt-0.5 leading-tight">
+              สั่งเสื้อเพิ่ม โดยระบบจะนำไป <strong>บวกเพิ่ม</strong> เข้ากับยอดเดิมของคุณ
+            </p>
+          </div>
+        </button>
+      </div>
+
+      <button type="button" onclick="closeMobileExistingBookingModal()" class="w-full py-1 text-[11px] text-slate-400 hover:text-slate-600">
+        ยกเลิก / ปิดหน้าต่าง
+      </button>
     </div>
   </div>
 
@@ -416,15 +571,35 @@
       }
     };
 
-    let mSelectedSize = 'M';
-    let mSelectedChest = 40;
+    let mSizeQuantities = { M: 0, L: 0, XL: 0, '2XL': 0, '3XL': 0, '4XL': 0 };
+    const M_SIZE_CHEST_MAP = { M: 40, L: 42, XL: 44, '2XL': 46, '3XL': 48, '4XL': 50 };
+    let mCurrentBookingMode = 'new'; // 'new', 'update', 'add_more'
+    let mExistingBookingRecord = null;
     let mSelectedEmployee = null;
-    let mQty = 1;
+    let mAllBookings = [];
 
     document.addEventListener('DOMContentLoaded', () => {
+      loadMobileBookings();
       renderSheetEmployees(window.PPCH_EMPLOYEES || []);
+      updateAllMobileSizeCardsUI();
       updateMobileTotal();
     });
+
+    async function loadMobileBookings() {
+      const endpoint = MOBILE_CONFIG.gasEndpoint;
+      if (!endpoint) return;
+      try {
+        const res = await fetch(`${endpoint}?action=getRegistrations`);
+        const data = await res.json();
+        if (data && data.items) {
+          mAllBookings = data.items;
+          // Refresh employee list so "จองแล้ว" tags appear accurately
+          renderSheetEmployees(window.PPCH_EMPLOYEES || [], document.getElementById('mSheetSearchInput').value || '');
+        }
+      } catch (e) {
+        console.warn('Could not load bookings on mobile:', e);
+      }
+    }
 
     function setMobileJacketView(view) {
       const img = document.getElementById('mJacketImg');
@@ -445,35 +620,117 @@
       }
     }
 
-    function selectMobileSize(size, chest) {
-      mSelectedSize = size;
-      mSelectedChest = chest;
-      document.getElementById('mSelectedSizeText').innerText = `ไซส์ ${size} (อก ${chest}")`;
+    // ================= MULTI-SIZE HANDLERS =================
+    function onMobileCardClick(size) {
+      if ((mSizeQuantities[size] || 0) === 0) {
+        adjustMobileSizeQty(size, 1);
+      }
+    }
 
-      document.querySelectorAll('.size-pill').forEach(pill => {
-        if (pill.dataset.size === size) {
-          pill.classList.add('active');
-        } else {
-          pill.classList.remove('active');
-        }
-      });
+    function adjustMobileSizeQty(size, delta) {
+      let current = mSizeQuantities[size] || 0;
+      current += delta;
+      if (current < 0) current = 0;
+      if (current > 10) current = 10;
+      mSizeQuantities[size] = current;
+
+      updateMobileSizeCardUI(size);
       updateMobileTotal();
     }
 
-    function adjustMobileQty(delta) {
-      mQty += delta;
-      if (mQty < 1) mQty = 1;
-      if (mQty > 10) mQty = 10;
-      document.getElementById('mQtyInput').value = mQty;
-      updateMobileTotal();
+    function updateMobileSizeCardUI(size) {
+      const qty = mSizeQuantities[size] || 0;
+      const displayEl = document.getElementById(`mDisplay_${size}`);
+      const cardEl = document.getElementById(`mCard_${size}`);
+      const badgeEl = document.getElementById(`mBadge_${size}`);
+
+      if (displayEl) displayEl.innerText = qty;
+
+      if (cardEl) {
+        if (qty > 0) {
+          cardEl.className = 'p-2.5 rounded-xl border-2 border-blue-900 bg-blue-50/90 shadow-2xs transition flex flex-col items-center justify-between cursor-pointer select-none';
+          if (badgeEl) {
+            badgeEl.innerText = `${qty} ตัว`;
+            badgeEl.classList.remove('hidden');
+          }
+        } else {
+          cardEl.className = 'p-2.5 rounded-xl border-2 border-slate-200 bg-white transition flex flex-col items-center justify-between cursor-pointer select-none';
+          if (badgeEl) {
+            badgeEl.classList.add('hidden');
+          }
+        }
+      }
+    }
+
+    function updateAllMobileSizeCardsUI() {
+      ['M', 'L', 'XL', '2XL', '3XL', '4XL'].forEach(s => updateMobileSizeCardUI(s));
     }
 
     function updateMobileTotal() {
-      const total = mQty * 500;
-      document.getElementById('mTotalPriceDisplay').innerText = `ไม่เกิน ${total.toLocaleString()} บาท`;
+      let totalQty = 0;
+      const summaryParts = [];
+
+      ['M', 'L', 'XL', '2XL', '3XL', '4XL'].forEach(s => {
+        const q = mSizeQuantities[s] || 0;
+        if (q > 0) {
+          totalQty += q;
+          summaryParts.push(`ไซส์ ${s} (${q} ตัว)`);
+        }
+      });
+
+      const maxTotal = totalQty * 500;
+      const textBadge = document.getElementById('mSelectedSizeText');
+      const noteEl = document.getElementById('mSummaryNote');
+      const totalDisplay = document.getElementById('mTotalPriceDisplay');
+      const totalLabel = document.getElementById('mTotalLabel');
+      const btnSubmitText = document.getElementById('mBtnSubmitText');
+
+      if (textBadge) {
+        textBadge.innerText = totalQty > 0 ? `รวม ${totalQty} ตัว` : 'รวม 0 ตัว';
+        textBadge.className = totalQty > 0 
+          ? 'text-xs font-bold text-white bg-blue-900 px-2.5 py-0.5 rounded-full' 
+          : 'text-xs font-bold text-slate-500 bg-slate-200 px-2.5 py-0.5 rounded-full';
+      }
+
+      if (mCurrentBookingMode === 'add_more' && mExistingBookingRecord) {
+        const prevQty = Number(mExistingBookingRecord.qty) || 0;
+        const grandQty = prevQty + totalQty;
+        const grandPrice = grandQty * 500;
+
+        if (noteEl) {
+          noteEl.innerHTML = totalQty > 0
+            ? `<span class="text-emerald-700 font-bold">➕ สั่งเพิ่ม:</span> ${summaryParts.join(', ')} (${totalQty} ตัว)<br><span class="text-slate-500">ยอดเดิม ${prevQty} ตัว • รวมสุทธิ ${grandQty} ตัว (${grandPrice.toLocaleString()} บ.)</span>`
+            : `<span class="text-amber-700">กรุณาเลือกจำนวนที่ต้องการสั่งเพิ่ม (ยอดเดิม ${prevQty} ตัว)</span>`;
+        }
+        if (totalLabel) totalLabel.innerText = totalQty > 0 ? `สั่งเพิ่ม (${totalQty} ตัว)` : 'ยอดเดิม ' + prevQty + ' ตัว';
+        if (totalDisplay) totalDisplay.innerText = totalQty > 0 ? `+${maxTotal.toLocaleString()} บ.` : '0 บาท';
+        if (btnSubmitText) btnSubmitText.innerText = 'ยืนยันสั่งเพิ่ม ➔';
+
+      } else if (mCurrentBookingMode === 'update' && mExistingBookingRecord) {
+        const prevQty = Number(mExistingBookingRecord.qty) || 0;
+
+        if (noteEl) {
+          noteEl.innerHTML = totalQty > 0
+            ? `<span class="text-amber-800 font-bold">📝 แก้ไขเป็น:</span> ${summaryParts.join(', ')} (${totalQty} ตัว)<br><span class="text-slate-500">จะบันทึกแทนที่ยอดเดิม (${prevQty} ตัว)</span>`
+            : `<span class="text-rose-600">กรุณาเลือกไซส์และจำนวนใหม่เพื่อแทนที่ข้อมูลเดิม</span>`;
+        }
+        if (totalLabel) totalLabel.innerText = 'ยอดรวมสุทธิ (แทนที่เดิม)';
+        if (totalDisplay) totalDisplay.innerText = `ไม่เกิน ${maxTotal.toLocaleString()} บ.`;
+        if (btnSubmitText) btnSubmitText.innerText = 'บันทึกการแก้ไข ➔';
+
+      } else {
+        if (noteEl) {
+          noteEl.innerText = totalQty > 0
+            ? `${summaryParts.join(', ')} • รวม ${totalQty} ตัว (ไม่เกิน ${maxTotal.toLocaleString()} บ.)`
+            : 'แตะที่ไซส์เพื่อสั่ง 1 ตัว หรือกดปุ่ม +/- เพื่อปรับจำนวน';
+        }
+        if (totalLabel) totalLabel.innerText = 'ยอดชำระประมาณการ';
+        if (totalDisplay) totalDisplay.innerText = `ไม่เกิน ${maxTotal.toLocaleString()} บาท`;
+        if (btnSubmitText) btnSubmitText.innerText = 'ยืนยันการจอง ➔';
+      }
     }
 
-    // Employee Bottom Sheet Picker
+    // ================= EMPLOYEE BOTTOM SHEET PICKER =================
     function openEmployeePickerSheet() {
       document.getElementById('employeePickerSheet').classList.remove('hidden');
       const listEl = document.getElementById('mSheetEmployeeList');
@@ -505,22 +762,31 @@
           <span class="font-bold font-inter">${list.length} ท่าน</span>
         </div>` : '';
 
-      container.innerHTML = badge + list.map(emp => `
+      container.innerHTML = badge + list.map(emp => {
+        const rawId = String(emp.id || '').trim();
+        const empId6 = /^\d+$/.test(rawId) ? rawId.padStart(6, '0') : rawId;
+        const isBooked = mAllBookings.some(b => b.empId === empId6 || b.empId === emp.id);
+
+        return `
         <div onclick="selectEmployeeMobile('${emp.id}')" class="p-3 hover:bg-blue-50 active:bg-blue-100 rounded-xl cursor-pointer flex items-center justify-between transition">
           <div class="flex items-center gap-2.5">
-            <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-900 font-bold text-xs flex items-center justify-center font-inter flex-shrink-0">
+            <span class="w-8 h-8 rounded-lg ${isBooked ? 'bg-amber-100 text-amber-900' : 'bg-blue-100 text-blue-900'} font-bold text-xs flex items-center justify-center font-inter flex-shrink-0">
               ${emp.prefix ? emp.prefix.substring(0, 2) : 'PP'}
             </span>
             <div>
-              <div class="font-bold text-xs text-slate-900">${emp.fullName}</div>
+              <div class="font-bold text-xs text-slate-900 flex items-center gap-1.5">
+                <span>${emp.fullName}</span>
+                ${isBooked ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 font-semibold">จองแล้ว</span>' : ''}
+              </div>
               <div class="text-[10px] text-slate-500">${emp.department || '-'}</div>
             </div>
           </div>
           <span class="font-inter text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700 flex-shrink-0">
-            ${emp.id}
+            ${empId6}
           </span>
         </div>
-      `).join('');
+      `;
+      }).join('');
     }
 
     function filterSheetEmployees(query) {
@@ -544,21 +810,142 @@
       if (!emp) return;
 
       mSelectedEmployee = emp;
+      const rawId = String(emp.id || '').trim();
+      const empId6 = /^\d+$/.test(rawId) ? rawId.padStart(6, '0') : rawId;
+
       document.getElementById('mEmpName').innerText = emp.fullName;
-      document.getElementById('mEmpIdBadge').innerText = emp.id;
+      document.getElementById('mEmpIdBadge').innerText = empId6;
       document.getElementById('mEmpDeptPos').innerText = `${emp.department || '-'} • ${emp.position || '-'}`;
       document.getElementById('mEmpAvatar').innerText = emp.prefix ? emp.prefix.substring(0, 2) : 'PP';
 
       document.getElementById('mEmpCardEmpty').classList.add('hidden');
       document.getElementById('mEmpCardSelected').classList.remove('hidden');
       closeEmployeePickerSheet();
+
+      // Check if already registered
+      const existing = mAllBookings.find(b => b.empId === empId6 || b.empId === emp.id);
+      if (existing) {
+        mExistingBookingRecord = existing;
+        document.getElementById('mModalExistingEmpName').innerText = emp.fullName;
+        document.getElementById('mModalExistingEmpId').innerText = empId6;
+        document.getElementById('mModalExistingSizes').innerText = existing.sizeSummary || (existing.size ? `${existing.size} (${existing.qty} ตัว)` : '-');
+        document.getElementById('mModalExistingTotal').innerText = `${existing.qty || 1} ตัว (ไม่เกิน ${((existing.qty || 1) * 500).toLocaleString()} บ.)`;
+
+        openMobileExistingBookingModal();
+        setMobileBookingMode('update');
+      } else {
+        mExistingBookingRecord = null;
+        setMobileBookingMode('new');
+        mSizeQuantities = { M: 0, L: 0, XL: 0, '2XL': 0, '3XL': 0, '4XL': 0 };
+        mSizeQuantities.M = 1; // Default 1 M
+        updateAllMobileSizeCardsUI();
+        updateMobileTotal();
+      }
     }
 
-    // Submit Booking (บันทึกลง Google Sheets เท่านั้น ไม่บันทึก localstore)
+    // ================= MOBILE EXISTING BOOKING MODAL & MODES =================
+    function openMobileExistingBookingModal() {
+      document.getElementById('mExistingBookingModal').classList.remove('hidden');
+    }
+
+    function closeMobileExistingBookingModal() {
+      document.getElementById('mExistingBookingModal').classList.add('hidden');
+    }
+
+    function confirmMobileBookingMode(mode) {
+      setMobileBookingMode(mode);
+      closeMobileExistingBookingModal();
+      showMobileToast(`โหมด: ${mode === 'update' ? 'เปลี่ยนแปลงข้อมูล' : 'ต้องการสั่งเพิ่ม'}`);
+    }
+
+    function toggleMobileBookingMode() {
+      if (mCurrentBookingMode === 'update') {
+        setMobileBookingMode('add_more');
+      } else {
+        setMobileBookingMode('update');
+      }
+    }
+
+    function setMobileBookingMode(mode) {
+      mCurrentBookingMode = mode;
+      const banner = document.getElementById('mExistingBookingBanner');
+      const icon = document.getElementById('mBannerModeIcon');
+      const title = document.getElementById('mBannerModeTitle');
+      const desc = document.getElementById('mBannerModeDesc');
+      const btnToggle = document.getElementById('mBtnToggleMode');
+
+      if (mode === 'new') {
+        if (banner) banner.classList.add('hidden');
+      } else if (mode === 'update') {
+        if (banner) {
+          banner.className = 'rounded-2xl border border-amber-300 bg-amber-50/80 p-3 text-xs text-amber-950 transition';
+          icon.className = 'w-6 h-6 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0';
+          icon.innerHTML = '<i class="ph ph-pencil-simple-line"></i>';
+          title.innerText = 'โหมด: เปลี่ยนแปลงข้อมูลการจอง';
+          desc.innerText = 'รายการใหม่จะบันทึก "แทนที่" ข้อมูลเดิม';
+          btnToggle.innerText = 'สลับ: สั่งเพิ่ม';
+          banner.classList.remove('hidden');
+        }
+
+        // Pre-fill quantities from existing record
+        if (mExistingBookingRecord) {
+          mSizeQuantities = { M: 0, L: 0, XL: 0, '2XL': 0, '3XL': 0, '4XL': 0 };
+          const hasMulti = mExistingBookingRecord.qtyM !== undefined || mExistingBookingRecord.qtyL !== undefined;
+          if (hasMulti) {
+            mSizeQuantities.M = Number(mExistingBookingRecord.qtyM) || 0;
+            mSizeQuantities.L = Number(mExistingBookingRecord.qtyL) || 0;
+            mSizeQuantities.XL = Number(mExistingBookingRecord.qtyXL) || 0;
+            mSizeQuantities['2XL'] = Number(mExistingBookingRecord.qty2XL) || 0;
+            mSizeQuantities['3XL'] = Number(mExistingBookingRecord.qty3XL) || 0;
+            mSizeQuantities['4XL'] = Number(mExistingBookingRecord.qty4XL) || 0;
+          } else {
+            const s = (mExistingBookingRecord.size || 'M').toUpperCase();
+            if (mSizeQuantities[s] !== undefined) mSizeQuantities[s] = Number(mExistingBookingRecord.qty) || 1;
+            else mSizeQuantities.M = 1;
+          }
+        }
+        updateAllMobileSizeCardsUI();
+        updateMobileTotal();
+
+      } else if (mode === 'add_more') {
+        const prevQty = mExistingBookingRecord ? (Number(mExistingBookingRecord.qty) || 0) : 0;
+        if (banner) {
+          banner.className = 'rounded-2xl border border-emerald-300 bg-emerald-50/80 p-3 text-xs text-emerald-950 transition';
+          icon.className = 'w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0';
+          icon.innerHTML = '<i class="ph ph-plus-circle"></i>';
+          title.innerText = 'โหมด: ต้องการสั่งเพิ่ม';
+          desc.innerText = `บวกเพิ่มจากยอดเดิม (${prevQty} ตัว)`;
+          btnToggle.innerText = 'สลับ: เปลี่ยนแปลง';
+          banner.classList.remove('hidden');
+        }
+
+        // Reset to 0 ready to choose additional
+        mSizeQuantities = { M: 0, L: 0, XL: 0, '2XL': 0, '3XL': 0, '4XL': 0 };
+        updateAllMobileSizeCardsUI();
+        updateMobileTotal();
+      }
+    }
+
+    // ================= SUBMIT BOOKING =================
     async function submitMobileBooking() {
       if (!mSelectedEmployee) {
         showMobileToast('กรุณาเลือกรายชื่อพนักงานก่อนค่ะ');
         openEmployeePickerSheet();
+        return;
+      }
+
+      let totalSelectedQty = 0;
+      const sizeSummaryParts = [];
+      ['M', 'L', 'XL', '2XL', '3XL', '4XL'].forEach(s => {
+        const q = mSizeQuantities[s] || 0;
+        if (q > 0) {
+          totalSelectedQty += q;
+          sizeSummaryParts.push(`ไซส์ ${s} (${q} ตัว)`);
+        }
+      });
+
+      if (totalSelectedQty <= 0) {
+        showMobileToast('กรุณาเลือกจำนวนและไซส์อย่างน้อย 1 ตัวค่ะ');
         return;
       }
 
@@ -568,7 +955,11 @@
         return;
       }
 
-      showMobileLoading(true, 'กำลังบันทึกข้อมูลการจองลง Google Sheets...');
+      showMobileLoading(true, mCurrentBookingMode === 'add_more' 
+        ? 'กำลังส่งข้อมูลการสั่งเสื้อเพิ่ม...' 
+        : (mCurrentBookingMode === 'update' 
+          ? 'กำลังบันทึกการเปลี่ยนแปลงข้อมูล...' 
+          : 'กำลังบันทึกข้อมูลการจอง...'));
 
       const rawEmpId = String(mSelectedEmployee.id || '').trim();
       const empId6 = /^\d+$/.test(rawEmpId) ? rawEmpId.padStart(6, '0') : rawEmpId;
@@ -576,15 +967,21 @@
       const lastName = mSelectedEmployee.lastName || '';
 
       const bookingPayload = {
+        bookingMode: mCurrentBookingMode,
         empId: empId6,
         firstName: firstNameWithPrefix,
         lastName: lastName,
         fullName: mSelectedEmployee.fullName,
         department: mSelectedEmployee.department || '-',
         position: mSelectedEmployee.position || '-',
-        size: mSelectedSize,
-        chest: mSelectedChest,
-        qty: mQty
+        qtyM: mSizeQuantities.M,
+        qtyL: mSizeQuantities.L,
+        qtyXL: mSizeQuantities.XL,
+        qty2XL: mSizeQuantities['2XL'],
+        qty3XL: mSizeQuantities['3XL'],
+        qty4XL: mSizeQuantities['4XL'],
+        size: sizeSummaryParts.join(', '),
+        qty: totalSelectedQty
       };
 
       try {
@@ -600,14 +997,20 @@
           // Fallback via GET action=book
           const params = new URLSearchParams({
             action: 'book',
+            bookingMode: bookingPayload.bookingMode,
             empId: bookingPayload.empId,
             firstName: bookingPayload.firstName,
             lastName: bookingPayload.lastName,
             fullName: bookingPayload.fullName,
             department: bookingPayload.department,
             position: bookingPayload.position,
+            qtyM: bookingPayload.qtyM,
+            qtyL: bookingPayload.qtyL,
+            qtyXL: bookingPayload.qtyXL,
+            qty2XL: bookingPayload.qty2XL,
+            qty3XL: bookingPayload.qty3XL,
+            qty4XL: bookingPayload.qty4XL,
             size: bookingPayload.size,
-            chest: bookingPayload.chest,
             qty: bookingPayload.qty
           });
           const getRes = await fetch(`${endpoint}?${params.toString()}`);
@@ -617,6 +1020,7 @@
         if (result && result.success) {
           showMobileLoading(false);
           const confirmedRecord = {
+            bookingMode: result.bookingMode || mCurrentBookingMode,
             bookingId: result.bookingId,
             timestamp: result.timestamp,
             empId: result.empId || empId6,
@@ -625,14 +1029,15 @@
             fullName: result.fullName || mSelectedEmployee.fullName,
             department: result.department || mSelectedEmployee.department || '-',
             position: result.position || mSelectedEmployee.position || '-',
-            size: result.size || mSelectedSize,
-            chest: result.chest || mSelectedChest,
-            qty: result.qty || mQty,
-            totalPrice: result.totalPrice || (mQty * 500)
+            sizeSummary: result.sizeSummary || sizeSummaryParts.join(', '),
+            totalQty: result.totalQty || totalSelectedQty,
+            totalPrice: result.totalPrice || (totalSelectedQty * 500),
+            status: result.status || 'จองสำเร็จ'
           };
 
           showMobileSuccessModal(confirmedRecord);
           resetMobileForm();
+          loadMobileBookings();
         } else {
           throw new Error((result && result.message) || 'ระบบ Google Sheets ตอบกลับไม่สำเร็จ');
         }
@@ -651,11 +1056,38 @@
     }
 
     function showMobileSuccessModal(r) {
+      const titleEl = document.getElementById('mSuccessModalTitle');
+      const descEl = document.getElementById('mSuccessModalDesc');
+      const statusTag = document.getElementById('mSuccessStatusTag');
+
+      if (r.bookingMode === 'add_more') {
+        if (titleEl) titleEl.innerText = 'สั่งเสื้อเพิ่มสำเร็จ!';
+        if (descEl) descEl.innerText = 'ข้อมูลการสั่งเสื้อเพิ่มรวมเข้ากับยอดเดิมใน Google Sheets แล้วค่ะ';
+        if (statusTag) {
+          statusTag.innerText = 'สั่งเพิ่มสำเร็จ';
+          statusTag.className = 'font-bold text-emerald-700 font-inter';
+        }
+      } else if (r.bookingMode === 'update') {
+        if (titleEl) titleEl.innerText = 'เปลี่ยนแปลงข้อมูลสำเร็จ!';
+        if (descEl) descEl.innerText = 'ข้อมูลการจองได้รับการอัปเดตแทนที่ใน Google Sheets เรียบร้อยแล้วค่ะ';
+        if (statusTag) {
+          statusTag.innerText = 'แก้ไขข้อมูลสำเร็จ';
+          statusTag.className = 'font-bold text-amber-700 font-inter';
+        }
+      } else {
+        if (titleEl) titleEl.innerText = 'บันทึกการจองสำเร็จ!';
+        if (descEl) descEl.innerText = 'ข้อมูลถูกบันทึกลงในระบบ Google Sheets เรียบร้อยแล้วค่ะ';
+        if (statusTag) {
+          statusTag.innerText = 'จองสำเร็จ';
+          statusTag.className = 'font-bold text-blue-900 font-inter';
+        }
+      }
+
       document.getElementById('mSuccessName').innerText = r.fullName || '-';
       document.getElementById('mSuccessEmpId').innerText = r.empId || '-';
-      document.getElementById('mSuccessSize').innerText = `ไซส์ ${r.size} (อก ${r.chest}")`;
-      document.getElementById('mSuccessQty').innerText = `${r.qty} ตัว`;
-      document.getElementById('mSuccessPrice').innerText = `ไม่เกิน ${(r.totalPrice || r.qty * 500).toLocaleString()} บาท`;
+      document.getElementById('mSuccessSize').innerText = r.sizeSummary || '-';
+      document.getElementById('mSuccessQty').innerText = `${r.totalQty} ตัว`;
+      document.getElementById('mSuccessPrice').innerText = `ไม่เกิน ${(r.totalPrice || r.totalQty * 500).toLocaleString()} บาท`;
 
       document.getElementById('mobileSuccessModal').classList.remove('hidden');
     }
@@ -666,11 +1098,13 @@
 
     function resetMobileForm() {
       mSelectedEmployee = null;
+      mExistingBookingRecord = null;
       document.getElementById('mEmpCardEmpty').classList.remove('hidden');
       document.getElementById('mEmpCardSelected').classList.add('hidden');
-      mQty = 1;
-      document.getElementById('mQtyInput').value = 1;
-      selectMobileSize('M', 40);
+      mSizeQuantities = { M: 0, L: 0, XL: 0, '2XL': 0, '3XL': 0, '4XL': 0 };
+      mSizeQuantities.M = 1; // Default 1 M
+      setMobileBookingMode('new');
+      updateAllMobileSizeCardsUI();
       updateMobileTotal();
     }
 

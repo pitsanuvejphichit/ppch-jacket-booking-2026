@@ -305,16 +305,13 @@
           <thead>
             <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px] whitespace-nowrap">
               <th class="py-3 px-3.5 text-center">#</th>
-              <th class="py-3 px-3.5">รหัสการจอง</th>
-              <th class="py-3 px-3.5">วันเวลาที่จอง</th>
               <th class="py-3 px-3.5">รหัสพนักงาน</th>
               <th class="py-3 px-3.5">ชื่อ</th>
               <th class="py-3 px-3.5">นามสกุล</th>
               <th class="py-3 px-3.5">แผนก</th>
               <th class="py-3 px-3.5">ตำแหน่ง</th>
-              <th class="py-3 px-3.5 text-center">ไซส์</th>
-              <th class="py-3 px-3.5 text-center">รอบอก</th>
-              <th class="py-3 px-3.5 text-center">จำนวน</th>
+              <th class="py-3 px-3.5 text-center">ไซส์ที่สั่งจอง</th>
+              <th class="py-3 px-3.5 text-center">จำนวนรวม</th>
               <th class="py-3 px-3.5 text-right">ยอดประมาณการ</th>
               <th class="py-3 px-3.5 text-center">สถานะ</th>
             </tr>
@@ -433,11 +430,20 @@
         totalQty += q;
         totalAmount += p;
 
-        const s = (r.size || '').toUpperCase();
-        if (sizeCounts[s] !== undefined) {
-          sizeCounts[s] += q;
-        } else if (s) {
-          sizeCounts[s] = q;
+        if (r.qtyM !== undefined || r.qtyL !== undefined) {
+          sizeCounts['M'] += Number(r.qtyM) || 0;
+          sizeCounts['L'] += Number(r.qtyL) || 0;
+          sizeCounts['XL'] += Number(r.qtyXL) || 0;
+          sizeCounts['2XL'] += Number(r.qty2XL) || 0;
+          sizeCounts['3XL'] += Number(r.qty3XL) || 0;
+          sizeCounts['4XL'] += Number(r.qty4XL) || 0;
+        } else {
+          const s = (r.size || '').toUpperCase();
+          if (sizeCounts[s] !== undefined) {
+            sizeCounts[s] += q;
+          } else if (s) {
+            sizeCounts[s] = q;
+          }
         }
       });
 
@@ -499,7 +505,14 @@
       const query = (document.getElementById('tableSearchInput').value || '').trim().toLowerCase();
 
       const filtered = allRecords.filter(r => {
-        const matchesSize = !activeSizeFilter || (r.size || '').toUpperCase() === activeSizeFilter;
+        let matchesSize = true;
+        if (activeSizeFilter) {
+          if (r.qtyM !== undefined || r.qtyL !== undefined) {
+            matchesSize = Number(r['qty' + activeSizeFilter]) > 0;
+          } else {
+            matchesSize = (r.size || '').toUpperCase() === activeSizeFilter;
+          }
+        }
         if (!matchesSize) return false;
 
         if (!query) return true;
@@ -551,9 +564,9 @@
         const rawEmp = String(r.empId || '').trim();
         const empId6 = /^\d+$/.test(rawEmp) ? rawEmp.padStart(6, '0') : rawEmp;
         let displayName = r.fullName || ((r.firstName || '') + ' ' + (r.lastName || '')).trim();
-        const qty = Number(r.qty) || 1;
-        const total = Number(r.totalPrice) || (qty * 500);
-        const timeFormatted = formatDateTime(r.timestamp);
+        const totalQty = Number(r.totalQty || r.qty) || 1;
+        const total = Number(r.totalPrice) || (totalQty * 500);
+        const sizeText = r.sizeSummary || (r.size ? `${r.size} (${totalQty} ตัว)` : '-');
 
         return `
           <div class="p-3.5 bg-slate-50/70 hover:bg-blue-50/50 rounded-2xl border border-slate-200 transition space-y-2">
@@ -567,19 +580,18 @@
                 </span>
               </div>
               <span class="px-2.5 py-0.5 rounded-full bg-blue-900 text-white font-inter font-bold text-[11px] flex-shrink-0">
-                ${r.size || '-'} (อก ${r.chest || '-'}")
+                ${sizeText}
               </span>
             </div>
 
             <div class="text-[11px] text-slate-600 flex items-center justify-between gap-2">
               <span class="truncate">${r.department || '-'}</span>
-              <span class="font-inter font-semibold text-slate-900 flex-shrink-0">${qty} ตัว • ไม่เกิน ${total.toLocaleString()} บ.</span>
+              <span class="font-inter font-semibold text-slate-900 flex-shrink-0">รวม ${totalQty} ตัว • ไม่เกิน ${total.toLocaleString()} บ.</span>
             </div>
 
-            <div class="pt-2 border-t border-slate-200 flex items-center justify-between text-[11px]">
-              <span class="text-slate-400 font-inter text-[10px]">${timeFormatted}</span>
+            <div class="pt-2 border-t border-slate-200 flex items-center justify-end text-[11px]">
               <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-semibold flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> บันทึกสำเร็จ
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> ${r.paymentStatus || 'บันทึกสำเร็จ'}
               </span>
             </div>
           </div>
@@ -599,15 +611,13 @@
           lName = parts.slice(1).join(' ') || '';
         }
 
-        const qty = Number(r.qty) || 1;
-        const total = Number(r.totalPrice) || (qty * 500);
-        const timeFormatted = formatDateTime(r.timestamp);
+        const totalQty = Number(r.totalQty || r.qty) || 1;
+        const total = Number(r.totalPrice) || (totalQty * 500);
+        const sizeText = r.sizeSummary || (r.size ? `${r.size} (${totalQty} ตัว)` : '-');
 
         return `
           <tr class="hover:bg-blue-50/40 transition border-b border-slate-100 whitespace-nowrap">
             <td class="py-2.5 px-3.5 text-center text-slate-400 font-inter">${idx + 1}</td>
-            <td class="py-2.5 px-3.5 font-inter font-semibold text-blue-900">${r.bookingId || '-'}</td>
-            <td class="py-2.5 px-3.5 text-slate-500 font-inter text-[11px]">${timeFormatted}</td>
             <td class="py-2.5 px-3.5">
               <span class="font-inter font-bold text-blue-950 bg-blue-100/70 px-2 py-0.5 rounded tracking-wide border border-blue-200">
                 ${empId6}
@@ -617,20 +627,17 @@
             <td class="py-2.5 px-3.5 font-semibold text-slate-900">${lName || '-'}</td>
             <td class="py-2.5 px-3.5 text-slate-600">${r.department || '-'}</td>
             <td class="py-2.5 px-3.5 text-slate-500 text-[11px]">${r.position || '-'}</td>
-            <td class="py-2.5 px-3.5 text-center">
-              <span class="px-2 py-0.5 rounded-full bg-blue-900 text-white font-inter font-bold text-[11px]">
-                ${r.size || '-'}
-              </span>
+            <td class="py-2.5 px-3.5 text-center font-inter font-semibold text-blue-900">
+              ${sizeText}
             </td>
-            <td class="py-2.5 px-3.5 text-center font-inter text-slate-700">${r.chest || '-'}"</td>
-            <td class="py-2.5 px-3.5 text-center font-bold font-inter text-slate-900">${qty}</td>
+            <td class="py-2.5 px-3.5 text-center font-bold font-inter text-slate-900">${totalQty} ตัว</td>
             <td class="py-2.5 px-3.5 text-right font-bold font-inter text-emerald-800">
               ไม่เกิน ${total.toLocaleString()} บ.
             </td>
             <td class="py-2.5 px-3.5 text-center">
               <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-semibold flex items-center justify-center gap-1 mx-auto w-fit">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                บันทึกสำเร็จ
+                ${r.paymentStatus || 'บันทึกสำเร็จ'}
               </span>
             </td>
           </tr>
