@@ -363,7 +363,8 @@
     <button type="button" 
             onclick="submitMobileBooking()" 
             id="mBtnSubmit"
-            class="py-3 px-5 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-md active:scale-95 transition">
+            disabled
+            class="py-3 px-5 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-md active:scale-95 transition opacity-50 cursor-not-allowed pointer-events-none">
       <span id="mBtnSubmitText">ยืนยันการจอง</span>
       <i class="ph ph-arrow-right font-bold"></i>
     </button>
@@ -693,7 +694,7 @@
       }
 
       if (mCurrentBookingMode === 'add_more' && mExistingBookingRecord) {
-        const prevQty = Number(mExistingBookingRecord.qty) || 0;
+        const prevQty = Number(mExistingBookingRecord.totalQty || mExistingBookingRecord.qty) || 0;
         const grandQty = prevQty + totalQty;
         const grandPrice = grandQty * 500;
 
@@ -707,7 +708,7 @@
         if (btnSubmitText) btnSubmitText.innerText = 'ยืนยันสั่งเพิ่ม ➔';
 
       } else if (mCurrentBookingMode === 'update' && mExistingBookingRecord) {
-        const prevQty = Number(mExistingBookingRecord.qty) || 0;
+        const prevQty = Number(mExistingBookingRecord.totalQty || mExistingBookingRecord.qty) || 0;
 
         if (noteEl) {
           noteEl.innerHTML = totalQty > 0
@@ -727,6 +728,16 @@
         if (totalLabel) totalLabel.innerText = 'ยอดชำระประมาณการ';
         if (totalDisplay) totalDisplay.innerText = `ไม่เกิน ${maxTotal.toLocaleString()} บาท`;
         if (btnSubmitText) btnSubmitText.innerText = 'ยืนยันการจอง ➔';
+      }
+
+      // Update submit button disabled DOM state
+      const mBtnSubmit = document.getElementById('mBtnSubmit');
+      if (mBtnSubmit && !mIsSubmitting) {
+        const isReady = totalQty > 0 && mSelectedEmployee !== null;
+        mBtnSubmit.disabled = !isReady;
+        mBtnSubmit.classList.toggle('opacity-50', !isReady);
+        mBtnSubmit.classList.toggle('cursor-not-allowed', !isReady);
+        mBtnSubmit.classList.toggle('pointer-events-none', !isReady);
       }
     }
 
@@ -828,8 +839,9 @@
         mExistingBookingRecord = existing;
         document.getElementById('mModalExistingEmpName').innerText = emp.fullName;
         document.getElementById('mModalExistingEmpId').innerText = empId6;
-        document.getElementById('mModalExistingSizes').innerText = existing.sizeSummary || (existing.size ? `${existing.size} (${existing.qty} ตัว)` : '-');
-        document.getElementById('mModalExistingTotal').innerText = `${existing.qty || 1} ตัว (ไม่เกิน ${((existing.qty || 1) * 500).toLocaleString()} บ.)`;
+        const existingQty = existing.totalQty || existing.qty || 1;
+        document.getElementById('mModalExistingSizes').innerText = existing.sizeSummary || (existing.size ? `${existing.size} (${existingQty} ตัว)` : '-');
+        document.getElementById('mModalExistingTotal').innerText = `${existingQty} ตัว (ไม่เกิน ${(existingQty * 500).toLocaleString()} บ.)`;
 
         openMobileExistingBookingModal();
         setMobileBookingMode('update');
@@ -900,7 +912,7 @@
             mSizeQuantities['4XL'] = Number(mExistingBookingRecord.qty4XL) || 0;
           } else {
             const s = (mExistingBookingRecord.size || 'M').toUpperCase();
-            if (mSizeQuantities[s] !== undefined) mSizeQuantities[s] = Number(mExistingBookingRecord.qty) || 1;
+            if (mSizeQuantities[s] !== undefined) mSizeQuantities[s] = Number(mExistingBookingRecord.totalQty || mExistingBookingRecord.qty) || 1;
             else mSizeQuantities.M = 1;
           }
         }
@@ -908,7 +920,7 @@
         updateMobileTotal();
 
       } else if (mode === 'add_more') {
-        const prevQty = mExistingBookingRecord ? (Number(mExistingBookingRecord.qty) || 0) : 0;
+        const prevQty = mExistingBookingRecord ? (Number(mExistingBookingRecord.totalQty || mExistingBookingRecord.qty) || 0) : 0;
         if (banner) {
           banner.className = 'rounded-2xl border border-emerald-300 bg-emerald-50/80 p-3 text-xs text-emerald-950 transition';
           icon.className = 'w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0';
@@ -1091,10 +1103,7 @@
         console.error('Mobile submit failed:', err);
       } finally {
         mIsSubmitting = false;
-        if (btn) {
-          btn.disabled = false;
-          btn.classList.remove('opacity-60', 'pointer-events-none');
-        }
+        updateMobileTotal();
       }
     }
 

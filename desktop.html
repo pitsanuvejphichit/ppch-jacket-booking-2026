@@ -531,7 +531,8 @@
             <div class="flex items-center gap-3 pt-2">
               <button type="submit" 
                       id="btnSubmit" 
-                      class="flex-1 tactile-btn py-3.5 px-6 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-semibold text-sm flex items-center justify-center gap-2 transition cursor-pointer">
+                      disabled
+                      class="flex-1 tactile-btn py-3.5 px-6 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-semibold text-sm flex items-center justify-center gap-2 transition opacity-50 cursor-not-allowed">
                 <i class="ph ph-check-circle text-lg"></i>
                 <span id="btnSubmitText">ยืนยันการลงทะเบียนสั่งจอง ➔</span>
               </button>
@@ -898,7 +899,7 @@
       }
 
       if (currentBookingMode === 'add_more' && existingBookingRecord) {
-        const prevQty = Number(existingBookingRecord.qty) || 0;
+        const prevQty = Number(existingBookingRecord.totalQty || existingBookingRecord.qty) || 0;
         const grandTotalQty = prevQty + totalQty;
         const grandPrice = grandTotalQty * 500;
 
@@ -911,7 +912,7 @@
         if (subDetail) subDetail.innerText = `โหมดสั่งเพิ่ม: บวกยอดใหม่เข้ากับยอดเดิม ${prevQty} ตัว`;
 
       } else if (currentBookingMode === 'update' && existingBookingRecord) {
-        const prevQty = Number(existingBookingRecord.qty) || 0;
+        const prevQty = Number(existingBookingRecord.totalQty || existingBookingRecord.qty) || 0;
         calcEl.innerHTML = totalQty > 0 
           ? `<strong class="text-amber-300">แก้ไขเป็น:</strong> ${summaryParts.join(', ')} (รวม ${totalQty} ตัว)`
           : `<span class="text-rose-200">กรุณาเลือกไซส์และจำนวนใหม่เพื่อแทนที่ข้อมูลเดิม</span>`;
@@ -928,6 +929,15 @@
         totalDisplay.innerText = totalQty > 0 ? `ไม่เกิน ${maxTotal.toLocaleString()} บาท` : '0 บาท';
         subText.innerText = totalQty > 0 ? `(${totalQty} ตัว • ราคาไม่เกิน 500 บ./ตัว)` : '(ยังไม่ได้เลือกจำนวน)';
         if (subDetail) subDetail.innerText = 'ราคาไม่เกิน 500 บาท / ตัว';
+      }
+
+      // Update submit button disabled DOM state
+      const btnSubmit = document.getElementById('btnSubmit');
+      if (btnSubmit && !isSubmitting) {
+        const isReady = totalQty > 0 && selectedEmployee !== null;
+        btnSubmit.disabled = !isReady;
+        btnSubmit.classList.toggle('opacity-50', !isReady);
+        btnSubmit.classList.toggle('cursor-not-allowed', !isReady);
       }
     }
 
@@ -1028,8 +1038,9 @@
         existingBookingRecord = existing;
         document.getElementById('modalExistingEmpName').innerText = emp.fullName;
         document.getElementById('modalExistingEmpId').innerText = empId6;
-        document.getElementById('modalExistingSizes').innerText = existing.sizeSummary || (existing.size ? `${existing.size} (${existing.qty} ตัว)` : '-');
-        document.getElementById('modalExistingTotal').innerText = `${existing.qty || 1} ตัว (ไม่เกิน ${((existing.qty || 1) * 500).toLocaleString()} บาท)`;
+        const existingQty = existing.totalQty || existing.qty || 1;
+        document.getElementById('modalExistingSizes').innerText = existing.sizeSummary || (existing.size ? `${existing.size} (${existingQty} ตัว)` : '-');
+        document.getElementById('modalExistingTotal').innerText = `${existingQty} ตัว (ไม่เกิน ${(existingQty * 500).toLocaleString()} บาท)`;
 
         // Show decision modal to prompt "เปลี่ยนแปลงข้อมูล" or "ต้องการสั่งเพิ่ม"
         openExistingBookingModal();
@@ -1057,6 +1068,9 @@
       document.getElementById('empSearchInput').value = '';
       document.getElementById('btnClearSearch').classList.add('hidden');
       document.getElementById('autocompleteDropdown').classList.add('hidden');
+      sizeQuantities = { M: 0, L: 0, XL: 0, '2XL': 0, '3XL': 0, '4XL': 0 };
+      updateAllSizeCardsUI();
+      updateTotalCalculation();
       setBookingMode('new');
     }
 
@@ -1120,7 +1134,7 @@
             sizeQuantities['4XL'] = Number(existingBookingRecord.qty4XL) || 0;
           } else {
             const s = (existingBookingRecord.size || 'M').toUpperCase();
-            if (sizeQuantities[s] !== undefined) sizeQuantities[s] = Number(existingBookingRecord.qty) || 1;
+            if (sizeQuantities[s] !== undefined) sizeQuantities[s] = Number(existingBookingRecord.totalQty || existingBookingRecord.qty) || 1;
             else sizeQuantities.M = 1;
           }
         }
@@ -1128,7 +1142,7 @@
         updateTotalCalculation();
 
       } else if (mode === 'add_more') {
-        const prevQty = existingBookingRecord ? (Number(existingBookingRecord.qty) || 0) : 0;
+        const prevQty = existingBookingRecord ? (Number(existingBookingRecord.totalQty || existingBookingRecord.qty) || 0) : 0;
         if (banner) {
           banner.className = 'rounded-2xl border border-emerald-300 bg-emerald-50/80 p-3.5 text-xs text-emerald-950 transition';
           icon.className = 'w-7 h-7 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0';
@@ -1318,10 +1332,7 @@
         console.error('Submission failed:', err);
       } finally {
         isSubmitting = false;
-        if (btnSubmit) {
-          btnSubmit.disabled = false;
-          btnSubmit.classList.remove('opacity-60', 'cursor-not-allowed');
-        }
+        updateTotalCalculation();
       }
     }
 
@@ -1335,7 +1346,7 @@
         if (data && data.items) {
           allBookings = data.items;
           let totalQty = 0;
-          allBookings.forEach(b => totalQty += (Number(b.qty) || 0));
+          allBookings.forEach(b => totalQty += (Number(b.totalQty || b.qty) || 0));
           const headerTotal = document.getElementById('statTotalReservedHeader');
           if (headerTotal) {
             headerTotal.innerHTML = `${totalQty} <span class="text-xs font-normal text-slate-400 font-sans">ตัว</span>`;

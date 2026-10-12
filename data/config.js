@@ -4,7 +4,7 @@
  */
 window.PPCH_CONFIG = {
   // Google Apps Script Web App URL ที่ deploy ผ่าน clasp
-  gasEndpoint: 'https://script.google.com/macros/s/AKfycbz7DLwECGX2ucEKWYGEzFOyEuXrYNZ8EQBQvphpqlWWL3sC0r0lFggB-5EMaDvupXh6aQ/exec',
+  gasEndpoint: 'https://script.google.com/macros/s/AKfycbwSpjAhdpnzoWZfjNWmFuCmmoohao62jQZFB9n4tYe_gChmfpLdESPInJhVN-ux-gxCOQ/exec',
   spreadsheetId: '1E2yctLgOo3nKxcWCNyPfEVmDLKnZovPPSTVLvlq72NM',
   spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/1E2yctLgOo3nKxcWCNyPfEVmDLKnZovPPSTVLvlq72NM/edit',
   maxPricePerUnit: 500,

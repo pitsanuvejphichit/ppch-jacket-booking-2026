@@ -284,18 +284,25 @@ function processBooking(data) {
       hasLock = true;
     }
     
-    if (!data.empId) {
+    // กฎเหล็ก: รหัสพนักงานห้ามว่าง ห้ามเว้นวรรคล้วน ต้องเป็นตัวเลขเท่านั้น และเติม 0 ให้ครบ 6 หลักเสมอ
+    const rawEmpId = String(data.empId !== undefined && data.empId !== null ? data.empId : '').trim();
+    if (!rawEmpId) {
       return ContentService.createTextOutput(JSON.stringify({
         success: false,
         message: 'กรุณาระบุรหัสพนักงาน'
       })).setMimeType(ContentService.MimeType.JSON);
     }
     
-    const sheet = getTargetSheet();
+    if (!/^\d+$/.test(rawEmpId)) {
+      return ContentService.createTextOutput(JSON.stringify({
+        success: false,
+        message: 'รหัสพนักงานต้องเป็นตัวเลขเท่านั้น'
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
     
-    // กฎเหล็ก: รหัสพนักงาน 6 หลักเสมอ (เช่น 000023)
-    let rawEmpId = String(data.empId || '').trim();
-    const empIdStr = /^\d+$/.test(rawEmpId) ? rawEmpId.padStart(6, '0') : rawEmpId;
+    const empIdStr = rawEmpId.padStart(6, '0');
+    
+    const sheet = getTargetSheet();
     
     // ค้นหาประวัติการจองเดิมในชีท (ค้นหาด้วยรหัสพนักงาน 6 หลัก Col C)
     const values = sheet.getDataRange().getValues();
@@ -339,6 +346,53 @@ function processBooking(data) {
     const randomHex = Math.floor(1000 + Math.random() * 9000);
     const bookingId = data.bookingId || ('JK-' + Utilities.formatDate(now, 'Asia/Bangkok', 'yyyyMMdd-') + randomHex);
     
+    // ตรวจสอบความถูกต้องของจำนวนเสื้อ (ห้ามเป็นทศนิยม และห้ามเป็นค่าติดลบ)
+    const rawQuantityValues = [
+      data.qtyM, data.qtyL, data.qtyXL, data.qty2XL, data.qty3XL, data.qty4XL
+    ];
+    if (data.qty !== undefined && data.qty !== null && data.qty !== '') {
+      rawQuantityValues.push(data.qty);
+    }
+    
+    for (let qi = 0; qi < rawQuantityValues.length; qi++) {
+      const qVal = rawQuantityValues[qi];
+      if (qVal === undefined || qVal === null || qVal === '') continue;
+      
+      if (typeof qVal === 'number') {
+        if (isNaN(qVal)) continue; // รองรับ fallback สำหรับค่าที่ไม่ใช่ตัวเลข
+        if (!Number.isInteger(qVal)) {
+          return ContentService.createTextOutput(JSON.stringify({
+            success: false,
+            message: 'จำนวนเสื้อต้องเป็นจำนวนเต็มเท่านั้น'
+          })).setMimeType(ContentService.MimeType.JSON);
+        }
+        if (qVal < 0) {
+          return ContentService.createTextOutput(JSON.stringify({
+            success: false,
+            message: 'จำนวนเสื้อต้องไม่เป็นค่าติดลบ (กรุณาเลือกจำนวนเสื้ออย่างน้อย 1 ตัว)'
+          })).setMimeType(ContentService.MimeType.JSON);
+        }
+      } else if (typeof qVal === 'string') {
+        const trimmedQ = qVal.trim();
+        if (trimmedQ === '') continue;
+        if (/^-?\d+\.\d+$/.test(trimmedQ)) {
+          return ContentService.createTextOutput(JSON.stringify({
+            success: false,
+            message: 'จำนวนเสื้อต้องเป็นจำนวนเต็มเท่านั้น'
+          })).setMimeType(ContentService.MimeType.JSON);
+        }
+        if (/^-?\d+$/.test(trimmedQ)) {
+          const numQ = parseInt(trimmedQ, 10);
+          if (numQ < 0) {
+            return ContentService.createTextOutput(JSON.stringify({
+              success: false,
+              message: 'จำนวนเสื้อต้องไม่เป็นค่าติดลบ (กรุณาเลือกจำนวนเสื้ออย่างน้อย 1 ตัว)'
+            })).setMimeType(ContentService.MimeType.JSON);
+          }
+        }
+      }
+    }
+    
     // ดึงจำนวนแต่ละไซส์จาก payload
     let qtyM = parseInt(data.qtyM, 10) || 0;
     let qtyL = parseInt(data.qtyL, 10) || 0;
@@ -360,6 +414,15 @@ function processBooking(data) {
     }
     
     const bookingMode = String(data.bookingMode || 'new').toLowerCase().trim();
+    
+    // ในโหมด add_more (ต้องการสั่งเพิ่ม) ต้องเพิ่มจำนวนเสื้ออย่างน้อย 1 ตัว และห้ามติดลบ
+    const incomingIncrementQty = qtyM + qtyL + qtyXL + qty2XL + qty3XL + qty4XL;
+    if (bookingMode === 'add_more' && incomingIncrementQty <= 0) {
+      return ContentService.createTextOutput(JSON.stringify({
+        success: false,
+        message: 'กรุณาเลือกจำนวนเสื้ออย่างน้อย 1 ตัว'
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
     
     let finalM = qtyM;
     let finalL = qtyL;
@@ -464,6 +527,7 @@ function processBooking(data) {
       qty3XL: final3XL,
       qty4XL: final4XL,
       sizeSummary: sizeSummaryText,
+      qty: finalTotalQty,
       totalQty: finalTotalQty,
       totalPrice: finalTotalPrice,
       status: finalStatus,
@@ -605,6 +669,7 @@ function handleGetRegistrations() {
       qty4XL: q4XL,
       sizeDetails: sizeDetails,
       sizeSummary: sizeSummaryText,
+      qty: totalQty,
       totalQty: totalQty,
       totalPrice: totalPrice,
       paymentStatus: status
