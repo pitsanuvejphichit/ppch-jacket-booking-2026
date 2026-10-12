@@ -2,8 +2,8 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>รายชื่อผู้ลงทะเบียนสั่งจองเสื้อแจ็กเก็ต | ตรวจสอบฐานข้อมูล Google Sheets</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>รายชื่อผู้ลงทะเบียนสั่งจองเสื้อแจ็กเก็ต | รพ.พิษณุเวช พิจิตร</title>
   
   <!-- Google Fonts: Prompt & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,6 +20,7 @@
       font-family: 'Prompt', sans-serif;
       background-color: #F8FAFC;
       color: #0F172A;
+      -webkit-tap-highlight-color: transparent;
     }
     .font-inter {
       font-family: 'Inter', sans-serif;
@@ -27,15 +28,15 @@
 
     /* CSS Medical Cross Phitsanuvej Logo Loader */
     .css-logo-loader {
-      width: 64px;
-      height: 64px;
+      width: 58px;
+      height: 58px;
       position: relative;
-      margin: 0 auto 16px auto;
+      margin: 0 auto 14px auto;
     }
     .logo-petal {
       position: absolute;
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       border-radius: 5px;
       animation: loadingPulse 1.6s infinite ease-in-out;
     }
@@ -45,14 +46,14 @@
     .logo-petal.inner {
       background: #5faee3;
     }
-    .logo-petal.top { top: 0; left: 23px; animation-delay: 0s; }
-    .logo-petal.top-right { top: 7px; right: 7px; animation-delay: 0.2s; }
-    .logo-petal.right { top: 23px; right: 0; animation-delay: 0.4s; }
-    .logo-petal.bottom-right { bottom: 7px; right: 7px; animation-delay: 0.6s; }
-    .logo-petal.bottom { bottom: 0; left: 23px; animation-delay: 0.8s; }
-    .logo-petal.bottom-left { bottom: 7px; left: 7px; animation-delay: 1s; }
-    .logo-petal.left { top: 23px; left: 0; animation-delay: 1.2s; }
-    .logo-petal.top-left { top: 7px; left: 7px; animation-delay: 1.4s; }
+    .logo-petal.top { top: 0; left: 21px; animation-delay: 0s; }
+    .logo-petal.top-right { top: 6px; right: 6px; animation-delay: 0.2s; }
+    .logo-petal.right { top: 21px; right: 0; animation-delay: 0.4s; }
+    .logo-petal.bottom-right { bottom: 6px; right: 6px; animation-delay: 0.6s; }
+    .logo-petal.bottom { bottom: 0; left: 21px; animation-delay: 0.8s; }
+    .logo-petal.bottom-left { bottom: 6px; left: 6px; animation-delay: 1s; }
+    .logo-petal.left { top: 21px; left: 0; animation-delay: 1.2s; }
+    .logo-petal.top-left { top: 6px; left: 6px; animation-delay: 1.4s; }
 
     @keyframes loadingPulse {
       0%, 100% {
@@ -71,8 +72,8 @@
 
     /* Custom scrollbar */
     .custom-scroll::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 4px;
+      height: 4px;
     }
     .custom-scroll::-webkit-scrollbar-track {
       background: #F1F5F9;
@@ -85,40 +86,38 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <!-- Sticky Header Bar -->
-  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+  <!-- Top Sticky Header Bar (Fully Mobile Responsive) -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-3">
       
       <!-- Logo & Hospital Title -->
-      <div class="flex items-center gap-3.5">
+      <div class="flex items-center gap-3 min-w-0">
         <a href="index.html" class="flex-shrink-0">
-          <img src="assets/logo.png" alt="โลโก้โรงพยาบาลพิษณุเวช" class="h-11 w-auto object-contain">
+          <img src="assets/logo.png" alt="โลโก้โรงพยาบาลพิษณุเวช" class="h-9 sm:h-11 w-auto object-contain">
         </a>
-        <div>
+        <div class="min-w-0">
           <div class="flex items-center gap-2">
-            <span class="font-bold text-base sm:text-lg tracking-tight text-blue-950">รายชื่อผู้ลงทะเบียนสั่งจองเสื้อแจ็กเก็ต</span>
-            <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold border border-emerald-200 flex items-center gap-1">
-              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              Live Database
+            <h1 class="font-bold text-sm sm:text-base text-blue-950 truncate">รายชื่อผู้ลงทะเบียนสั่งจองเสื้อ</h1>
+            <span class="hidden sm:inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold flex-shrink-0">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              Live Sync
             </span>
           </div>
-          <p class="text-xs text-slate-500 font-normal">ระบบตรวจสอบข้อมูลจริงบน Google Sheets • โรงพยาบาลพิษณุเวช พิจิตร (PPCH 2569)</p>
+          <p class="text-[11px] text-slate-500 truncate hidden sm:block">
+            ระบบตรวจสอบข้อมูลการสั่งจองเสื้อแจ็กเก็ต • โรงพยาบาลพิษณุเวช พิจิตร (PPCH 2569)
+          </p>
         </div>
       </div>
 
-      <!-- Quick Action Navigation -->
-      <div class="flex items-center gap-2">
-        <a href="index.html" class="px-3.5 py-2 rounded-xl bg-blue-900 hover:bg-blue-800 text-white text-xs font-semibold flex items-center gap-1.5 transition shadow-xs">
+      <!-- Action Navigation (Clean & Compact) -->
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <button onclick="fetchRosterData()" id="btnRefresh" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition border border-slate-200" title="รีเฟรชข้อมูล">
+          <i class="ph ph-arrows-clockwise text-base text-blue-900"></i>
+          <span class="hidden md:inline">รีเฟรช</span>
+        </button>
+        <a href="index.html" class="px-3 py-2 sm:px-3.5 sm:py-2 rounded-xl bg-blue-900 hover:bg-blue-800 text-white text-xs font-semibold flex items-center gap-1.5 transition shadow-xs whitespace-nowrap">
           <i class="ph ph-arrow-left text-base"></i>
-          <span>กลับหน้าสั่งจองเสื้อ</span>
-        </a>
-        <a href="summary.html" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition border border-slate-200">
-          <i class="ph ph-chart-donut text-base text-blue-900"></i>
-          <span class="hidden sm:inline">สรุปยอด & กราฟ</span>
-        </a>
-        <a href="https://docs.google.com/spreadsheets/d/1E2yctLgOo3nKxcWCNyPfEVmDLKnZovPPSTVLvlq72NM/edit" target="_blank" class="px-3 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center gap-1.5 transition shadow-xs" title="เปิด Google Sheets แผ่นจริง">
-          <i class="ph ph-file-xls text-base"></i>
-          <span class="hidden md:inline">เปิด Google Sheets</span>
+          <span>กลับหน้าจอง</span>
         </a>
       </div>
 
@@ -126,153 +125,141 @@
   </header>
 
   <!-- Main Container -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-5">
     
-    <!-- Real-time Live Connection Notice Banner -->
-    <div id="liveStatusBanner" class="p-4 rounded-2xl bg-blue-50/80 border border-blue-200 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
-      <div class="flex items-start md:items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-blue-900 text-white flex items-center justify-center text-lg flex-shrink-0">
+    <!-- Connection Status Banner -->
+    <div id="liveStatusBanner" class="p-3.5 sm:p-4 rounded-2xl bg-blue-50/80 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-900 text-white flex items-center justify-center text-lg flex-shrink-0">
           <i class="ph ph-shield-check"></i>
         </div>
-        <div>
+        <div class="min-w-0">
           <div class="font-bold text-blue-950 flex items-center gap-2">
-            <span>ฐานข้อมูลกลาง Google Sheets โรงพยาบาลพิษณุเวช พิจิตร</span>
-            <span class="text-[10px] px-2 py-0.2 bg-emerald-100 text-emerald-800 rounded font-inter font-semibold">100% Cloud Synced</span>
+            <span class="truncate">ตรวจสอบรายชื่อผู้ลงทะเบียนสั่งจองเสื้อแจ็กเก็ต</span>
+            <span class="text-[10px] px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-inter font-semibold flex-shrink-0">บันทึกสำเร็จ</span>
           </div>
-          <p class="text-slate-600 mt-0.5">
-            ข้อมูลในตารางนี้ดึงสดจาก Google Sheet เพื่อให้พนักงานตรวจสอบว่าการจองของตนเองถูกบันทึกสำเร็จจริงแล้ว
+          <p class="text-slate-600 mt-0.5 text-[11px] sm:text-xs">
+            พนักงานสามารถตรวจสอบรายชื่อเพื่อยืนยันว่าการจองของท่านถูกบันทึกในระบบเรียบร้อยแล้วค่ะ
           </p>
         </div>
       </div>
 
-      <div class="flex items-center gap-2 self-end md:self-auto flex-shrink-0">
-        <span class="text-[11px] text-slate-500" id="lastUpdatedText">กำลังเชื่อมต่อ...</span>
-        <button onclick="fetchRosterData()" id="btnRefresh" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 text-xs font-semibold flex items-center gap-1.5 transition shadow-2xs">
-          <i class="ph ph-arrows-clockwise text-blue-900 text-sm"></i>
-          <span>รีเฟรชข้อมูล</span>
-        </button>
+      <div class="flex items-center gap-1.5 self-start sm:self-auto flex-shrink-0 text-[11px] text-slate-500">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span id="lastUpdatedText">กำลังเชื่อมต่อ...</span>
       </div>
     </div>
 
     <!-- Quick Stats Cards (4 Cards) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       
-      <!-- Card 1: Total Reservations (People) -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
+      <!-- Card 1: Total Reservations -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-4 shadow-xs">
         <div class="flex items-center justify-between text-slate-500 text-xs mb-1">
           <span>ผู้ลงทะเบียนแล้ว</span>
-          <i class="ph ph-users text-blue-700 text-lg"></i>
+          <i class="ph ph-users text-blue-700 text-base sm:text-lg"></i>
         </div>
         <div class="flex items-baseline gap-1.5">
-          <span class="text-2xl font-bold font-inter text-blue-950" id="statTotalPersons">0</span>
+          <span class="text-xl sm:text-2xl font-bold font-inter text-blue-950" id="statTotalPersons">0</span>
           <span class="text-xs text-slate-400">คน</span>
         </div>
-        <div class="text-[11px] text-slate-400 mt-1">บันทึกสำเร็จในระบบ</div>
+        <div class="text-[11px] text-slate-400 mt-0.5">บันทึกสำเร็จในระบบ</div>
       </div>
 
-      <!-- Card 2: Total Shirts (Quantity) -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
+      <!-- Card 2: Total Shirts -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-4 shadow-xs">
         <div class="flex items-center justify-between text-slate-500 text-xs mb-1">
           <span>ยอดสั่งจองเสื้อรวม</span>
-          <i class="ph ph-coat-hanger text-emerald-600 text-lg"></i>
+          <i class="ph ph-coat-hanger text-emerald-600 text-base sm:text-lg"></i>
         </div>
         <div class="flex items-baseline gap-1.5">
-          <span class="text-2xl font-bold font-inter text-emerald-700" id="statTotalShirts">0</span>
+          <span class="text-xl sm:text-2xl font-bold font-inter text-emerald-700" id="statTotalShirts">0</span>
           <span class="text-xs text-slate-400">ตัว</span>
         </div>
-        <div class="text-[11px] text-slate-400 mt-1">เฉลี่ย 1 ตัว / คน</div>
+        <div class="text-[11px] text-slate-400 mt-0.5">เฉลี่ย 1 ตัว / คน</div>
       </div>
 
       <!-- Card 3: Estimated Amount -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
+      <div class="bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-4 shadow-xs">
         <div class="flex items-center justify-between text-slate-500 text-xs mb-1">
           <span>ยอดประมาณการรวม</span>
-          <i class="ph ph-currency-circle-dollar text-indigo-600 text-lg"></i>
+          <i class="ph ph-currency-circle-dollar text-indigo-600 text-base sm:text-lg"></i>
         </div>
         <div class="flex items-baseline gap-1.5">
-          <span class="text-2xl font-bold font-inter text-indigo-950" id="statTotalAmount">0</span>
+          <span class="text-xl sm:text-2xl font-bold font-inter text-indigo-950" id="statTotalAmount">0</span>
           <span class="text-xs text-slate-400">บาท</span>
         </div>
-        <div class="text-[11px] text-slate-400 mt-1">ราคาไม่เกิน 500 บ./ตัว</div>
+        <div class="text-[11px] text-slate-400 mt-0.5">ราคาไม่เกิน 500 บ./ตัว</div>
       </div>
 
       <!-- Card 4: Top Size -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
+      <div class="bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-4 shadow-xs">
         <div class="flex items-center justify-between text-slate-500 text-xs mb-1">
           <span>ไซส์ที่มีผู้จองมากสุด</span>
-          <i class="ph ph-crown text-amber-500 text-lg"></i>
+          <i class="ph ph-crown text-amber-500 text-base sm:text-lg"></i>
         </div>
         <div class="flex items-baseline gap-1.5">
-          <span class="text-2xl font-bold font-inter text-amber-900" id="statTopSize">-</span>
-          <span class="text-xs text-slate-400" id="statTopSizeQty">(0 ตัว)</span>
+          <span class="text-xl sm:text-2xl font-bold font-inter text-amber-900" id="statTopSize">-</span>
+          <span class="text-xs text-slate-400 font-inter" id="statTopSizeQty">(0 ตัว)</span>
         </div>
-        <div class="text-[11px] text-slate-400 mt-1">ยอดนิยมสูงสุด</div>
+        <div class="text-[11px] text-slate-400 mt-0.5">ยอดนิยมสูงสุด</div>
       </div>
 
     </div>
 
-    <!-- Main Table Container Card -->
+    <!-- Main List & Table Card -->
     <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
       
       <!-- Filter and Action Toolbar -->
-      <div class="p-4 sm:p-5 border-b border-slate-200 space-y-4">
+      <div class="p-4 sm:p-5 border-b border-slate-200 space-y-3.5">
         
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
-              <i class="ph ph-table text-blue-900 text-lg"></i>
-              รายชื่อผู้สั่งจองในฐานข้อมูล Google Sheets
+            <h2 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+              <i class="ph ph-users-three text-blue-900 text-lg"></i>
+              รายชื่อผู้สั่งจองทั้งหมด
             </h2>
-            <p class="text-xs text-slate-500 mt-0.5">
-              แสดงข้อมูลทั้งหมด 13 คอลัมน์ (แยกชื่อ - นามสกุล และรหัสพนักงานครบ 6 หลัก)
+            <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">
+              แสดงรหัสพนักงานครบ 6 หลัก และข้อมูลขนาดเสื้อที่เลือก
             </p>
           </div>
 
-          <!-- Quick Actions: Search & Export -->
-          <div class="flex flex-wrap items-center gap-2">
-            <!-- Search Input -->
-            <div class="relative flex-1 sm:flex-initial">
-              <i class="ph ph-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-sm"></i>
-              <input type="text" 
-                     id="tableSearchInput" 
-                     oninput="onSearchFilter()" 
-                     placeholder="ค้นหารหัสพนักงาน, ชื่อ, แผนก..." 
-                     class="w-full sm:w-64 pl-9 pr-8 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition">
-              <button id="btnClearSearch" onclick="clearSearch()" class="hidden absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600">
-                <i class="ph ph-x-circle text-sm"></i>
-              </button>
-            </div>
-
-            <!-- Export CSV -->
-            <button onclick="exportToCSV()" class="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
-              <i class="ph ph-download-simple text-sm"></i>
-              <span>ส่งออก Excel</span>
+          <!-- Search Input (Full Width on Mobile) -->
+          <div class="relative w-full sm:w-72">
+            <i class="ph ph-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-sm"></i>
+            <input type="text" 
+                   id="tableSearchInput" 
+                   oninput="onSearchFilter()" 
+                   placeholder="ค้นหารหัสพนักงาน 6 หลัก หรือชื่อ..." 
+                   class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition">
+            <button id="btnClearSearch" onclick="clearSearch()" class="hidden absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600">
+              <i class="ph ph-x-circle text-sm"></i>
             </button>
           </div>
         </div>
 
-        <!-- Size Pills Quick Filter -->
-        <div class="flex flex-wrap items-center gap-1.5 pt-1 text-xs" id="sizePillFilterContainer">
-          <span class="text-slate-400 text-[11px] mr-1">กรองไซส์:</span>
-          <button onclick="setSizeFilter('')" data-size="" class="size-filter-btn px-3 py-1 rounded-lg font-medium transition bg-blue-900 text-white shadow-2xs">
+        <!-- Size Pills Quick Filter (Scrollable horizontally on mobile) -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs custom-scroll" id="sizePillFilterContainer">
+          <span class="text-slate-400 text-[11px] mr-1 flex-shrink-0">กรองไซส์:</span>
+          <button onclick="setSizeFilter('')" data-size="" class="size-filter-btn flex-shrink-0 px-3 py-1 rounded-lg font-medium transition bg-blue-900 text-white shadow-2xs">
             ทั้งหมด (<span id="countSizeAll">0</span>)
           </button>
-          <button onclick="setSizeFilter('M')" data-size="M" class="size-filter-btn px-3 py-1 rounded-lg font-medium transition bg-slate-100 text-slate-700 hover:bg-slate-200">
+          <button onclick="setSizeFilter('M')" data-size="M" class="size-filter-btn flex-shrink-0 px-2.5 py-1 rounded-lg font-medium transition bg-slate-100 text-slate-700 hover:bg-slate-200">
             M อก 40" (<span id="countSizeM">0</span>)
           </button>
-          <button onclick="setSizeFilter('L')" data-size="L" class="size-filter-btn px-3 py-1 rounded-lg font-medium transition bg-slate-100 text-slate-700 hover:bg-slate-200">
+          <button onclick="setSizeFilter('L')" data-size="L" class="size-filter-btn flex-shrink-0 px-2.5 py-1 rounded-lg font-medium transition bg-slate-100 text-slate-700 hover:bg-slate-200">
             L อก 42" (<span id="countSizeL">0</span>)
           </button>
-          <button onclick="setSizeFilter('XL')" data-size="XL" class="size-filter-btn px-3 py-1 rounded-lg font-medium transition bg-slate-100 text-slate-700 hover:bg-slate-200">
+          <button onclick="setSizeFilter('XL')" data-size="XL" class="size-filter-btn flex-shrink-0 px-2.5 py-1 rounded-lg font-medium transition bg-slate-100 text-slate-700 hover:bg-slate-200">
             XL อก 44" (<span id="countSizeXL">0</span>)
           </button>
-          <button onclick="setSizeFilter('2XL')" data-size="2XL" class="size-filter-btn px-3 py-1 rounded-lg font-medium transition bg-slate-100 text-slate-700 hover:bg-slate-200">
+          <button onclick="setSizeFilter('2XL')" data-size="2XL" class="size-filter-btn flex-shrink-0 px-2.5 py-1 rounded-lg font-medium transition bg-slate-100 text-slate-700 hover:bg-slate-200">
             2XL อก 46" (<span id="countSize2XL">0</span>)
           </button>
-          <button onclick="setSizeFilter('3XL')" data-size="3XL" class="size-filter-btn px-3 py-1 rounded-lg font-medium transition bg-slate-100 text-slate-700 hover:bg-slate-200">
+          <button onclick="setSizeFilter('3XL')" data-size="3XL" class="size-filter-btn flex-shrink-0 px-2.5 py-1 rounded-lg font-medium transition bg-slate-100 text-slate-700 hover:bg-slate-200">
             3XL อก 48" (<span id="countSize3XL">0</span>)
           </button>
-          <button onclick="setSizeFilter('4XL')" data-size="4XL" class="size-filter-btn px-3 py-1 rounded-lg font-medium transition bg-slate-100 text-slate-700 hover:bg-slate-200">
+          <button onclick="setSizeFilter('4XL')" data-size="4XL" class="size-filter-btn flex-shrink-0 px-2.5 py-1 rounded-lg font-medium transition bg-slate-100 text-slate-700 hover:bg-slate-200">
             4XL อก 50" (<span id="countSize4XL">0</span>)
           </button>
         </div>
@@ -291,8 +278,8 @@
           <div class="logo-petal outer left"></div>
           <div class="logo-petal inner top-left"></div>
         </div>
-        <h3 class="text-sm font-bold text-blue-950 mt-1">กำลังดึงข้อมูลสดจาก Google Sheets...</h3>
-        <p class="text-xs text-slate-400 mt-1">เชื่อมต่อฐานข้อมูลโรงพยาบาลพิษณุเวช พิจิตร</p>
+        <h3 class="text-sm font-bold text-blue-950 mt-1">กำลังดึงข้อมูลการจองล่าสุด...</h3>
+        <p class="text-xs text-slate-400 mt-1">โรงพยาบาลพิษณุเวช พิจิตร</p>
       </div>
 
       <!-- Empty State -->
@@ -307,14 +294,19 @@
         </button>
       </div>
 
-      <!-- Responsive Table View -->
-      <div id="tableWrapper" class="hidden overflow-x-auto custom-scroll">
+      <!-- 1. Mobile Cards View (Displayed on screens < md) -->
+      <div id="mobileCardsContainer" class="hidden md:hidden p-3.5 space-y-2.5 divide-y divide-slate-100">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- 2. Desktop Table View (Displayed on screens >= md) -->
+      <div id="tableWrapper" class="hidden md:block overflow-x-auto custom-scroll">
         <table class="w-full text-left text-xs border-collapse">
           <thead>
             <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px] whitespace-nowrap">
               <th class="py-3 px-3.5 text-center">#</th>
               <th class="py-3 px-3.5">รหัสการจอง</th>
-              <th class="py-3 px-3.5">วันเวลาที่ลงทะเบียน</th>
+              <th class="py-3 px-3.5">วันเวลาที่จอง</th>
               <th class="py-3 px-3.5">รหัสพนักงาน</th>
               <th class="py-3 px-3.5">ชื่อ</th>
               <th class="py-3 px-3.5">นามสกุล</th>
@@ -324,7 +316,7 @@
               <th class="py-3 px-3.5 text-center">รอบอก</th>
               <th class="py-3 px-3.5 text-center">จำนวน</th>
               <th class="py-3 px-3.5 text-right">ยอดประมาณการ</th>
-              <th class="py-3 px-3.5 text-center">สถานะชีท</th>
+              <th class="py-3 px-3.5 text-center">สถานะ</th>
             </tr>
           </thead>
           <tbody id="rosterTableBody" class="divide-y divide-slate-100 text-slate-700">
@@ -337,11 +329,11 @@
       <div class="p-3.5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-500">
         <div>
           แสดง <strong class="text-slate-900 font-inter" id="displayRowCount">0</strong> รายการ 
-          (จากทั้งหมด <span class="font-inter" id="totalRowCount">0</span> รายการใน Google Sheets)
+          (จากทั้งหมด <span class="font-inter" id="totalRowCount">0</span> รายการ)
         </div>
         <div class="flex items-center gap-1.5 text-[11px]">
           <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span>Google Sheets ID: 1E2yct...lvq72NM (คอลัมน์รหัสพนักงาน Plain Text 6 หลัก)</span>
+          <span>ระบบบันทึกข้อมูลโรงพยาบาลพิษณุเวช พิจิตร (PPCH 2569)</span>
         </div>
       </div>
 
@@ -361,16 +353,37 @@
       fetchRosterData();
     });
 
+    // Format ISO string to Thai readable format
+    function formatDateTime(ts) {
+      if (!ts) return '-';
+      try {
+        const d = new Date(ts);
+        if (isNaN(d.getTime())) return ts;
+        return d.toLocaleDateString('th-TH', { 
+          day: 'numeric', 
+          month: 'short', 
+          year: '2-digit' 
+        }) + ' ' + d.toLocaleTimeString('th-TH', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        }) + ' น.';
+      } catch (e) {
+        return ts;
+      }
+    }
+
     async function fetchRosterData() {
       const loading = document.getElementById('rosterLoadingContainer');
       const empty = document.getElementById('rosterEmptyContainer');
       const tableWrapper = document.getElementById('tableWrapper');
+      const mobileCards = document.getElementById('mobileCardsContainer');
       const bannerUpdated = document.getElementById('lastUpdatedText');
       const btnRefresh = document.getElementById('btnRefresh');
 
       loading.classList.remove('hidden');
       empty.classList.add('hidden');
       tableWrapper.classList.add('hidden');
+      mobileCards.classList.add('hidden');
       btnRefresh.disabled = true;
       btnRefresh.classList.add('opacity-50');
 
@@ -378,7 +391,7 @@
 
       if (!endpoint) {
         loading.classList.add('hidden');
-        alert('⚠️ ไม่พบ Web App Endpoint ในการตั้งค่า\nกรุณาตรวจสอบ data/config.js ค่ะ');
+        alert('⚠️ ไม่พบ Web App Endpoint ในการตั้งค่า\nกรุณาติดต่อผู้ดูแลระบบค่ะ');
         btnRefresh.disabled = false;
         btnRefresh.classList.remove('opacity-50');
         return;
@@ -402,7 +415,6 @@
       } catch (err) {
         console.error('Fetch roster failed:', err);
         bannerUpdated.innerText = 'เกิดข้อผิดพลาดในการดึงข้อมูล';
-        alert('❌ ไม่สามารถดึงข้อมูลจาก Google Sheets ได้\nโปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตหรือสิทธิ์ Web App ค่ะ');
       } finally {
         loading.classList.add('hidden');
         btnRefresh.disabled = false;
@@ -475,9 +487,9 @@
       activeSizeFilter = size;
       document.querySelectorAll('.size-filter-btn').forEach(btn => {
         if (btn.dataset.size === size) {
-          btn.className = 'size-filter-btn px-3 py-1 rounded-lg font-medium transition bg-blue-900 text-white shadow-2xs';
+          btn.className = 'size-filter-btn flex-shrink-0 px-3 py-1 rounded-lg font-medium transition bg-blue-900 text-white shadow-2xs';
         } else {
-          btn.className = 'size-filter-btn px-3 py-1 rounded-lg font-medium transition bg-slate-100 text-slate-700 hover:bg-slate-200';
+          btn.className = 'size-filter-btn flex-shrink-0 px-2.5 py-1 rounded-lg font-medium transition bg-slate-100 text-slate-700 hover:bg-slate-200';
         }
       });
       applyFilters();
@@ -509,12 +521,13 @@
                bookingId.includes(query);
       });
 
-      renderTable(filtered);
+      renderData(filtered);
     }
 
-    function renderTable(list) {
+    function renderData(list) {
       const tbody = document.getElementById('rosterTableBody');
       const tableWrapper = document.getElementById('tableWrapper');
+      const mobileCards = document.getElementById('mobileCardsContainer');
       const empty = document.getElementById('rosterEmptyContainer');
       const displayCount = document.getElementById('displayRowCount');
 
@@ -522,20 +535,62 @@
 
       if (!list || list.length === 0) {
         tbody.innerHTML = '';
+        mobileCards.innerHTML = '';
         tableWrapper.classList.add('hidden');
+        mobileCards.classList.add('hidden');
         empty.classList.remove('hidden');
         return;
       }
 
       empty.classList.add('hidden');
       tableWrapper.classList.remove('hidden');
+      mobileCards.classList.remove('hidden');
 
+      // 1. Render Mobile Cards View
+      mobileCards.innerHTML = list.map((r, idx) => {
+        const rawEmp = String(r.empId || '').trim();
+        const empId6 = /^\d+$/.test(rawEmp) ? rawEmp.padStart(6, '0') : rawEmp;
+        let displayName = r.fullName || ((r.firstName || '') + ' ' + (r.lastName || '')).trim();
+        const qty = Number(r.qty) || 1;
+        const total = Number(r.totalPrice) || (qty * 500);
+        const timeFormatted = formatDateTime(r.timestamp);
+
+        return `
+          <div class="p-3.5 bg-slate-50/70 hover:bg-blue-50/50 rounded-2xl border border-slate-200 transition space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="font-inter font-bold text-xs text-blue-900 bg-blue-100/80 px-2 py-0.5 rounded-md border border-blue-200 flex-shrink-0">
+                  ${empId6}
+                </span>
+                <span class="font-bold text-xs text-slate-900 truncate">
+                  ${displayName || '-'}
+                </span>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full bg-blue-900 text-white font-inter font-bold text-[11px] flex-shrink-0">
+                ${r.size || '-'} (อก ${r.chest || '-'}")
+              </span>
+            </div>
+
+            <div class="text-[11px] text-slate-600 flex items-center justify-between gap-2">
+              <span class="truncate">${r.department || '-'}</span>
+              <span class="font-inter font-semibold text-slate-900 flex-shrink-0">${qty} ตัว • ไม่เกิน ${total.toLocaleString()} บ.</span>
+            </div>
+
+            <div class="pt-2 border-t border-slate-200 flex items-center justify-between text-[11px]">
+              <span class="text-slate-400 font-inter text-[10px]">${timeFormatted}</span>
+              <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-semibold flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> บันทึกสำเร็จ
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // 2. Render Desktop Table View
       tbody.innerHTML = list.map((r, idx) => {
-        // Enforce 6-digit display format
         const rawEmp = String(r.empId || '').trim();
         const empId6 = /^\d+$/.test(rawEmp) ? rawEmp.padStart(6, '0') : rawEmp;
 
-        // Names
         let fName = r.firstName || '';
         let lName = r.lastName || '';
         if (!fName && !lName && r.fullName) {
@@ -546,12 +601,13 @@
 
         const qty = Number(r.qty) || 1;
         const total = Number(r.totalPrice) || (qty * 500);
+        const timeFormatted = formatDateTime(r.timestamp);
 
         return `
           <tr class="hover:bg-blue-50/40 transition border-b border-slate-100 whitespace-nowrap">
             <td class="py-2.5 px-3.5 text-center text-slate-400 font-inter">${idx + 1}</td>
             <td class="py-2.5 px-3.5 font-inter font-semibold text-blue-900">${r.bookingId || '-'}</td>
-            <td class="py-2.5 px-3.5 text-slate-500 font-inter text-[11px]">${r.timestamp || '-'}</td>
+            <td class="py-2.5 px-3.5 text-slate-500 font-inter text-[11px]">${timeFormatted}</td>
             <td class="py-2.5 px-3.5">
               <span class="font-inter font-bold text-blue-950 bg-blue-100/70 px-2 py-0.5 rounded tracking-wide border border-blue-200">
                 ${empId6}
@@ -574,63 +630,12 @@
             <td class="py-2.5 px-3.5 text-center">
               <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-semibold flex items-center justify-center gap-1 mx-auto w-fit">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                บันทึกในชีทแล้ว
+                บันทึกสำเร็จ
               </span>
             </td>
           </tr>
         `;
       }).join('');
-    }
-
-    function exportToCSV() {
-      if (!allRecords || allRecords.length === 0) {
-        alert('ยังไม่มีข้อมูลการจองในระบบเพื่อส่งออกค่ะ');
-        return;
-      }
-
-      const headers = ['ลำดับ', 'รหัสการจอง', 'วันเวลาที่ลงทะเบียน', 'รหัสพนักงาน', 'ชื่อ', 'นามสกุล', 'ชื่อ-นามสกุลเต็ม', 'แผนก', 'ตำแหน่ง', 'ไซส์เสื้อ', 'รอบอก(นิ้ว)', 'จำนวน(ตัว)', 'ราคาต่อตัว', 'ยอดประมาณการ(บาท)', 'สถานะ'];
-      
-      const rows = allRecords.map((r, i) => {
-        const rawEmp = String(r.empId || '').trim();
-        const empId6 = /^\d+$/.test(rawEmp) ? rawEmp.padStart(6, '0') : rawEmp;
-        let fName = r.firstName || '';
-        let lName = r.lastName || '';
-        if (!fName && !lName && r.fullName) {
-          const parts = r.fullName.split(' ');
-          fName = parts[0] || '';
-          lName = parts.slice(1).join(' ') || '';
-        }
-        const qty = Number(r.qty) || 1;
-        const total = Number(r.totalPrice) || (qty * 500);
-
-        return [
-          `"${i + 1}"`,
-          `"${r.bookingId || ''}"`,
-          `"${r.timestamp || ''}"`,
-          `"${empId6}"`,
-          `"${fName}"`,
-          `"${lName}"`,
-          `"${r.fullName || (fName + ' ' + lName).trim()}"`,
-          `"${r.department || ''}"`,
-          `"${r.position || ''}"`,
-          `"${r.size || ''}"`,
-          `"${r.chest || ''}"`,
-          `"${qty}"`,
-          `"ไม่เกิน 500 บาท"`,
-          `"ไม่เกิน ${total.toLocaleString()} บาท"`,
-          `"บันทึกในชีทแล้ว"`
-        ];
-      });
-
-      const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', `PPCH_Jacket_Registrations_Live_${new Date().toISOString().slice(0, 10)}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
     }
   </script>
 </body>

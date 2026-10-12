@@ -56,24 +56,12 @@
       <div class="flex flex-wrap items-center gap-2">
         <a href="roster.html" class="px-3 py-1.5 rounded-xl bg-blue-100 hover:bg-blue-200 text-blue-900 text-xs font-semibold flex items-center gap-1.5 transition">
           <i class="ph ph-table text-base"></i>
-          <span>รายชื่อในฐานข้อมูล</span>
+          <span>รายชื่อทั้งหมด</span>
         </a>
-        <a href="https://docs.google.com/spreadsheets/d/1E2yctLgOo3nKxcWCNyPfEVmDLKnZovPPSTVLvlq72NM/edit" target="_blank" class="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center gap-1.5 transition shadow-xs" title="เปิด Google Sheets แผ่นจริง">
-          <i class="ph ph-file-xls text-base"></i>
-          <span>เปิด Google Sheets</span>
-        </a>
-        <button onclick="openConfigModal()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition">
-          <i class="ph ph-plugs-connected text-base text-blue-700"></i>
-          <span>เชื่อมต่อ Web App</span>
-        </button>
         <a href="desktop.html" class="px-3 py-1.5 rounded-xl bg-blue-900 hover:bg-blue-800 text-white text-xs font-semibold flex items-center gap-1.5 transition">
           <i class="ph ph-plus-circle text-base"></i>
           <span>หน้าลงทะเบียน</span>
         </a>
-        <button onclick="exportToCSV()" class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-1.5 transition">
-          <i class="ph ph-file-csv text-base"></i>
-          <span>ส่งออก Excel</span>
-        </button>
       </div>
 
     </div>
@@ -193,7 +181,7 @@
           <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
             <i class="ph ph-list-dashes text-blue-800 text-lg"></i> รายชื่อผู้สั่งจองทั้งหมดในระบบ
           </h3>
-          <p class="text-xs text-slate-500 mt-0.5">สามารถค้นหา กรองข้อมูล หรือกดส่งออกรายงานได้ทันที</p>
+          <p class="text-xs text-slate-500 mt-0.5">สามารถค้นหาและกรองข้อมูลตามไซส์เสื้อได้ทันที</p>
         </div>
 
         <!-- Filter Controls -->
@@ -218,11 +206,6 @@
             <option value="3XL">ไซส์ 3XL (อก 48")</option>
             <option value="4XL">ไซส์ 4XL (อก 50")</option>
           </select>
-
-          <!-- Export Button -->
-          <button onclick="exportToCSV()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs flex items-center gap-1 transition" title="ส่งออก CSV">
-            <i class="ph ph-download-simple text-base"></i>
-          </button>
         </div>
       </div>
 
@@ -314,6 +297,24 @@
     document.addEventListener('DOMContentLoaded', () => {
       loadData();
     });
+
+    function formatDateTime(ts) {
+      if (!ts) return '-';
+      try {
+        const d = new Date(ts);
+        if (isNaN(d.getTime())) return ts;
+        return d.toLocaleDateString('th-TH', { 
+          day: 'numeric', 
+          month: 'short', 
+          year: '2-digit' 
+        }) + ' ' + d.toLocaleTimeString('th-TH', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        }) + ' น.';
+      } catch (e) {
+        return ts;
+      }
+    }
 
     function getEndpoint() {
       return (window.PPCH_CONFIG && window.PPCH_CONFIG.gasEndpoint) || localStorage.getItem('ppch_gas_endpoint') || '';
@@ -469,12 +470,16 @@
       }
 
       emptyNotice.classList.add('hidden');
-      tbody.innerHTML = list.map((b, idx) => `
+      tbody.innerHTML = list.map((b, idx) => {
+        const rawEmp = String(b.empId || '').trim();
+        const empId6 = /^\d+$/.test(rawEmp) ? rawEmp.padStart(6, '0') : rawEmp;
+        const timeFormatted = formatDateTime(b.timestamp);
+        return `
         <tr class="hover:bg-slate-50 transition border-b border-slate-100">
           <td class="py-2.5 px-3 text-slate-400 font-inter">${idx + 1}</td>
           <td class="py-2.5 px-3 font-semibold text-blue-900 font-inter">${b.bookingId || '-'}</td>
-          <td class="py-2.5 px-3 text-slate-500">${b.timestamp || '-'}</td>
-          <td class="py-2.5 px-3 font-inter font-semibold text-slate-800">${b.empId}</td>
+          <td class="py-2.5 px-3 text-slate-500 font-inter text-[11px]">${timeFormatted}</td>
+          <td class="py-2.5 px-3 font-inter font-semibold text-slate-800">${empId6}</td>
           <td class="py-2.5 px-3 font-semibold text-slate-900">${b.fullName}</td>
           <td class="py-2.5 px-3 text-slate-600">${b.department || '-'}</td>
           <td class="py-2.5 px-3 text-center">
@@ -485,11 +490,12 @@
           <td class="py-2.5 px-3 text-right font-bold font-inter text-blue-950">ไม่เกิน ${(b.totalPrice || (b.qty || 1) * 500).toLocaleString()} บ.</td>
           <td class="py-2.5 px-3">
             <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-semibold">
-              ${b.paymentStatus || 'รอสรุปยอด'}
+              ${b.paymentStatus || 'บันทึกสำเร็จ'}
             </span>
           </td>
         </tr>
-      `).join('');
+      `;
+      }).join('');
     }
 
     function onTableFilter() {
@@ -511,43 +517,6 @@
       renderTableRows(filtered);
     }
 
-    function exportToCSV() {
-      if (!bookings || bookings.length === 0) {
-        alert('ยังไม่มีข้อมูลการจองในระบบเพื่อส่งออกค่ะ');
-        return;
-      }
-
-      const headers = ['รหัสการจอง', 'วันเวลาที่ลงทะเบียน', 'รหัสพนักงาน', 'ชื่อ-นามสกุล', 'แผนก', 'ตำแหน่ง', 'ไซส์เสื้อ', 'รอบอก(นิ้ว)', 'จำนวน(ตัว)', 'ราคาต่อตัว', 'ยอดประมาณการ(บาท)', 'สถานะ'];
-      
-      const rows = bookings.map(b => {
-        const qty = Number(b.qty) || 1;
-        const total = b.totalPrice || (qty * 500);
-        return [
-          `"${b.bookingId || ''}"`,
-          `"${b.timestamp || ''}"`,
-          `"${b.empId || ''}"`,
-          `"${b.fullName || ''}"`,
-          `"${b.department || ''}"`,
-          `"${b.position || ''}"`,
-          `"${b.size || ''}"`,
-          `"${b.chest || ''}"`,
-          `"${qty}"`,
-          `"ไม่เกิน 500 บาท"`,
-          `"ไม่เกิน ${total.toLocaleString()} บาท"`,
-          `"${b.paymentStatus || 'รอสรุปยอด'}"`
-        ];
-      });
-
-      const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', `PPCH_Jacket_Registrations_${new Date().toISOString().slice(0, 10)}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
   </script>
 </body>
 </html>
