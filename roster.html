@@ -127,86 +127,6 @@
   <!-- Main Container -->
   <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-5">
     
-    <!-- Connection Status Banner -->
-    <div id="liveStatusBanner" class="p-3.5 sm:p-4 rounded-2xl bg-blue-50/80 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-      <div class="flex items-center gap-3 min-w-0">
-        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-900 text-white flex items-center justify-center text-lg flex-shrink-0">
-          <i class="ph ph-shield-check"></i>
-        </div>
-        <div class="min-w-0">
-          <div class="font-bold text-blue-950 flex items-center gap-2">
-            <span class="truncate">ตรวจสอบรายชื่อผู้ลงทะเบียนสั่งจองเสื้อแจ็กเก็ต</span>
-            <span class="text-[10px] px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-inter font-semibold flex-shrink-0">บันทึกสำเร็จ</span>
-          </div>
-          <p class="text-slate-600 mt-0.5 text-[11px] sm:text-xs">
-            พนักงานสามารถตรวจสอบรายชื่อเพื่อยืนยันว่าการจองของท่านถูกบันทึกในระบบเรียบร้อยแล้วค่ะ
-          </p>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-1.5 self-start sm:self-auto flex-shrink-0 text-[11px] text-slate-500">
-        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-        <span id="lastUpdatedText">กำลังเชื่อมต่อ...</span>
-      </div>
-    </div>
-
-    <!-- Quick Stats Cards (4 Cards) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-      
-      <!-- Card 1: Total Reservations -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-4 shadow-xs">
-        <div class="flex items-center justify-between text-slate-500 text-xs mb-1">
-          <span>ผู้ลงทะเบียนแล้ว</span>
-          <i class="ph ph-users text-blue-700 text-base sm:text-lg"></i>
-        </div>
-        <div class="flex items-baseline gap-1.5">
-          <span class="text-xl sm:text-2xl font-bold font-inter text-blue-950" id="statTotalPersons">0</span>
-          <span class="text-xs text-slate-400">คน</span>
-        </div>
-        <div class="text-[11px] text-slate-400 mt-0.5">บันทึกสำเร็จในระบบ</div>
-      </div>
-
-      <!-- Card 2: Total Shirts -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-4 shadow-xs">
-        <div class="flex items-center justify-between text-slate-500 text-xs mb-1">
-          <span>ยอดสั่งจองเสื้อรวม</span>
-          <i class="ph ph-coat-hanger text-emerald-600 text-base sm:text-lg"></i>
-        </div>
-        <div class="flex items-baseline gap-1.5">
-          <span class="text-xl sm:text-2xl font-bold font-inter text-emerald-700" id="statTotalShirts">0</span>
-          <span class="text-xs text-slate-400">ตัว</span>
-        </div>
-        <div class="text-[11px] text-slate-400 mt-0.5">เฉลี่ย 1 ตัว / คน</div>
-      </div>
-
-      <!-- Card 3: Estimated Amount -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-4 shadow-xs">
-        <div class="flex items-center justify-between text-slate-500 text-xs mb-1">
-          <span>ยอดประมาณการรวม</span>
-          <i class="ph ph-currency-circle-dollar text-indigo-600 text-base sm:text-lg"></i>
-        </div>
-        <div class="flex items-baseline gap-1.5">
-          <span class="text-xl sm:text-2xl font-bold font-inter text-indigo-950" id="statTotalAmount">0</span>
-          <span class="text-xs text-slate-400">บาท</span>
-        </div>
-        <div class="text-[11px] text-slate-400 mt-0.5">ราคาไม่เกิน 500 บ./ตัว</div>
-      </div>
-
-      <!-- Card 4: Top Size -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-4 shadow-xs">
-        <div class="flex items-center justify-between text-slate-500 text-xs mb-1">
-          <span>ไซส์ที่มีผู้จองมากสุด</span>
-          <i class="ph ph-crown text-amber-500 text-base sm:text-lg"></i>
-        </div>
-        <div class="flex items-baseline gap-1.5">
-          <span class="text-xl sm:text-2xl font-bold font-inter text-amber-900" id="statTopSize">-</span>
-          <span class="text-xs text-slate-400 font-inter" id="statTopSizeQty">(0 ตัว)</span>
-        </div>
-        <div class="text-[11px] text-slate-400 mt-0.5">ยอดนิยมสูงสุด</div>
-      </div>
-
-    </div>
-
     <!-- Main List & Table Card -->
     <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
       
@@ -372,7 +292,6 @@
       const empty = document.getElementById('rosterEmptyContainer');
       const tableWrapper = document.getElementById('tableWrapper');
       const mobileCards = document.getElementById('mobileCardsContainer');
-      const bannerUpdated = document.getElementById('lastUpdatedText');
       const btnRefresh = document.getElementById('btnRefresh');
 
       loading.classList.remove('hidden');
@@ -398,10 +317,6 @@
 
         if (data && data.items) {
           allRecords = data.items;
-          const now = new Date();
-          const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-          bannerUpdated.innerText = `อัปเดตล่าสุด: ${timeStr} น.`;
-          
           updateKPIs(allRecords);
           applyFilters();
         } else {
@@ -409,7 +324,6 @@
         }
       } catch (err) {
         console.error('Fetch roster failed:', err);
-        bannerUpdated.innerText = 'เกิดข้อผิดพลาดในการดึงข้อมูล';
       } finally {
         loading.classList.add('hidden');
         btnRefresh.disabled = false;
@@ -418,15 +332,10 @@
     }
 
     function updateKPIs(records) {
-      let totalQty = 0;
-      let totalAmount = 0;
       const sizeCounts = { 'M': 0, 'L': 0, 'XL': 0, '2XL': 0, '3XL': 0, '4XL': 0 };
 
       records.forEach(r => {
         const q = Number(r.qty) || 1;
-        const p = Number(r.totalPrice) || (q * 500);
-        totalQty += q;
-        totalAmount += p;
 
         if (r.qtyM !== undefined || r.qtyL !== undefined) {
           sizeCounts['M'] += Number(r.qtyM) || 0;
@@ -445,32 +354,16 @@
         }
       });
 
-      document.getElementById('statTotalPersons').innerText = records.length.toLocaleString();
-      document.getElementById('statTotalShirts').innerText = totalQty.toLocaleString();
-      document.getElementById('statTotalAmount').innerText = totalAmount.toLocaleString();
-
-      // Top size
-      let topSize = '-';
-      let maxCount = 0;
-      Object.entries(sizeCounts).forEach(([s, cnt]) => {
-        if (cnt > maxCount) {
-          maxCount = cnt;
-          topSize = s;
-        }
-      });
-      document.getElementById('statTopSize').innerText = topSize;
-      document.getElementById('statTopSizeQty').innerText = `(${maxCount} ตัว)`;
-
       // Update Size filter button badges
-      document.getElementById('countSizeAll').innerText = records.length;
-      document.getElementById('countSizeM').innerText = sizeCounts['M'] || 0;
-      document.getElementById('countSizeL').innerText = sizeCounts['L'] || 0;
-      document.getElementById('countSizeXL').innerText = sizeCounts['XL'] || 0;
-      document.getElementById('countSize2XL').innerText = sizeCounts['2XL'] || 0;
-      document.getElementById('countSize3XL').innerText = sizeCounts['3XL'] || 0;
-      document.getElementById('countSize4XL').innerText = sizeCounts['4XL'] || 0;
+      const elAll = document.getElementById('countSizeAll');
+      if (elAll) elAll.innerText = records.length;
+      ['M', 'L', 'XL', '2XL', '3XL', '4XL'].forEach(s => {
+        const el = document.getElementById(`countSize${s}`);
+        if (el) el.innerText = sizeCounts[s] || 0;
+      });
 
-      document.getElementById('totalRowCount').innerText = records.length;
+      const totalRowEl = document.getElementById('totalRowCount');
+      if (totalRowEl) totalRowEl.innerText = records.length;
     }
 
     function onSearchFilter() {

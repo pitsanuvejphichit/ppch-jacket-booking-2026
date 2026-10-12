@@ -927,7 +927,12 @@
     }
 
     // ================= SUBMIT BOOKING =================
+    // ================= SUBMIT BOOKING (QUEUE & CONCURRENCY SAFE) =================
+    let mIsSubmitting = false;
+
     async function submitMobileBooking() {
+      if (mIsSubmitting) return; // ป้องกันการกดซ้ำซ้อน / บันทึกพร้อมกัน
+
       if (!mSelectedEmployee) {
         showMobileToast('กรุณาเลือกรายชื่อพนักงานก่อนค่ะ');
         openEmployeePickerSheet();
@@ -955,11 +960,12 @@
         return;
       }
 
-      showMobileLoading(true, mCurrentBookingMode === 'add_more' 
-        ? 'กำลังส่งข้อมูลการสั่งเสื้อเพิ่ม...' 
-        : (mCurrentBookingMode === 'update' 
-          ? 'กำลังบันทึกการเปลี่ยนแปลงข้อมูล...' 
-          : 'กำลังบันทึกข้อมูลการจอง...'));
+      mIsSubmitting = true;
+      const btn = document.getElementById('mBtnSubmit');
+      if (btn) {
+        btn.disabled = true;
+        btn.classList.add('opacity-60', 'pointer-events-none');
+      }
 
       const rawEmpId = String(mSelectedEmployee.id || '').trim();
       const empId6 = /^\d+$/.test(rawEmpId) ? rawEmpId.padStart(6, '0') : rawEmpId;
@@ -985,36 +991,74 @@
       };
 
       try {
+        const maxRetries = 4;
+        let attempt = 0;
         let result = null;
-        try {
-          const res = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(bookingPayload)
-          });
-          result = await res.json();
-        } catch (postErr) {
-          // Fallback via GET action=book
-          const params = new URLSearchParams({
-            action: 'book',
-            bookingMode: bookingPayload.bookingMode,
-            empId: bookingPayload.empId,
-            firstName: bookingPayload.firstName,
-            lastName: bookingPayload.lastName,
-            fullName: bookingPayload.fullName,
-            department: bookingPayload.department,
-            position: bookingPayload.position,
-            qtyM: bookingPayload.qtyM,
-            qtyL: bookingPayload.qtyL,
-            qtyXL: bookingPayload.qtyXL,
-            qty2XL: bookingPayload.qty2XL,
-            qty3XL: bookingPayload.qty3XL,
-            qty4XL: bookingPayload.qty4XL,
-            size: bookingPayload.size,
-            qty: bookingPayload.qty
-          });
-          const getRes = await fetch(`${endpoint}?${params.toString()}`);
-          result = await getRes.json();
+
+        while (attempt < maxRetries) {
+          attempt++;
+          if (attempt > 1) {
+            showMobileLoading(true, `กำลังรอคิวบันทึกข้อมูล (ต่อคิวครั้งที่ ${attempt}/${maxRetries})...`);
+            await new Promise(r => setTimeout(r, 1800)); // หน่วงเวลาให้คิวก่อนหน้าเสร็จสิ้น
+          } else {
+            showMobileLoading(true, mCurrentBookingMode === 'add_more' 
+              ? 'กำลังส่งข้อมูลการสั่งเสื้อเพิ่ม...' 
+              : (mCurrentBookingMode === 'update' 
+                ? 'กำลังบันทึกการเปลี่ยนแปลงข้อมูล...' 
+                : 'กำลังจัดคิวบันทึกข้อมูลการจอง...'));
+          }
+
+          try {
+            try {
+              const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(bookingPayload)
+              });
+              result = await res.json();
+            } catch (postErr) {
+              // Fallback via GET action=book
+              const params = new URLSearchParams({
+                action: 'book',
+                bookingMode: bookingPayload.bookingMode,
+                empId: bookingPayload.empId,
+                firstName: bookingPayload.firstName,
+                lastName: bookingPayload.lastName,
+                fullName: bookingPayload.fullName,
+                department: bookingPayload.department,
+                position: bookingPayload.position,
+                qtyM: bookingPayload.qtyM,
+                qtyL: bookingPayload.qtyL,
+                qtyXL: bookingPayload.qtyXL,
+                qty2XL: bookingPayload.qty2XL,
+                qty3XL: bookingPayload.qty3XL,
+                qty4XL: bookingPayload.qty4XL,
+                size: bookingPayload.size,
+                qty: bookingPayload.qty
+              });
+              const getRes = await fetch(`${endpoint}?${params.toString()}`);
+              result = await getRes.json();
+            }
+
+            if (result && result.success) {
+              break; // สำเร็จแล้ว ออกจากลูปคิว
+            }
+
+            // หากติดคิวบันทึกพร้อมกัน (Queue Busy หรือ Lock Wait) ให้รอแล้วต่อคิวใหม่
+            if (result && (result.queueBusy || (result.error && result.error.includes('LockService')))) {
+              console.warn(`Mobile queue busy on attempt ${attempt}, waiting for queue slot...`);
+              continue;
+            }
+
+            if (result && result.message) {
+              throw new Error(result.message);
+            }
+          } catch (fetchErr) {
+            if (attempt >= maxRetries) {
+              throw fetchErr;
+            }
+            console.warn(`Mobile attempt ${attempt} network error, retrying...`, fetchErr);
+          }
         }
 
         if (result && result.success) {
@@ -1039,12 +1083,18 @@
           resetMobileForm();
           loadMobileBookings();
         } else {
-          throw new Error((result && result.message) || 'ระบบ Google Sheets ตอบกลับไม่สำเร็จ');
+          throw new Error((result && (result.message || result.error)) || 'ระบบ Google Sheets ตอบกลับไม่สำเร็จ');
         }
       } catch (err) {
         showMobileLoading(false);
         alert('❌ บันทึกข้อมูลไม่สำเร็จ!\n\nไม่สามารถบันทึกข้อมูลลง Google Sheets ได้ ข้อมูลจึงยังไม่ถูกบันทึกในระบบ กรุณาลองใหม่อีกครั้ง หรือติดต่อฝ่ายบุคคล (HR)');
         console.error('Mobile submit failed:', err);
+      } finally {
+        mIsSubmitting = false;
+        if (btn) {
+          btn.disabled = false;
+          btn.classList.remove('opacity-60', 'pointer-events-none');
+        }
       }
     }
 

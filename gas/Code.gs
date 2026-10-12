@@ -273,9 +273,16 @@ function doPost(e) {
  */
 function processBooking(data) {
   const lock = LockService.getScriptLock();
+  let hasLock = false;
   
   try {
-    lock.waitLock(30000);
+    // ระบบจัดคิว (Queue): รอคิวเพื่อเข้าถึงและเขียนข้อมูลลงชีท ป้องกันการบันทึกชนกันในเวลาเดียวกัน
+    hasLock = lock.tryLock(30000);
+    if (!hasLock) {
+      // หากยังมีคิวก่อนหน้าทำงานอยู่ ให้รอคิวเพิ่มอีก 15 วินาที
+      lock.waitLock(15000);
+      hasLock = true;
+    }
     
     if (!data.empId) {
       return ContentService.createTextOutput(JSON.stringify({
@@ -425,6 +432,9 @@ function processBooking(data) {
       sheet.getRange(newRow, 3).setNumberFormat('@').setValue(empIdStr);
     }
     
+    // บันทึกและซิงค์ข้อมูลลง Google Sheet ทันที (Flush) เพื่อให้คิวถัดไปอ่านข้อมูลที่อัปเดตแล้วได้อย่างถูกต้อง
+    SpreadsheetApp.flush();
+    
     // สร้างข้อความสรุปไซส์ เช่น "M: 1, XL: 1"
     const sizeSummaryParts = [];
     if (finalM > 0) sizeSummaryParts.push(`M (${finalM})`);
@@ -465,10 +475,19 @@ function processBooking(data) {
   } catch (err) {
     return ContentService.createTextOutput(JSON.stringify({
       success: false,
+      queueBusy: true,
+      message: 'ระบบกำลังจัดคิวบันทึกข้อมูล กรุณารอสักครู่ค่ะ',
       error: err.toString()
     })).setMimeType(ContentService.MimeType.JSON);
   } finally {
-    lock.releaseLock();
+    try {
+      SpreadsheetApp.flush();
+    } catch (flushErr) {}
+    if (hasLock) {
+      try {
+        lock.releaseLock();
+      } catch (lockErr) {}
+    }
   }
 }
 
