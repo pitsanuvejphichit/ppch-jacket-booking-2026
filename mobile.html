@@ -357,15 +357,17 @@
     </div>
   </div>
 
-  <!-- Master Employees Script -->
+  <!-- Master Employees Script & Config -->
   <script src="data/employees-data.js"></script>
+  <script src="data/config.js"></script>
 
   <script>
     const MOBILE_CONFIG = {
       pricePerUnit: 500,
       priceDesc: 'ราคาไม่เกิน 500 บาท / ตัว',
-      storageKey: 'ppch_jacket_bookings_2026',
-      gasEndpoint: '' // Google Apps Script Web App URL
+      get gasEndpoint() {
+        return (window.PPCH_CONFIG && window.PPCH_CONFIG.gasEndpoint) || localStorage.getItem('ppch_gas_endpoint') || '';
+      }
     };
 
     let mSelectedSize = 'M';
@@ -487,83 +489,82 @@
       document.getElementById('mEmpCardEmpty').classList.add('hidden');
       document.getElementById('mEmpCardSelected').classList.remove('hidden');
       closeEmployeePickerSheet();
-
-      // Check existing booking
-      try {
-        const stored = localStorage.getItem(MOBILE_CONFIG.storageKey);
-        if (stored) {
-          const list = JSON.parse(stored);
-          const found = list.find(b => b.empId === emp.id);
-          if (found) {
-            showMobileToast(`พบประวัติเดิม: ไซส์ ${found.size} (${found.qty} ตัว)`);
-            if (found.size) selectMobileSize(found.size, found.chest || 40);
-            if (found.qty) {
-              mQty = found.qty;
-              document.getElementById('mQtyInput').value = mQty;
-              updateMobileTotal();
-            }
-          }
-        }
-      } catch (err) {}
     }
 
-    // Submit Booking
-    function submitMobileBooking() {
+    // Submit Booking (บันทึกลง Google Sheets เท่านั้น ไม่บันทึก localstore)
+    async function submitMobileBooking() {
       if (!mSelectedEmployee) {
         showMobileToast('กรุณาเลือกรายชื่อพนักงานก่อนค่ะ');
         openEmployeePickerSheet();
         return;
       }
 
-      const timestamp = new Date().toLocaleString('th-TH', { 
-        year: 'numeric', month: 'short', day: 'numeric', 
-        hour: '2-digit', minute: '2-digit' 
-      });
-      const bookingId = 'JK-' + new Date().getFullYear() + ('0' + (new Date().getMonth() + 1)).slice(-2) + ('0' + new Date().getDate()).slice(-2) + '-' + Math.floor(1000 + Math.random() * 9000);
+      const endpoint = MOBILE_CONFIG.gasEndpoint;
+      if (!endpoint) {
+        alert('⚠️ ยังไม่สามารถบันทึกได้ เนื่องจากระบบยังไม่ได้เชื่อมต่อ Google Apps Script Web App URL\n\n(กรุณาติดต่อผู้ดูแลระบบ เพื่อเชื่อมต่อ Google Sheet กลางก่อนค่ะ)');
+        return;
+      }
 
-      const record = {
-        bookingId: bookingId,
-        timestamp: timestamp,
+      showMobileToast('กำลังส่งข้อมูลลง Google Sheets...');
+
+      const bookingPayload = {
         empId: mSelectedEmployee.id,
         fullName: mSelectedEmployee.fullName,
         department: mSelectedEmployee.department || '-',
         position: mSelectedEmployee.position || '-',
         size: mSelectedSize,
         chest: mSelectedChest,
-        qty: mQty,
-        pricePerUnitDesc: 'ราคาไม่เกิน 500 บาท / ตัว',
-        totalPrice: mQty * 500,
-        totalPriceDesc: `ไม่เกิน ${(mQty * 500).toLocaleString()} บาท`,
-        paymentStatus: 'รอสรุปยอดหลังปิดรับจอง'
+        qty: mQty
       };
 
-      // Save to localStorage
       try {
-        let list = [];
-        const stored = localStorage.getItem(MOBILE_CONFIG.storageKey);
-        if (stored) list = JSON.parse(stored);
-        const idx = list.findIndex(b => b.empId === record.empId);
-        if (idx >= 0) list[idx] = record;
-        else list.unshift(record);
-        localStorage.setItem(MOBILE_CONFIG.storageKey, JSON.stringify(list));
-      } catch (err) {}
-
-      // Sync to Google Apps Script if endpoint is configured
-      if (MOBILE_CONFIG.gasEndpoint) {
+        let result = null;
         try {
-          fetch(MOBILE_CONFIG.gasEndpoint, {
+          const res = await fetch(endpoint, {
             method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(record)
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(bookingPayload)
           });
-        } catch (err) {
-          console.warn('Backend sync failed:', err);
+          result = await res.json();
+        } catch (postErr) {
+          // Fallback via GET action=book
+          const params = new URLSearchParams({
+            action: 'book',
+            empId: bookingPayload.empId,
+            fullName: bookingPayload.fullName,
+            department: bookingPayload.department,
+            position: bookingPayload.position,
+            size: bookingPayload.size,
+            chest: bookingPayload.chest,
+            qty: bookingPayload.qty
+          });
+          const getRes = await fetch(`${endpoint}?${params.toString()}`);
+          result = await getRes.json();
         }
-      }
 
-      // Show slip
-      displayMobileSlip(record);
+        if (result && result.success) {
+          const confirmedRecord = {
+            bookingId: result.bookingId,
+            timestamp: result.timestamp,
+            empId: result.empId || mSelectedEmployee.id,
+            fullName: result.fullName || mSelectedEmployee.fullName,
+            department: result.department || mSelectedEmployee.department || '-',
+            position: result.position || mSelectedEmployee.position || '-',
+            size: result.size || mSelectedSize,
+            chest: result.chest || mSelectedChest,
+            qty: result.qty || mQty,
+            totalPrice: result.totalPrice || (mQty * 500)
+          };
+
+          // แสดงสลิปเมื่อบันทึกลง Google Sheet สำเร็จแล้วเท่านั้น
+          displayMobileSlip(confirmedRecord);
+        } else {
+          throw new Error((result && result.message) || 'ระบบ Google Sheets ตอบกลับไม่สำเร็จ');
+        }
+      } catch (err) {
+        alert('❌ บันทึกข้อมูลไม่สำเร็จ!\n\nไม่สามารถบันทึกข้อมูลลง Google Sheets ได้ ข้อมูลจึงยังไม่ถูกบันทึกในระบบ กรุณาลองใหม่อีกครั้ง หรือติดต่อฝ่ายบุคคล (HR)');
+        console.error('Mobile submit failed:', err);
+      }
     }
 
     function displayMobileSlip(r) {

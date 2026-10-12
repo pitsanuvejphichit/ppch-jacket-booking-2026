@@ -611,16 +611,18 @@
     </div>
   </div>
 
-  <!-- Load Master Employees Data (209 Records) -->
+  <!-- Load Master Employees Data (209 Records) & Central Config -->
   <script src="data/employees-data.js"></script>
+  <script src="data/config.js"></script>
 
   <!-- Application Logic -->
   <script>
     const APP_CONFIG = {
       maxPricePerUnit: 500,
-      endDate: new Date('2026-10-19T23:59:59+07:00').getTime(),
-      storageKey: 'ppch_jacket_bookings_2026',
-      gasEndpoint: '' // Set to Google Apps Script Web App URL if deploying with live backend
+      endDate: (window.PPCH_CONFIG && window.PPCH_CONFIG.endDate) || new Date('2026-10-19T23:59:59+07:00').getTime(),
+      get gasEndpoint() {
+        return (window.PPCH_CONFIG && window.PPCH_CONFIG.gasEndpoint) || localStorage.getItem('ppch_gas_endpoint') || '';
+      }
     };
 
     let selectedSize = 'M';
@@ -848,7 +850,7 @@
       document.getElementById('autocompleteDropdown').classList.add('hidden');
     }
 
-    // Submit Booking Handler
+    // Submit Booking Handler (บันทึกลง Google Sheets เท่านั้น ไม่บันทึก localstore)
     async function handleFormSubmit(e) {
       e.preventDefault();
 
@@ -866,76 +868,99 @@
         return;
       }
 
-      showLoading(true, 'กำลังบันทึกข้อมูลการจอง...');
+      const endpoint = APP_CONFIG.gasEndpoint;
+      if (!endpoint) {
+        alert('⚠️ ยังไม่สามารถบันทึกได้ เนื่องจากระบบยังไม่ได้เชื่อมต่อ Google Apps Script Web App URL\n\n(กรุณาติดต่อผู้ดูแลระบบ เพื่อเชื่อมต่อ Google Sheet กลางก่อนค่ะ)');
+        return;
+      }
 
-      const timestamp = new Date().toLocaleString('th-TH', { 
-        year: 'numeric', month: 'short', day: 'numeric', 
-        hour: '2-digit', minute: '2-digit', second: '2-digit' 
-      });
-      const bookingId = 'JK-' + new Date().getFullYear() + ('0' + (new Date().getMonth() + 1)).slice(-2) + ('0' + new Date().getDate()).slice(-2) + '-' + Math.floor(1000 + Math.random() * 9000);
+      showLoading(true, 'กำลังบันทึกข้อมูลลงฐานข้อมูล Google Sheets...');
 
-      const bookingRecord = {
-        bookingId: bookingId,
-        timestamp: timestamp,
+      const bookingPayload = {
         empId: empId,
         fullName: fullName,
         department: document.getElementById('department').value || '-',
         position: document.getElementById('position').value || '-',
         size: selectedSize,
         chest: selectedChest,
-        qty: qty,
-        priceNote: 'ราคาไม่เกิน 500 บาท / ตัว',
-        maxTotal: qty * APP_CONFIG.maxPricePerUnit
+        qty: qty
       };
 
-      // Save to localStorage
-      saveBooking(bookingRecord);
-
-      // If backend GAS is connected, send asynchronous fetch
-      if (APP_CONFIG.gasEndpoint) {
-        try {
-          await fetch(APP_CONFIG.gasEndpoint, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(bookingRecord)
-          });
-        } catch (err) {
-          console.warn('Backend sync failed, saved locally:', err);
-        }
-      }
-
-      showLoading(false);
-      showToast('บันทึกการจองเสื้อสำเร็จแล้วค่ะ!', 'success');
-
-      // Show confirmation slip modal
-      displaySlipModal(bookingRecord);
-
-      // Reset form
-      resetBookingForm();
-      loadBookings();
-    }
-
-    // Save Booking to storage
-    function saveBooking(record) {
-      const existingIdx = allBookings.findIndex(b => b.empId === record.empId);
-      if (existingIdx >= 0) {
-        allBookings[existingIdx] = record;
-      } else {
-        allBookings.unshift(record);
-      }
-      localStorage.setItem(APP_CONFIG.storageKey, JSON.stringify(allBookings));
-    }
-
-    // Load Bookings from storage
-    function loadBookings() {
       try {
-        const stored = localStorage.getItem(APP_CONFIG.storageKey);
-        allBookings = stored ? JSON.parse(stored) : [];
-      } catch (e) {
-        allBookings = [];
+        let result = null;
+        try {
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(bookingPayload)
+          });
+          result = await res.json();
+        } catch (postErr) {
+          // Fallback via GET action=book
+          const params = new URLSearchParams({
+            action: 'book',
+            empId: bookingPayload.empId,
+            fullName: bookingPayload.fullName,
+            department: bookingPayload.department,
+            position: bookingPayload.position,
+            size: bookingPayload.size,
+            chest: bookingPayload.chest,
+            qty: bookingPayload.qty
+          });
+          const getRes = await fetch(`${endpoint}?${params.toString()}`);
+          result = await getRes.json();
+        }
+
+        if (result && result.success) {
+          showLoading(false);
+          showToast('บันทึกข้อมูลลง Google Sheets สำเร็จแล้วค่ะ!', 'success');
+
+          const confirmedRecord = {
+            bookingId: result.bookingId,
+            timestamp: result.timestamp,
+            empId: result.empId || empId,
+            fullName: result.fullName || fullName,
+            department: result.department || document.getElementById('department').value || '-',
+            position: result.position || document.getElementById('position').value || '-',
+            size: result.size || selectedSize,
+            chest: result.chest || selectedChest,
+            qty: result.qty || qty,
+            totalPrice: result.totalPrice || (qty * 500)
+          };
+
+          // แสดงสลิปยืนยันเมื่อบันทึกจริงลง Google Sheet สำเร็จแล้วเท่านั้น
+          displaySlipModal(confirmedRecord);
+          resetBookingForm();
+          loadBookings();
+        } else {
+          throw new Error((result && result.message) || 'ระบบ Google Sheets ตอบกลับไม่สำเร็จ');
+        }
+      } catch (err) {
+        showLoading(false);
+        alert('❌ บันทึกข้อมูลไม่สำเร็จ!\n\nไม่สามารถบันทึกข้อมูลลง Google Sheets ได้ ข้อมูลจึงยังไม่ถูกบันทึกในระบบ กรุณาลองใหม่อีกครั้ง หรือติดต่อฝ่ายบุคคล (HR)');
+        console.error('Submission failed:', err);
       }
-      renderBookingsTable(allBookings);
+    }
+
+    // Load Bookings directly from Google Sheets (ไม่มีการอ่านจาก localstore)
+    async function loadBookings() {
+      const endpoint = APP_CONFIG.gasEndpoint;
+      if (!endpoint) {
+        renderBookingsTable([]);
+        return;
+      }
+      try {
+        const res = await fetch(`${endpoint}?action=getRegistrations`);
+        const data = await res.json();
+        if (data && data.items) {
+          allBookings = data.items;
+          renderBookingsTable(allBookings);
+          return;
+        }
+      } catch (e) {
+        console.warn('Could not load from Google Sheets:', e);
+      }
+      renderBookingsTable([]);
     }
 
     // Render bookings table

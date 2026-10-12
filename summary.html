@@ -53,14 +53,22 @@
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
-        <a href="desktop.html" class="px-3.5 py-1.5 rounded-xl bg-blue-900 hover:bg-blue-800 text-white text-xs font-semibold flex items-center gap-1.5 transition">
+      <div class="flex flex-wrap items-center gap-2">
+        <a href="https://docs.google.com/spreadsheets/d/1E2yctLgOo3nKxcWCNyPfEVmDLKnZovPPSTVLvlq72NM/edit" target="_blank" class="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center gap-1.5 transition shadow-xs" title="เปิด Google Sheets แผ่นจริง">
+          <i class="ph ph-file-xls text-base"></i>
+          <span>เปิด Google Sheets</span>
+        </a>
+        <button onclick="openConfigModal()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition">
+          <i class="ph ph-plugs-connected text-base text-blue-700"></i>
+          <span>เชื่อมต่อ Web App</span>
+        </button>
+        <a href="desktop.html" class="px-3 py-1.5 rounded-xl bg-blue-900 hover:bg-blue-800 text-white text-xs font-semibold flex items-center gap-1.5 transition">
           <i class="ph ph-plus-circle text-base"></i>
           <span>หน้าลงทะเบียน</span>
         </a>
         <button onclick="exportToCSV()" class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-1.5 transition">
           <i class="ph ph-file-csv text-base"></i>
-          <span>ส่งออก Excel / CSV</span>
+          <span>ส่งออก Excel</span>
         </button>
       </div>
 
@@ -68,7 +76,23 @@
   </header>
 
   <!-- Main Container -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+    
+    <!-- Google Sheet Real-time Connection Status Banner -->
+    <div id="gasStatusBanner" class="p-4 rounded-2xl bg-slate-100 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+      <div class="flex items-center gap-2.5">
+        <span id="gasStatusDot" class="w-3 h-3 rounded-full bg-amber-500 animate-pulse"></span>
+        <span class="font-medium text-slate-800" id="gasStatusText">กำลังตรวจสอบการเชื่อมต่อกับ Google Sheets...</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="loadData()" class="px-3 py-1 rounded-xl bg-white border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition flex items-center gap-1">
+          <i class="ph ph-arrows-clockwise text-sm"></i> รีเฟรชข้อมูลสด
+        </button>
+        <button onclick="openConfigModal()" class="px-3 py-1 rounded-xl bg-blue-900 text-white font-semibold hover:bg-blue-800 transition">
+          ตั้งค่า URL
+        </button>
+      </div>
+    </div>
     
     <!-- Top KPI Grid (4 Cards) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -230,41 +254,131 @@
 
   </main>
 
-  <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-500">
-    <p>ฝ่ายพัฒนาทรัพยากรบุคคล (HRD) • โรงพยาบาลพิษณุเวช พิจิตร (PPCH)</p>
-  </footer>
+  <!-- Configuration Modal -->
+  <div id="configModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+          <i class="ph ph-gear text-blue-800 text-lg"></i> ตั้งค่า Google Apps Script Web App URL
+        </h3>
+        <button onclick="closeConfigModal()" class="text-slate-400 hover:text-slate-600">
+          <i class="ph ph-x text-lg"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs text-slate-600">
+        <p>
+          ระบบจะส่งข้อมูลการลงทะเบียนจองเสื้อจากพนักงานทุกคนเข้าสู่ <strong>Google Sheet</strong> กลางโดยตรง (ไม่เก็บในเครื่องพนักงาน):
+        </p>
+
+        <div class="space-y-1">
+          <label class="font-semibold text-slate-700">Google Apps Script Web App URL:</label>
+          <input type="url" 
+                 id="inputGasUrl" 
+                 placeholder="https://script.google.com/macros/s/.../exec" 
+                 class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-mono text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-600">
+        </div>
+
+        <div class="p-3 bg-blue-50 text-blue-900 rounded-xl text-[11px] space-y-1">
+          <strong>วิธีนำ URL มาใส่:</strong>
+          <ol class="list-decimal list-inside space-y-0.5">
+            <li>ในหน้า Google Sheet ไปที่ <strong>ส่วนขยาย > Apps Script</strong></li>
+            <li>กดปุ่มสีน้ำเงิน <strong>Deploy (ทำให้ใช้งานได้) > New deployment</strong></li>
+            <li>เลือก <strong>Web app</strong> ตั้งค่าสิทธิ์ <strong>Who has access: Anyone (ทุกคน)</strong></li>
+            <li>คัดลอก URL ที่ลงท้ายด้วย <code>/exec</code> มาวางที่นี่</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+        <button onclick="closeConfigModal()" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold">
+          ยกเลิก
+        </button>
+        <button onclick="saveEndpointUrl()" class="px-5 py-2 bg-blue-900 text-white rounded-xl text-xs font-semibold hover:bg-blue-800 transition">
+          บันทึกและเชื่อมต่อ
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Central Config Script -->
+  <script src="data/config.js"></script>
 
   <script>
-    const STORAGE_KEY = 'ppch_jacket_bookings_2026';
-    const GAS_ENDPOINT = ''; // If configured, will fetch central Google Sheet registrations
     let bookings = [];
 
     document.addEventListener('DOMContentLoaded', () => {
       loadData();
     });
 
+    function getEndpoint() {
+      return (window.PPCH_CONFIG && window.PPCH_CONFIG.gasEndpoint) || localStorage.getItem('ppch_gas_endpoint') || '';
+    }
+
+    function openConfigModal() {
+      document.getElementById('inputGasUrl').value = getEndpoint();
+      document.getElementById('configModal').classList.remove('hidden');
+    }
+
+    function closeConfigModal() {
+      document.getElementById('configModal').classList.add('hidden');
+    }
+
+    function saveEndpointUrl() {
+      const url = document.getElementById('inputGasUrl').value.trim();
+      if (!url) {
+        alert('กรุณากรอก URL เว็บแอปค่ะ');
+        return;
+      }
+      localStorage.setItem('ppch_gas_endpoint', url);
+      closeConfigModal();
+      loadData();
+    }
+
     async function loadData() {
-      if (GAS_ENDPOINT) {
-        try {
-          const res = await fetch(`${GAS_ENDPOINT}?action=getRegistrations`);
-          const data = await res.json();
-          if (data && data.items && data.items.length > 0) {
-            bookings = data.items;
-            renderDashboard();
-            return;
-          }
-        } catch (err) {
-          console.warn('Could not fetch from GAS endpoint, falling back to local storage:', err);
-        }
+      const banner = document.getElementById('gasStatusBanner');
+      const dot = document.getElementById('gasStatusDot');
+      const text = document.getElementById('gasStatusText');
+      const endpoint = getEndpoint();
+
+      if (!endpoint) {
+        banner.className = 'p-4 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs';
+        dot.className = 'w-3 h-3 rounded-full bg-amber-500 animate-pulse';
+        text.innerHTML = '<strong>⚠️ ยังไม่ได้เชื่อมต่อ Google Apps Script Web App URL:</strong> กรุณากดปุ่ม <strong>"ตั้งค่า URL"</strong> ด้านขวา เพื่อเชื่อมต่อฐานข้อมูล Google Sheets กลาง';
+        document.getElementById('summaryTableEmpty').innerText = 'กรุณาเชื่อมต่อ Web App URL เพื่อดึงข้อมูลสดจาก Google Sheets ค่ะ';
+        bookings = [];
+        renderDashboard();
+        return;
       }
 
+      banner.className = 'p-4 rounded-2xl bg-blue-50 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs';
+      dot.className = 'w-3 h-3 rounded-full bg-blue-500 animate-pulse';
+      text.innerText = 'กำลังเชื่อมต่อและดึงข้อมูลสดจาก Google Sheets...';
+
       try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        bookings = stored ? JSON.parse(stored) : [];
-      } catch (e) {
+        const res = await fetch(`${endpoint}?action=getRegistrations`);
+        const data = await res.json();
+
+        if (data && data.items) {
+          bookings = data.items;
+          banner.className = 'p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs';
+          dot.className = 'w-3 h-3 rounded-full bg-emerald-500';
+          text.innerHTML = `<span class="text-emerald-900 font-semibold">🟢 เชื่อมต่อฐานข้อมูล Google Sheets สำเร็จ</span> • มีรายการจองทั้งหมด <strong>${bookings.length}</strong> รายการ (${data.totalQty || 0} ตัว)`;
+          document.getElementById('summaryTableEmpty').innerText = 'ยังไม่มีข้อมูลการจองในฐานข้อมูล Google Sheets ค่ะ';
+          renderDashboard();
+          return;
+        } else {
+          throw new Error('รูปแบบข้อมูลไม่ถูกต้อง');
+        }
+      } catch (err) {
+        console.error('Fetch Google Sheets failed:', err);
+        banner.className = 'p-4 rounded-2xl bg-rose-50 border border-rose-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs';
+        dot.className = 'w-3 h-3 rounded-full bg-rose-500';
+        text.innerHTML = `<span class="text-rose-900 font-semibold">❌ ไม่สามารถดึงข้อมูลจาก Google Sheets ได้:</span> โปรดตรวจสอบว่าได้ตั้งค่าสิทธิ์ Web App เป็น <strong>"Everyone (ทุกคน)"</strong> แล้วหรือไม่`;
+        document.getElementById('summaryTableEmpty').innerText = 'เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล Google Sheets';
         bookings = [];
+        renderDashboard();
       }
-      renderDashboard();
     }
 
     function renderDashboard() {

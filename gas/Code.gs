@@ -7,8 +7,8 @@
  */
 
 const CONFIG = {
+  SPREADSHEET_ID: '1E2yctLgOo3nKxcWCNyPfEVmDLKnZovPPSTVLvlq72NM',
   SHEET_NAME: 'รายการจองเสื้อ',
-  SUMMARY_SHEET_NAME: 'สรุปยอดตามไซส์',
   DEFAULT_PRICE: 500, // ราคาไม่เกิน 500 บาท / ตัว
   START_DATE: '2026-10-12',
   END_DATE: '2026-10-19',
@@ -16,29 +16,55 @@ const CONFIG = {
 };
 
 /**
- * เมนูเมื่อเปิด Google Sheet
+ * ดึงออบเจ็กต์ Google Spreadsheet ที่ผูกไว้
  */
-function onOpen() {
-  const ui = SpreadsheetApp.getUi();
-  ui.createMenu('🧥 ระบบลงทะเบียนจองเสื้อ')
-    .addItem('⚙️ 1. จัดรูปแบบหัวตารางอัตโนมัติ (Setup)', 'setupSheetHeaders')
-    .addItem('📊 2. สรุปยอดการจองตามไซส์ (Summary)', 'showSummaryDialog')
-    .addSeparator()
-    .addItem('🌐 3. เปิดหน้าเว็บลงทะเบียน (GitHub Pages)', 'openWebUrl')
-    .addToUi();
+function getSpreadsheet() {
+  if (CONFIG.SPREADSHEET_ID) {
+    try {
+      return SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
+    } catch (err) {
+      console.warn('Could not open by ID, falling back to active spreadsheet:', err);
+    }
+  }
+  return SpreadsheetApp.getActiveSpreadsheet();
 }
 
 /**
- * จัดรูปแบบหัวตาราง Google Sheet
+ * ดึงหรือสร้าง Sheet สำหรับบันทึกข้อมูล
  */
-function setupSheetHeaders() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+function getTargetSheet() {
+  const ss = getSpreadsheet();
   let sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
   
   if (!sheet) {
-    sheet = ss.insertSheet(CONFIG.SHEET_NAME, 0);
+    const sheets = ss.getSheets();
+    // ถ้ามีชีตเริ่มต้นเช่น 'ชีต1' หรือ 'Sheet1' ที่ยังว่างอยู่ ให้เปลี่ยนชื่อเป็น 'รายการจองเสื้อ'
+    if (sheets.length === 1 && sheets[0].getLastRow() <= 1) {
+      sheet = sheets[0];
+      sheet.setName(CONFIG.SHEET_NAME);
+    } else {
+      const defaultSheet = ss.getSheetByName('ชีต1') || ss.getSheetByName('Sheet1');
+      if (defaultSheet && defaultSheet.getLastRow() <= 1) {
+        sheet = defaultSheet;
+        sheet.setName(CONFIG.SHEET_NAME);
+      } else {
+        sheet = ss.insertSheet(CONFIG.SHEET_NAME, 0);
+      }
+    }
   }
   
+  // ตรวจสอบว่ามีหัวตารางแล้วหรือไม่
+  if (sheet.getLastRow() === 0) {
+    applySheetHeaders(sheet);
+  }
+  
+  return sheet;
+}
+
+/**
+ * ตั้งค่าหัวตาราง Sheet
+ */
+function applySheetHeaders(sheet) {
   const headers = [
     'รหัสการจอง',
     'วันเวลาที่ลงทะเบียน',
@@ -63,8 +89,32 @@ function setupSheetHeaders() {
   
   sheet.setFrozenRows(1);
   sheet.autoResizeColumns(1, headers.length);
-  
-  SpreadsheetApp.getUi().alert('สำเร็จ', 'จัดรูปแบบหัวตารางเรียบร้อยแล้วค่ะ!', SpreadsheetApp.getUi().ButtonSet.OK);
+}
+
+/**
+ * จัดรูปแบบหัวตาราง Google Sheet ด้วยตนเอง
+ */
+function setupSheetHeaders() {
+  const sheet = getTargetSheet();
+  applySheetHeaders(sheet);
+  try {
+    SpreadsheetApp.getUi().alert('สำเร็จ', 'จัดรูปแบบหัวตารางเรียบร้อยแล้วค่ะ!', SpreadsheetApp.getUi().ButtonSet.OK);
+  } catch (e) {}
+}
+
+/**
+ * เมนูเมื่อเปิด Google Sheet
+ */
+function onOpen() {
+  try {
+    const ui = SpreadsheetApp.getUi();
+    ui.createMenu('🧥 ระบบลงทะเบียนจองเสื้อ')
+      .addItem('⚙️ 1. จัดรูปแบบหัวตารางอัตโนมัติ (Setup)', 'setupSheetHeaders')
+      .addItem('📊 2. สรุปยอดการจองตามไซส์ (Summary)', 'showSummaryDialog')
+      .addSeparator()
+      .addItem('🌐 3. เปิดหน้าเว็บลงทะเบียน (GitHub Pages)', 'openWebUrl')
+      .addToUi();
+  } catch (e) {}
 }
 
 /**
@@ -77,6 +127,19 @@ function doGet(e) {
     return handleGetRegistrations();
   }
   
+  if (action === 'setup') {
+    setupSheetHeaders();
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'success',
+      message: 'Sheet headers initialized successfully'
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  // รองรับการบันทึกผ่าน GET (กรณีบางเครือข่ายบล็อก POST)
+  if (action === 'book' && e.parameter && e.parameter.empId) {
+    return processBooking(e.parameter);
+  }
+  
   return ContentService.createTextOutput(JSON.stringify({
     status: 'online',
     appName: 'PPCH Phichit Jacket Registration 2026',
@@ -86,34 +149,35 @@ function doGet(e) {
 }
 
 /**
- * Handle HTTP POST Requests (บันทึกข้อมูลการจอง)
+ * Handle HTTP POST Requests (บันทึกข้อมูลการจองลง Google Sheet)
  */
 function doPost(e) {
+  let data;
+  if (e && e.postData && e.postData.contents) {
+    try {
+      data = JSON.parse(e.postData.contents);
+    } catch (err) {
+      data = e.parameter;
+    }
+  } else if (e && e.parameter) {
+    data = e.parameter;
+  } else {
+    data = {};
+  }
+  
+  return processBooking(data);
+}
+
+/**
+ * ประมวลผลและบันทึกข้อมูลการจองลง Google Sheet
+ */
+function processBooking(data) {
   const lock = LockService.getScriptLock();
   
   try {
-    // รอ Lock สูงสุด 30 วินาที ป้องกันบันทึกทับซ้อน
+    // ล็อก 30 วินาที ป้องกันบันทึกแถวทับกัน
     lock.waitLock(30000);
     
-    let data;
-    if (e.postData && e.postData.contents) {
-      try {
-        data = JSON.parse(e.postData.contents);
-      } catch (err) {
-        data = e.parameter;
-      }
-    } else {
-      data = e.parameter;
-    }
-    
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    let sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
-    if (!sheet) {
-      setupSheetHeaders();
-      sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
-    }
-    
-    // ตรวจสอบข้อมูลจำเป็น
     if (!data.empId || !data.fullName || !data.size) {
       return ContentService.createTextOutput(JSON.stringify({
         success: false,
@@ -121,7 +185,8 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
     
-    // สร้างรหัสการจอง
+    const sheet = getTargetSheet();
+    
     const now = new Date();
     const timestampStr = Utilities.formatDate(now, 'Asia/Bangkok', 'yyyy-MM-dd HH:mm:ss');
     const randomHex = Math.floor(1000 + Math.random() * 9000);
@@ -136,13 +201,13 @@ function doPost(e) {
       '4XL': 50
     };
     
-    const size = String(data.size).toUpperCase();
-    const chest = chestSizes[size] || 0;
+    const size = String(data.size).toUpperCase().trim();
+    const chest = chestSizes[size] || parseInt(data.chest, 10) || 0;
     const qty = parseInt(data.qty, 10) || 1;
     const pricePerUnitDesc = 'ราคาไม่เกิน 500 บาท / ตัว';
     const totalPrice = qty * 500;
     
-    // ตรวจสอบว่าเคยจองไว้แล้วหรือไม่ (ถ้าเคยจองจะอัปเดตบรรทัดเดิม)
+    // ตรวจสอบประวัติการจองเดิม หากมีรหัสพนักงานนี้แล้วให้อัปเดตบรรทัดเดิม
     const values = sheet.getDataRange().getValues();
     let existingRow = -1;
     
@@ -165,7 +230,7 @@ function doPost(e) {
       qty,
       pricePerUnitDesc,
       totalPrice,
-      String(data.paymentStatus || 'รอสรุปยอดหลังปิดรับจอง')
+      'รอสรุปยอดหลังปิดรับจอง'
     ];
     
     if (existingRow > 0) {
@@ -181,11 +246,13 @@ function doPost(e) {
       timestamp: timestampStr,
       empId: data.empId,
       fullName: data.fullName,
+      department: data.department || '-',
+      position: data.position || '-',
       size: size,
       chest: chest,
       qty: qty,
       totalPrice: totalPrice,
-      message: existingRow > 0 ? 'อัปเดตข้อมูลการจองเรียบร้อยแล้ว' : 'บันทึกการจองสำเร็จ'
+      message: existingRow > 0 ? 'อัปเดตข้อมูลการจองเดิมสำเร็จ' : 'บันทึกการจองสำเร็จ'
     })).setMimeType(ContentService.MimeType.JSON);
     
   } catch (err) {
@@ -199,26 +266,19 @@ function doPost(e) {
 }
 
 /**
- * ดึงรายการจองและสรุปผล
+ * ดึงรายการจองและสรุปผลจาก Google Sheet
  */
 function handleGetRegistrations() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
-  
-  if (!sheet) {
-    return ContentService.createTextOutput(JSON.stringify({
-      totalCount: 0,
-      items: [],
-      summaryBySize: {}
-    })).setMimeType(ContentService.MimeType.JSON);
-  }
-  
+  const sheet = getTargetSheet();
   const values = sheet.getDataRange().getValues();
+  
   if (values.length <= 1) {
     return ContentService.createTextOutput(JSON.stringify({
-      totalCount: 0,
-      items: [],
-      summaryBySize: {}
+      totalBookings: 0,
+      totalQty: 0,
+      totalAmount: 0,
+      summaryBySize: { 'M': 0, 'L': 0, 'XL': 0, '2XL': 0, '3XL': 0, '4XL': 0 },
+      items: []
     })).setMimeType(ContentService.MimeType.JSON);
   }
   
@@ -229,6 +289,10 @@ function handleGetRegistrations() {
   
   for (let i = 1; i < values.length; i++) {
     const row = values[i];
+    const size = String(row[6] || '').trim().toUpperCase();
+    const qty = Number(row[8]) || 0;
+    const price = Number(row[10]) || 0;
+    
     const item = {
       bookingId: row[0],
       timestamp: row[1],
@@ -236,23 +300,23 @@ function handleGetRegistrations() {
       fullName: row[3],
       department: row[4],
       position: row[5],
-      size: row[6],
+      size: size,
       chest: row[7],
-      qty: row[8],
+      qty: qty,
       pricePerUnit: row[9],
-      totalPrice: row[10],
-      paymentStatus: row[11]
+      totalPrice: price,
+      paymentStatus: row[11] || 'รอสรุปยอด'
     };
     items.push(item);
     
-    if (summaryBySize[item.size] !== undefined) {
-      summaryBySize[item.size] += Number(item.qty) || 0;
-    } else {
-      summaryBySize[item.size] = Number(item.qty) || 0;
+    if (summaryBySize[size] !== undefined) {
+      summaryBySize[size] += qty;
+    } else if (size) {
+      summaryBySize[size] = qty;
     }
     
-    totalQty += Number(item.qty) || 0;
-    totalAmount += Number(item.totalPrice) || 0;
+    totalQty += qty;
+    totalAmount += price;
   }
   
   return ContentService.createTextOutput(JSON.stringify({
@@ -268,18 +332,12 @@ function handleGetRegistrations() {
  * ป๊อปอัปสรุปยอดบน Google Sheet
  */
 function showSummaryDialog() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
+  const sheet = getTargetSheet();
+  const values = sheet.getDataRange().getValues();
   const ui = SpreadsheetApp.getUi();
   
-  if (!sheet) {
-    ui.alert('ยังไม่มีข้อมูลการจอง');
-    return;
-  }
-  
-  const values = sheet.getDataRange().getValues();
   if (values.length <= 1) {
-    ui.alert('ยังไม่มีข้อมูลการจอง');
+    ui.alert('ยังไม่มีข้อมูลการจองในระบบ');
     return;
   }
   
@@ -293,7 +351,7 @@ function showSummaryDialog() {
     const price = Number(values[i][10]) || 0;
     if (summary[size] !== undefined) {
       summary[size] += qty;
-    } else {
+    } else if (size) {
       summary[size] = qty;
     }
     totalQty += qty;
@@ -305,12 +363,12 @@ function showSummaryDialog() {
   msg += `• รวมเสื้อทั้งหมด: ${totalQty} ตัว\n`;
   msg += `• ยอดเงินประมาณการรวม: ไม่เกิน ${totalAmount.toLocaleString()} บาท\n\n`;
   msg += 'จำแนกตามไซส์ (รอบอก):\n';
-  msg += `  - M (รอบอก 40"): ${summary['M']} ตัว\n`;
-  msg += `  - L (รอบอก 42"): ${summary['L']} ตัว\n`;
-  msg += `  - XL (รอบอก 44"): ${summary['XL']} ตัว\n`;
-  msg += `  - 2XL (รอบอก 46"): ${summary['2XL']} ตัว\n`;
-  msg += `  - 3XL (รอบอก 48"): ${summary['3XL']} ตัว\n`;
-  msg += `  - 4XL (รอบอก 50"): ${summary['4XL']} ตัว\n`;
+  msg += `  - M (รอบอก 40"): ${summary['M'] || 0} ตัว\n`;
+  msg += `  - L (รอบอก 42"): ${summary['L'] || 0} ตัว\n`;
+  msg += `  - XL (รอบอก 44"): ${summary['XL'] || 0} ตัว\n`;
+  msg += `  - 2XL (รอบอก 46"): ${summary['2XL'] || 0} ตัว\n`;
+  msg += `  - 3XL (รอบอก 48"): ${summary['3XL'] || 0} ตัว\n`;
+  msg += `  - 4XL (รอบอก 50"): ${summary['4XL'] || 0} ตัว\n`;
   
   ui.alert('สรุปยอดการจองเสื้อ', msg, ui.ButtonSet.OK);
 }
