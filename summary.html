@@ -236,13 +236,28 @@
 
   <script>
     const STORAGE_KEY = 'ppch_jacket_bookings_2026';
+    const GAS_ENDPOINT = ''; // If configured, will fetch central Google Sheet registrations
     let bookings = [];
 
     document.addEventListener('DOMContentLoaded', () => {
       loadData();
     });
 
-    function loadData() {
+    async function loadData() {
+      if (GAS_ENDPOINT) {
+        try {
+          const res = await fetch(`${GAS_ENDPOINT}?action=getRegistrations`);
+          const data = await res.json();
+          if (data && data.items && data.items.length > 0) {
+            bookings = data.items;
+            renderDashboard();
+            return;
+          }
+        } catch (err) {
+          console.warn('Could not fetch from GAS endpoint, falling back to local storage:', err);
+        }
+      }
+
       try {
         const stored = localStorage.getItem(STORAGE_KEY);
         bookings = stored ? JSON.parse(stored) : [];

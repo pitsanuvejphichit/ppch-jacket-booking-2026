@@ -75,25 +75,15 @@
     </div>
 
     <div class="flex items-center gap-1.5">
-      <a href="summary.html" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs flex items-center" title="สรุปยอดจอง">
-        <i class="ph ph-chart-bar text-base"></i>
+      <a href="summary.html" class="px-2.5 py-1.5 rounded-xl bg-blue-50 text-blue-900 text-[11px] font-semibold border border-blue-200 flex items-center gap-1" title="ฐานข้อมูลสรุปยอด">
+        <i class="ph ph-database text-sm"></i>
+        <span>ฐานข้อมูล</span>
       </a>
-      <button onclick="switchView('desktop')" class="px-2.5 py-1.5 rounded-xl bg-sky-50 text-sky-800 text-[11px] font-semibold border border-sky-200">
+      <button onclick="switchView('desktop')" class="px-2.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-[11px] font-semibold">
         💻 จอคอม
       </button>
     </div>
   </header>
-
-  <!-- Period & Price Notification Bar -->
-  <div class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white px-4 py-2.5 flex items-center justify-between text-xs">
-    <div class="flex items-center gap-2">
-      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-      <span>เปิดรับจอง: <strong>12 - 19 ต.ค. 69</strong></span>
-    </div>
-    <div class="bg-amber-400 text-slate-950 font-bold px-2 py-0.5 rounded text-[11px]">
-      ราคาไม่เกิน 500 บาท / ตัว
-    </div>
-  </div>
 
   <!-- Main Mobile Content Area -->
   <main class="p-4 space-y-5">
@@ -374,7 +364,8 @@
     const MOBILE_CONFIG = {
       pricePerUnit: 500,
       priceDesc: 'ราคาไม่เกิน 500 บาท / ตัว',
-      storageKey: 'ppch_jacket_bookings_2026'
+      storageKey: 'ppch_jacket_bookings_2026',
+      gasEndpoint: '' // Google Apps Script Web App URL
     };
 
     let mSelectedSize = 'M';
@@ -556,6 +547,20 @@
         else list.unshift(record);
         localStorage.setItem(MOBILE_CONFIG.storageKey, JSON.stringify(list));
       } catch (err) {}
+
+      // Sync to Google Apps Script if endpoint is configured
+      if (MOBILE_CONFIG.gasEndpoint) {
+        try {
+          fetch(MOBILE_CONFIG.gasEndpoint, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(record)
+          });
+        } catch (err) {
+          console.warn('Backend sync failed:', err);
+        }
+      }
 
       // Show slip
       displayMobileSlip(record);
