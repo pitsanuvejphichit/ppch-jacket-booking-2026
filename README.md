@@ -11,23 +11,28 @@
 - **การปักตราสัญลักษณ์**:
   - **อกซ้าย**: ตราสัญลักษณ์มาตรฐานเครือพริ้นซิเพิล เฮลท์แคร์
   - **ด้านหลัง**: ปักตัวอักษรสีขาวคมชัด `PITSANUVEJ PHICHIT`
-- **ราคาพิเศษสวัสดิการบุคลากร**: **390 บาท / ตัว** (ไม่เกิน 500 บาท)
-- **ระยะเวลาเปิดรับจอง**: **12 - 19 ตุลาคม 2569** (สิ้นสุด 19 ต.ค. 2569 เวลา 23:59:59 น.)
+- **ราคาประมาณการ**: **ราคาไม่เกิน 500 บาท / ตัว**
+- **ระยะเวลาเปิดรับจอง**: **12 - 19 ตุลาคม 2569**
+- **แบบฟอร์มลงทะเบียน (Minimal & Streamlined)**:
+  1. ค้นหารหัสพนักงาน / ชื่อ-นามสกุล (ระบบ Autocomplete เชื่อมฐานข้อมูลบุคลากร 209 ท่าน)
+  2. เลือกขนาดเสื้อ (ไซส์ M - 4XL)
+  3. จำนวนที่ต้องการ (ตัว)
+  *(ไม่มีการเก็บเบอร์โทรศัพท์, ไม่มีช่องทางการชำระเงิน, ไม่มีหมายเหตุเพิ่มเติม)*
 
 ---
 
 ## 📏 ตารางขนาดรอบอก (Size Chart)
 
-| ไซส์ (Size) | รอบอก (Chest) | ความยาวตัว (Length) | ความเหมาะสม |
-| :---: | :---: | :---: | :--- |
-| **M** | **40 นิ้ว** | 26 นิ้ว | รอบอกจริง 36" - 38" |
-| **L** | **42 นิ้ว** | 27 นิ้ว | รอบอกจริง 38" - 40" |
-| **XL** | **44 นิ้ว** | 28 นิ้ว | รอบอกจริง 40" - 42" |
-| **2XL** | **46 นิ้ว** | 29 นิ้ว | รอบอกจริง 42" - 44" |
-| **3XL** | **48 นิ้ว** | 30 นิ้ว | รอบอกจริง 44" - 46" |
-| **4XL** | **50 นิ้ว** | 31 นิ้ว | รอบอกจริง 46" - 48" |
+| ไซส์ (Size) | รอบอก (Chest) |
+| :---: | :---: |
+| **M** | **40 นิ้ว** |
+| **L** | **42 นิ้ว** |
+| **XL** | **44 นิ้ว** |
+| **2XL** | **46 นิ้ว** |
+| **3XL** | **48 นิ้ว** |
+| **4XL** | **50 นิ้ว** |
 
-> 💡 **คำแนะนำ**: แนะนำให้วัดรอบอกจริงแล้วเลือกขนาดที่ใหญ่กว่า 2 ถึง 4 นิ้ว เนื่องจากเป็นเสื้อคลุมสำหรับสวมทับเครื่องแบบปฏิบัติงาน
+*(40 - 50 นิ้ว คือขนาดรอบอก)*
 
 ---
 
@@ -35,9 +40,9 @@
 
 ```text
 projects/13-ลงทะเบียนจองเสื้อ/
-├── index.html              # Smart Auto-detect Router (ตรวจจับหน้าจออัตโนมัติ)
-├── desktop.html            # มุมมองจอคอมพิวเตอร์ (Widescreen 100% Split View & Preview)
-├── mobile.html             # มุมมองสมาร์ตโฟน (Touch First, Bottom Sheet, Thumb ergonomics)
+├── index.html              # Smart Auto-detect Router (ตรวจจับขนาดจอ & ระบบปฏิบัติการอัตโนมัติ)
+├── desktop.html            # มุมมองจอคอมพิวเตอร์ (Widescreen Split View & Live Preview)
+├── mobile.html             # มุมมองสมาร์ตโฟน (Touch-first, Bottom Sheet, Ergonomic UI)
 ├── summary.html            # แดชบอร์ดสรุปยอดสด & สถิติจำแนกไซส์/แผนก & ส่งออก CSV
 ├── assets/
 │   ├── logo.png            # โลโก้ทางการโรงพยาบาลพิษณุเวช
@@ -57,8 +62,8 @@ projects/13-ลงทะเบียนจองเสื้อ/
 
 ## 🌐 การเข้าถึงระบบ (Live Production)
 
-- **GitHub Pages URL**: `https://pitsanuvejphichit.github.io/ppch-jacket-booking-2026/`
-- **มุมมองคอมพิวเตอร์**: `https://pitsanuvejphichit.github.io/ppch-jacket-booking-2026/desktop.html`
-- **มุมมองมือถือ**: `https://pitsanuvejphichit.github.io/ppch-jacket-booking-2026/mobile.html`
-- **แดชบอร์ดสรุปยอด**: `https://pitsanuvejphichit.github.io/ppch-jacket-booking-2026/summary.html`
-- **GitHub Repository**: `https://github.com/pitsanuvejphichit/ppch-jacket-booking-2026`
+- **GitHub Pages URL**: [https://pitsanuvejphichit.github.io/ppch-jacket-booking-2026/](https://pitsanuvejphichit.github.io/ppch-jacket-booking-2026/)
+- **มุมมองคอมพิวเตอร์**: [https://pitsanuvejphichit.github.io/ppch-jacket-booking-2026/desktop.html](https://pitsanuvejphichit.github.io/ppch-jacket-booking-2026/desktop.html)
+- **มุมมองมือถือ**: [https://pitsanuvejphichit.github.io/ppch-jacket-booking-2026/mobile.html](https://pitsanuvejphichit.github.io/ppch-jacket-booking-2026/mobile.html)
+- **แดชบอร์ดสรุปยอด**: [https://pitsanuvejphichit.github.io/ppch-jacket-booking-2026/summary.html](https://pitsanuvejphichit.github.io/ppch-jacket-booking-2026/summary.html)
+- **GitHub Repository**: [https://github.com/pitsanuvejphichit/ppch-jacket-booking-2026](https://github.com/pitsanuvejphichit/ppch-jacket-booking-2026)

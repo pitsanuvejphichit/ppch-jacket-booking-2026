@@ -148,11 +148,11 @@
   <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white py-2.5 px-4">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between text-xs gap-2">
       <div class="flex items-center gap-2">
-        <span class="bg-amber-400 text-slate-950 px-2 py-0.5 rounded font-bold uppercase tracking-wider text-[11px]">Special Staff Price</span>
-        <span>เสื้อคลุมแจ็กเก็ตสีกรมท่า ปักตราสัญลักษณ์และข้อความ ราคาพิเศษบุคลากร <strong class="text-amber-300 font-bold text-sm">390 บาท</strong> (ราคาปกติ 590.-)</span>
+        <span class="bg-amber-400 text-slate-950 px-2 py-0.5 rounded font-bold uppercase tracking-wider text-[11px]">PPCH Jacket 2569</span>
+        <span>เสื้อคลุมแจ็กเก็ตสีกรมท่า ปักตราสัญลักษณ์และข้อความ PITSANUVEJ PHICHIT • <strong class="text-amber-300 font-bold text-sm">ราคาไม่เกิน 500 บาท / ตัว</strong></span>
       </div>
       <div class="flex items-center gap-3 text-slate-300">
-        <span><i class="ph ph-calendar-check mr-1"></i>สิ้นสุดรับจอง 19 ต.ค. 2569 เวลา 23:59 น.</span>
+        <span><i class="ph ph-calendar-check mr-1"></i>ระยะเวลาลงทะเบียน 12 - 19 ต.ค. 2569</span>
         <span><i class="ph ph-t-shirt mr-1"></i>รอบอก 40" - 50" (ไซส์ M - 4XL)</span>
       </div>
     </div>
@@ -174,8 +174,8 @@
       <!-- Quick stats pills -->
       <div class="flex items-center gap-3">
         <div class="bg-white border border-slate-200 rounded-xl px-4 py-2 shadow-xs text-right">
-          <div class="text-[11px] text-slate-500 font-medium">ราคาต่อตัว</div>
-          <div class="text-xl font-bold text-blue-950 font-inter">฿390 <span class="text-xs font-normal text-slate-400 font-sans">/ ตัว</span></div>
+          <div class="text-[11px] text-slate-500 font-medium">ราคาประมาณการ</div>
+          <div class="text-base sm:text-lg font-bold text-blue-950">ไม่เกิน 500 บาท <span class="text-xs font-normal text-slate-400 font-sans">/ ตัว</span></div>
         </div>
         <div class="bg-white border border-slate-200 rounded-xl px-4 py-2 shadow-xs text-right">
           <div class="text-[11px] text-slate-500 font-medium">ยอดสั่งจองแล้วขณะนี้</div>
@@ -253,59 +253,44 @@
             <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
               <i class="ph ph-ruler text-blue-700 text-base"></i> ตารางขนาดรอบอก (Size Guide)
             </h3>
-            <span class="text-[11px] font-medium text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">หน่วย: นิ้ว (Inches)</span>
+            <span class="text-[11px] font-medium text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">หน่วย: นิ้ว (40-50 คือรอบอก)</span>
           </div>
 
           <p class="text-xs text-slate-600">
-            คลิกเลือกขนาดที่ต้องการจากตารางเพื่อใส่ในฟอร์มทันที <span class="text-blue-700 font-medium">(แนะนำบวกเผื่อ 2 - 4 นิ้วจากรอบอกจริง)</span>
+            คลิกเลือกขนาดที่ต้องการจากตารางเพื่อใส่ในฟอร์มทันที
           </p>
 
           <!-- Size Interactive Grid -->
           <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
             <!-- M -->
-            <div class="size-card rounded-xl p-2.5 text-center flex flex-col items-center justify-center" onclick="selectSize('M', 40)">
+            <div class="size-card rounded-xl p-3 text-center flex flex-col items-center justify-center" onclick="selectSize('M', 40)">
               <span class="font-inter font-bold text-lg text-slate-900">M</span>
-              <span class="text-xs font-semibold text-blue-700 font-inter">40"</span>
-              <span class="text-[10px] text-slate-500 mt-0.5">ยาว 26"</span>
+              <span class="text-xs font-semibold text-blue-700 font-inter mt-1">40"</span>
             </div>
             <!-- L -->
-            <div class="size-card rounded-xl p-2.5 text-center flex flex-col items-center justify-center" onclick="selectSize('L', 42)">
+            <div class="size-card rounded-xl p-3 text-center flex flex-col items-center justify-center" onclick="selectSize('L', 42)">
               <span class="font-inter font-bold text-lg text-slate-900">L</span>
-              <span class="text-xs font-semibold text-blue-700 font-inter">42"</span>
-              <span class="text-[10px] text-slate-500 mt-0.5">ยาว 27"</span>
+              <span class="text-xs font-semibold text-blue-700 font-inter mt-1">42"</span>
             </div>
             <!-- XL -->
-            <div class="size-card rounded-xl p-2.5 text-center flex flex-col items-center justify-center" onclick="selectSize('XL', 44)">
+            <div class="size-card rounded-xl p-3 text-center flex flex-col items-center justify-center" onclick="selectSize('XL', 44)">
               <span class="font-inter font-bold text-lg text-slate-900">XL</span>
-              <span class="text-xs font-semibold text-blue-700 font-inter">44"</span>
-              <span class="text-[10px] text-slate-500 mt-0.5">ยาว 28"</span>
+              <span class="text-xs font-semibold text-blue-700 font-inter mt-1">44"</span>
             </div>
             <!-- 2XL -->
-            <div class="size-card rounded-xl p-2.5 text-center flex flex-col items-center justify-center" onclick="selectSize('2XL', 46)">
+            <div class="size-card rounded-xl p-3 text-center flex flex-col items-center justify-center" onclick="selectSize('2XL', 46)">
               <span class="font-inter font-bold text-lg text-slate-900">2XL</span>
-              <span class="text-xs font-semibold text-blue-700 font-inter">46"</span>
-              <span class="text-[10px] text-slate-500 mt-0.5">ยาว 29"</span>
+              <span class="text-xs font-semibold text-blue-700 font-inter mt-1">46"</span>
             </div>
             <!-- 3XL -->
-            <div class="size-card rounded-xl p-2.5 text-center flex flex-col items-center justify-center" onclick="selectSize('3XL', 48)">
+            <div class="size-card rounded-xl p-3 text-center flex flex-col items-center justify-center" onclick="selectSize('3XL', 48)">
               <span class="font-inter font-bold text-lg text-slate-900">3XL</span>
-              <span class="text-xs font-semibold text-blue-700 font-inter">48"</span>
-              <span class="text-[10px] text-slate-500 mt-0.5">ยาว 30"</span>
+              <span class="text-xs font-semibold text-blue-700 font-inter mt-1">48"</span>
             </div>
             <!-- 4XL -->
-            <div class="size-card rounded-xl p-2.5 text-center flex flex-col items-center justify-center" onclick="selectSize('4XL', 50)">
+            <div class="size-card rounded-xl p-3 text-center flex flex-col items-center justify-center" onclick="selectSize('4XL', 50)">
               <span class="font-inter font-bold text-lg text-slate-900">4XL</span>
-              <span class="text-xs font-semibold text-blue-700 font-inter">50"</span>
-              <span class="text-[10px] text-slate-500 mt-0.5">ยาว 31"</span>
-            </div>
-          </div>
-
-          <!-- Measurement Tip Box -->
-          <div class="bg-amber-50 border border-amber-200/80 rounded-xl p-3 text-xs text-amber-900 flex items-start gap-2.5">
-            <i class="ph ph-info text-amber-600 text-lg flex-shrink-0 mt-0.5"></i>
-            <div>
-              <strong class="font-semibold block">คำแนะนำในการเลือกไซส์เสื้อคลุม</strong>
-              เนื่องจากเป็นเสื้อคลุมแจ็กเก็ตที่มีซับในและใช้สวมทับเสื้อทำงาน แนะนำให้วัดรอบอกตัวท่านเอง แล้วเลือกขนาดที่ใหญ่กว่ารอบอกจริง 2 ถึง 4 นิ้ว เพื่อความสบายและคล่องตัวขณะสวมใส่
+              <span class="text-xs font-semibold text-blue-700 font-inter mt-1">50"</span>
             </div>
           </div>
         </div>
@@ -389,87 +374,67 @@
               <input type="hidden" id="position" name="position">
             </div>
 
-            <!-- Phone Number Field -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="space-y-1.5">
-                <label for="phone" class="block text-xs font-semibold text-slate-700">
-                  📱 เบอร์โทรศัพท์ติดต่อ <span class="text-rose-500">*</span>
-                </label>
-                <input type="tel" 
-                       id="phone" 
-                       name="phone" 
-                       placeholder="เช่น 081-234-5678 หรือเบอร์ภายใน" 
-                       required
-                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition">
-              </div>
-
-              <div class="space-y-1.5">
-                <label for="quantity" class="block text-xs font-semibold text-slate-700">
-                  🔢 จำนวนที่ต้องการสั่งจอง (ตัว) <span class="text-rose-500">*</span>
-                </label>
-                <div class="flex items-center">
-                  <button type="button" onclick="adjustQty(-1)" class="w-10 h-10 rounded-l-xl bg-slate-100 border border-slate-300 border-r-0 hover:bg-slate-200 flex items-center justify-center text-slate-700 text-lg font-bold">
-                    -
-                  </button>
-                  <input type="number" 
-                         id="quantity" 
-                         name="quantity" 
-                         value="1" 
-                         min="1" 
-                         max="10" 
-                         onchange="onQtyChange()" 
-                         class="w-full text-center py-2.5 bg-slate-50 border border-slate-300 text-sm font-bold font-inter focus:bg-white focus:outline-none">
-                  <button type="button" onclick="adjustQty(1)" class="w-10 h-10 rounded-r-xl bg-slate-100 border border-slate-300 border-l-0 hover:bg-slate-200 flex items-center justify-center text-slate-700 text-lg font-bold">
-                    +
-                  </button>
-                </div>
+            <!-- Quantity Field -->
+            <div class="space-y-1.5 max-w-xs">
+              <label for="quantity" class="block text-xs font-semibold text-slate-700">
+                🔢 จำนวนที่ต้องการสั่งจอง (ตัว) <span class="text-rose-500">*</span>
+              </label>
+              <div class="flex items-center">
+                <button type="button" onclick="adjustQty(-1)" class="w-10 h-10 rounded-l-xl bg-slate-100 border border-slate-300 border-r-0 hover:bg-slate-200 flex items-center justify-center text-slate-700 text-lg font-bold">
+                  -
+                </button>
+                <input type="number" 
+                       id="quantity" 
+                       name="quantity" 
+                       value="1" 
+                       min="1" 
+                       max="10" 
+                       onchange="onQtyChange()" 
+                       class="w-20 text-center py-2.5 bg-slate-50 border border-slate-300 text-sm font-bold font-inter focus:bg-white focus:outline-none">
+                <button type="button" onclick="adjustQty(1)" class="w-10 h-10 rounded-r-xl bg-slate-100 border border-slate-300 border-l-0 hover:bg-slate-200 flex items-center justify-center text-slate-700 text-lg font-bold">
+                  +
+                </button>
               </div>
             </div>
 
             <!-- Size Selection Section -->
             <div class="space-y-2">
               <label class="block text-xs font-semibold text-slate-700 flex items-center justify-between">
-                <span>👕 เลือกขนาดไซส์เสื้อ <span class="text-rose-500">*</span></span>
+                <span>👕 เลือกขนาดไซส์เสื้อ (40-50 คือรอบอก) <span class="text-rose-500">*</span></span>
                 <span id="selectedSizeSummaryBadge" class="text-xs font-bold text-blue-900 bg-blue-100 px-2.5 py-0.5 rounded-full">ยังไม่ได้เลือกไซส์</span>
               </label>
 
               <!-- Size selector button radio cards -->
               <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="formSizeCards">
                 
-                <div class="form-size-card p-3 rounded-xl border-2 border-slate-200 hover:border-blue-300 cursor-pointer transition text-center flex flex-col items-center" data-size="M" data-chest="40" onclick="selectSize('M', 40)">
+                <div class="form-size-card p-3.5 rounded-xl border-2 border-slate-200 hover:border-blue-300 cursor-pointer transition text-center flex flex-col items-center" data-size="M" data-chest="40" onclick="selectSize('M', 40)">
                   <span class="font-bold font-inter text-base text-slate-800">ไซส์ M</span>
-                  <span class="text-xs font-semibold text-blue-800 font-inter mt-0.5">รอบอก 40 นิ้ว</span>
-                  <span class="text-[11px] text-slate-500">ความยาว 26"</span>
+                  <span class="text-xs font-semibold text-blue-800 font-inter mt-1">รอบอก 40 นิ้ว</span>
                 </div>
 
-                <div class="form-size-card p-3 rounded-xl border-2 border-slate-200 hover:border-blue-300 cursor-pointer transition text-center flex flex-col items-center" data-size="L" data-chest="42" onclick="selectSize('L', 42)">
+                <div class="form-size-card p-3.5 rounded-xl border-2 border-slate-200 hover:border-blue-300 cursor-pointer transition text-center flex flex-col items-center" data-size="L" data-chest="42" onclick="selectSize('L', 42)">
                   <span class="font-bold font-inter text-base text-slate-800">ไซส์ L</span>
-                  <span class="text-xs font-semibold text-blue-800 font-inter mt-0.5">รอบอก 42 นิ้ว</span>
-                  <span class="text-[11px] text-slate-500">ความยาว 27"</span>
+                  <span class="text-xs font-semibold text-blue-800 font-inter mt-1">รอบอก 42 นิ้ว</span>
                 </div>
 
-                <div class="form-size-card p-3 rounded-xl border-2 border-slate-200 hover:border-blue-300 cursor-pointer transition text-center flex flex-col items-center" data-size="XL" data-chest="44" onclick="selectSize('XL', 44)">
+                <div class="form-size-card p-3.5 rounded-xl border-2 border-slate-200 hover:border-blue-300 cursor-pointer transition text-center flex flex-col items-center" data-size="XL" data-chest="44" onclick="selectSize('XL', 44)">
                   <span class="font-bold font-inter text-base text-slate-800">ไซส์ XL</span>
-                  <span class="text-xs font-semibold text-blue-800 font-inter mt-0.5">รอบอก 44 นิ้ว</span>
-                  <span class="text-[11px] text-slate-500">ความยาว 28"</span>
+                  <span class="text-xs font-semibold text-blue-800 font-inter mt-1">รอบอก 44 นิ้ว</span>
                 </div>
 
-                <div class="form-size-card p-3 rounded-xl border-2 border-slate-200 hover:border-blue-300 cursor-pointer transition text-center flex flex-col items-center" data-size="2XL" data-chest="46" onclick="selectSize('2XL', 46)">
+                <div class="form-size-card p-3.5 rounded-xl border-2 border-slate-200 hover:border-blue-300 cursor-pointer transition text-center flex flex-col items-center" data-size="2XL" data-chest="46" onclick="selectSize('2XL', 46)">
                   <span class="font-bold font-inter text-base text-slate-800">ไซส์ 2XL</span>
-                  <span class="text-xs font-semibold text-blue-800 font-inter mt-0.5">รอบอก 46 นิ้ว</span>
-                  <span class="text-[11px] text-slate-500">ความยาว 29"</span>
+                  <span class="text-xs font-semibold text-blue-800 font-inter mt-1">รอบอก 46 นิ้ว</span>
                 </div>
 
-                <div class="form-size-card p-3 rounded-xl border-2 border-slate-200 hover:border-blue-300 cursor-pointer transition text-center flex flex-col items-center" data-size="3XL" data-chest="48" onclick="selectSize('3XL', 48)">
+                <div class="form-size-card p-3.5 rounded-xl border-2 border-slate-200 hover:border-blue-300 cursor-pointer transition text-center flex flex-col items-center" data-size="3XL" data-chest="48" onclick="selectSize('3XL', 48)">
                   <span class="font-bold font-inter text-base text-slate-800">ไซส์ 3XL</span>
-                  <span class="text-xs font-semibold text-blue-800 font-inter mt-0.5">รอบอก 48 นิ้ว</span>
-                  <span class="text-[11px] text-slate-500">ความยาว 30"</span>
+                  <span class="text-xs font-semibold text-blue-800 font-inter mt-1">รอบอก 48 นิ้ว</span>
                 </div>
 
-                <div class="form-size-card p-3 rounded-xl border-2 border-slate-200 hover:border-blue-300 cursor-pointer transition text-center flex flex-col items-center" data-size="4XL" data-chest="50" onclick="selectSize('4XL', 50)">
+                <div class="form-size-card p-3.5 rounded-xl border-2 border-slate-200 hover:border-blue-300 cursor-pointer transition text-center flex flex-col items-center" data-size="4XL" data-chest="50" onclick="selectSize('4XL', 50)">
                   <span class="font-bold font-inter text-base text-slate-800">ไซส์ 4XL</span>
-                  <span class="text-xs font-semibold text-blue-800 font-inter mt-0.5">รอบอก 50 นิ้ว</span>
-                  <span class="text-[11px] text-slate-500">ความยาว 31"</span>
+                  <span class="text-xs font-semibold text-blue-800 font-inter mt-1">รอบอก 50 นิ้ว</span>
                 </div>
 
               </div>
@@ -479,63 +444,21 @@
               <input type="hidden" id="selectedChest" name="selectedChest">
             </div>
 
-            <!-- Payment Method Section -->
-            <div class="space-y-2">
-              <label class="block text-xs font-semibold text-slate-700">
-                💳 ช่องทางการชำระเงิน <span class="text-rose-500">*</span>
-              </label>
-              
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <label class="payment-method-card flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-blue-300 cursor-pointer transition bg-slate-50/50">
-                  <input type="radio" name="paymentMethod" value="พร้อมเพย์ QR Code" checked class="text-blue-600 focus:ring-blue-500 h-4 w-4">
-                  <div>
-                    <span class="text-xs font-semibold text-slate-900 block">สแกน QR Code</span>
-                    <span class="text-[11px] text-slate-500">พร้อมเพย์ รพ.</span>
-                  </div>
-                </label>
-
-                <label class="payment-method-card flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-blue-300 cursor-pointer transition bg-slate-50/50">
-                  <input type="radio" name="paymentMethod" value="หักเงินเดือน (สวัสดิการ)" class="text-blue-600 focus:ring-blue-500 h-4 w-4">
-                  <div>
-                    <span class="text-xs font-semibold text-slate-900 block">หักเงินเดือน</span>
-                    <span class="text-[11px] text-slate-500">สวัสดิการพนักงาน</span>
-                  </div>
-                </label>
-
-                <label class="payment-method-card flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-blue-300 cursor-pointer transition bg-slate-50/50">
-                  <input type="radio" name="paymentMethod" value="เงินสดวันรับเสื้อ" class="text-blue-600 focus:ring-blue-500 h-4 w-4">
-                  <div>
-                    <span class="text-xs font-semibold text-slate-900 block">เงินสดวันรับเสื้อ</span>
-                    <span class="text-[11px] text-slate-500">ชำระที่ฝ่ายบุคคล HRD</span>
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            <!-- Additional Note -->
-            <div class="space-y-1.5">
-              <label for="note" class="block text-xs font-semibold text-slate-700">
-                📝 หมายเหตุเพิ่มเติม (ถ้ามี)
-              </label>
-              <input type="text" 
-                     id="note" 
-                     name="note" 
-                     placeholder="เช่น สั่งเพิ่มให้เพื่อนร่วมงาน หรือระบุข้อมูลเพิ่มเติม..."
-                     class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition">
-            </div>
-
             <!-- Order Total & Summary Callout Card -->
             <div class="p-4 rounded-2xl bg-gradient-to-r from-blue-900 to-indigo-950 text-white shadow-md flex items-center justify-between">
               <div>
-                <span class="text-xs text-blue-200 block">สรุปยอดชำระทั้งสิ้น (Total Amount)</span>
-                <div class="text-xs text-slate-300 mt-0.5">
-                  <span id="summaryCalculationText">390 บาท × 1 ตัว</span>
+                <span class="text-xs text-blue-200 block">สรุปการลงทะเบียนจองเสื้อ</span>
+                <div class="text-xs text-slate-200 mt-1">
+                  <span id="summaryCalculationText">ไซส์ M (อก 40") • จำนวน 1 ตัว</span>
+                </div>
+                <div class="text-[11px] text-amber-300 mt-0.5 font-medium">
+                  ราคาไม่เกิน 500 บาท / ตัว
                 </div>
               </div>
 
               <div class="text-right">
-                <span class="text-2xl sm:text-3xl font-bold font-inter text-amber-300" id="totalPriceDisplay">฿390</span>
-                <span class="text-[11px] text-blue-200 block">สุทธิ (รวมภาษี)</span>
+                <span class="text-xl sm:text-2xl font-bold text-amber-300" id="totalPriceDisplay">ไม่เกิน 500 บาท</span>
+                <span class="text-[11px] text-blue-200 block" id="totalPriceSubText">(ยอดรวมตามจริงไม่เกิน 500 บ.)</span>
               </div>
             </div>
 
@@ -602,8 +525,7 @@
               <th class="py-2.5 px-3 text-center">ไซส์</th>
               <th class="py-2.5 px-3 text-center">รอบอก</th>
               <th class="py-2.5 px-3 text-center">จำนวน</th>
-              <th class="py-2.5 px-3 text-right">ยอดเงิน</th>
-              <th class="py-2.5 px-3">วิธีชำระ</th>
+              <th class="py-2.5 px-3 text-right">ราคาประมาณการ</th>
               <th class="py-2.5 px-3 text-center">จัดการ</th>
             </tr>
           </thead>
@@ -685,17 +607,13 @@
             <span class="text-slate-500">ตำแหน่ง:</span>
             <span class="text-slate-800" id="slipPosition">-</span>
           </div>
-          <div class="flex justify-between">
-            <span class="text-slate-500">เบอร์โทรศัพท์:</span>
-            <span class="text-slate-800 font-inter" id="slipPhone">-</span>
-          </div>
         </div>
 
         <!-- Order Items -->
         <div class="border-t border-b border-dashed border-slate-200 py-3 space-y-2">
           <div class="flex justify-between text-slate-600 font-medium">
             <span>รายการ</span>
-            <span>จำนวน x ราคา</span>
+            <span>จำนวน</span>
           </div>
           <div class="flex justify-between font-bold text-slate-900 text-sm">
             <div>
@@ -704,19 +622,19 @@
               <span class="text-xs font-normal text-slate-500" id="slipChest">(อก 40")</span>
             </div>
             <div class="font-inter">
-              <span id="slipQty">1</span> × ฿390
+              <span id="slipQty">1</span> ตัว
             </div>
           </div>
-          <div class="flex justify-between text-xs text-slate-500 pt-1">
-            <span>วิธีชำระเงิน:</span>
-            <span class="font-semibold text-slate-700" id="slipPaymentMethod">พร้อมเพย์ QR Code</span>
+          <div class="flex justify-between text-xs text-amber-800 bg-amber-50 px-2 py-1 rounded-md">
+            <span>เงื่อนไขราคา:</span>
+            <span class="font-semibold">ราคาไม่เกิน 500 บาท / ตัว</span>
           </div>
         </div>
 
         <!-- Total Price -->
         <div class="flex justify-between items-center text-sm font-bold bg-blue-50 p-3 rounded-xl border border-blue-100">
-          <span class="text-blue-950">ยอดชำระทั้งสิ้น:</span>
-          <span class="text-xl font-inter text-blue-900" id="slipTotalPrice">฿390</span>
+          <span class="text-blue-950">ยอดชำระประมาณการ:</span>
+          <span class="text-lg font-bold text-blue-900" id="slipTotalPrice">ไม่เกิน 500 บาท</span>
         </div>
 
         <div class="text-[11px] text-slate-400 text-center space-y-0.5">
@@ -761,7 +679,7 @@
   <!-- Application Logic -->
   <script>
     const APP_CONFIG = {
-      pricePerUnit: 390,
+      maxPricePerUnit: 500,
       endDate: new Date('2026-10-19T23:59:59+07:00').getTime(),
       storageKey: 'ppch_jacket_bookings_2026',
       gasEndpoint: '' // Set to Google Apps Script Web App URL if deploying with live backend
@@ -888,10 +806,11 @@
     function updateTotalCalculation() {
       const qtyInput = document.getElementById('quantity');
       const qty = parseInt(qtyInput.value, 10) || 1;
-      const total = qty * APP_CONFIG.pricePerUnit;
+      const maxTotal = qty * APP_CONFIG.maxPricePerUnit;
       
-      document.getElementById('totalPriceDisplay').innerText = `฿${total.toLocaleString()}`;
-      document.getElementById('summaryCalculationText').innerText = `ไซส์ ${selectedSize} (อก ${selectedChest}") • ${APP_CONFIG.pricePerUnit} บ. × ${qty} ตัว`;
+      document.getElementById('totalPriceDisplay').innerText = `ไม่เกิน ${maxTotal.toLocaleString()} บาท`;
+      document.getElementById('totalPriceSubText').innerText = `(${qty} ตัว • ราคาไม่เกิน 500 บ./ตัว)`;
+      document.getElementById('summaryCalculationText').innerText = `ไซส์ ${selectedSize} (อก ${selectedChest}") • จำนวน ${qty} ตัว`;
     }
 
     // Employee Autocomplete Search
@@ -975,7 +894,6 @@
         showToast(`พบประวัติเดิม: ไซส์ ${existing.size} (${existing.qty} ตัว) สามารถแก้ไขข้อมูลได้ค่ะ`, 'info');
         if (existing.size) selectSize(existing.size, existing.chest || 40);
         if (existing.qty) document.getElementById('quantity').value = existing.qty;
-        if (existing.phone) document.getElementById('phone').value = existing.phone;
         updateTotalCalculation();
       }
     }
@@ -998,10 +916,7 @@
 
       const empId = document.getElementById('empId').value;
       const fullName = document.getElementById('fullName').value;
-      const phone = document.getElementById('phone').value.trim();
       const qty = parseInt(document.getElementById('quantity').value, 10) || 1;
-      const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'พร้อมเพย์ QR Code';
-      const note = document.getElementById('note').value.trim();
 
       if (!empId || !fullName) {
         showToast('กรุณาเลือกรายชื่อพนักงานก่อนค่ะ', 'error');
@@ -1028,15 +943,11 @@
         fullName: fullName,
         department: document.getElementById('department').value || '-',
         position: document.getElementById('position').value || '-',
-        phone: phone,
         size: selectedSize,
         chest: selectedChest,
         qty: qty,
-        pricePerUnit: APP_CONFIG.pricePerUnit,
-        totalPrice: qty * APP_CONFIG.pricePerUnit,
-        paymentMethod: paymentMethod,
-        paymentStatus: 'รอตรวจสอบการชำระเงิน',
-        note: note
+        priceNote: 'ราคาไม่เกิน 500 บาท / ตัว',
+        maxTotal: qty * APP_CONFIG.maxPricePerUnit
       };
 
       // Save to localStorage
@@ -1118,8 +1029,7 @@
           </td>
           <td class="py-2.5 px-3 text-center text-slate-600 font-inter">${b.chest || '-'}"</td>
           <td class="py-2.5 px-3 text-center font-bold font-inter text-slate-900">${b.qty}</td>
-          <td class="py-2.5 px-3 text-right font-bold font-inter text-blue-950">฿${(b.totalPrice || 0).toLocaleString()}</td>
-          <td class="py-2.5 px-3 text-slate-600">${b.paymentMethod || '-'}</td>
+          <td class="py-2.5 px-3 text-right font-medium text-slate-800">ไม่เกิน ${(b.qty * 500).toLocaleString()} บ.</td>
           <td class="py-2.5 px-3 text-center">
             <button onclick='displaySlipModal(${JSON.stringify(b)})' class="p-1.5 rounded-lg text-blue-700 hover:bg-blue-50 transition" title="ดูใบยืนยันการจอง">
               <i class="ph ph-receipt text-base"></i>
@@ -1152,12 +1062,10 @@
       document.getElementById('slipEmpId').innerText = record.empId;
       document.getElementById('slipDepartment').innerText = record.department || '-';
       document.getElementById('slipPosition').innerText = record.position || '-';
-      document.getElementById('slipPhone').innerText = record.phone || '-';
       document.getElementById('slipSize').innerText = record.size;
       document.getElementById('slipChest').innerText = `(อก ${record.chest}")`;
       document.getElementById('slipQty').innerText = record.qty;
-      document.getElementById('slipPaymentMethod').innerText = record.paymentMethod;
-      document.getElementById('slipTotalPrice').innerText = `฿${(record.totalPrice || 0).toLocaleString()}`;
+      document.getElementById('slipTotalPrice').innerText = `ไม่เกิน ${(record.qty * 500).toLocaleString()} บาท`;
       document.getElementById('slipTimestamp').innerText = record.timestamp;
 
       document.getElementById('bookingSlipModal').classList.remove('hidden');
@@ -1169,9 +1077,7 @@
 
     function resetBookingForm() {
       clearSelectedEmployee();
-      document.getElementById('phone').value = '';
       document.getElementById('quantity').value = '1';
-      document.getElementById('note').value = '';
       selectSize('M', 40);
       updateTotalCalculation();
     }

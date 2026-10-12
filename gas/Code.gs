@@ -9,9 +9,10 @@
 const CONFIG = {
   SHEET_NAME: 'รายการจองเสื้อ',
   SUMMARY_SHEET_NAME: 'สรุปยอดตามไซส์',
-  DEFAULT_PRICE: 390, // ราคาตัวละ 390 บาท (ไม่เกิน 500 บาท)
+  DEFAULT_PRICE: 500, // ราคาไม่เกิน 500 บาท / ตัว
   START_DATE: '2026-10-12',
-  END_DATE: '2026-10-19'
+  END_DATE: '2026-10-19',
+  WEB_URL: 'https://pitsanuvejphichit.github.io/ppch-jacket-booking-2026/'
 };
 
 /**
@@ -45,15 +46,12 @@ function setupSheetHeaders() {
     'ชื่อ-นามสกุล',
     'แผนก',
     'ตำแหน่ง',
-    'เบอร์โทรศัพท์',
     'ไซส์เสื้อ',
     'รอบอก (นิ้ว)',
     'จำนวน (ตัว)',
-    'ราคาต่อตัว (บาท)',
-    'ยอดเงินรวม (บาท)',
-    'วิธีชำระเงิน',
-    'สถานะชำระเงิน',
-    'หมายเหตุ'
+    'ราคาต่อตัว',
+    'ยอดประมาณการ (บาท)',
+    'สถานะ'
   ];
   
   const range = sheet.getRange(1, 1, 1, headers.length);
@@ -82,7 +80,7 @@ function doGet(e) {
   return ContentService.createTextOutput(JSON.stringify({
     status: 'online',
     appName: 'PPCH Phichit Jacket Registration 2026',
-    price: CONFIG.DEFAULT_PRICE,
+    price: 'ไม่เกิน 500 บาท / ตัว',
     period: '12 - 19 ต.ค. 2569'
   })).setMimeType(ContentService.MimeType.JSON);
 }
@@ -141,8 +139,8 @@ function doPost(e) {
     const size = String(data.size).toUpperCase();
     const chest = chestSizes[size] || 0;
     const qty = parseInt(data.qty, 10) || 1;
-    const pricePerUnit = parseInt(data.pricePerUnit, 10) || CONFIG.DEFAULT_PRICE;
-    const totalPrice = qty * pricePerUnit;
+    const pricePerUnitDesc = 'ราคาไม่เกิน 500 บาท / ตัว';
+    const totalPrice = qty * 500;
     
     // ตรวจสอบว่าเคยจองไว้แล้วหรือไม่ (ถ้าเคยจองจะอัปเดตบรรทัดเดิม)
     const values = sheet.getDataRange().getValues();
@@ -162,15 +160,12 @@ function doPost(e) {
       String(data.fullName).trim(),
       String(data.department || '').trim(),
       String(data.position || '').trim(),
-      String(data.phone || '').trim(),
       size,
       chest,
       qty,
-      pricePerUnit,
+      pricePerUnitDesc,
       totalPrice,
-      String(data.paymentMethod || 'พร้อมเพย์ QR Code'),
-      String(data.paymentStatus || 'รอตรวจสอบการชำระเงิน'),
-      String(data.note || '')
+      String(data.paymentStatus || 'รอสรุปยอดหลังปิดรับจอง')
     ];
     
     if (existingRow > 0) {
@@ -241,15 +236,12 @@ function handleGetRegistrations() {
       fullName: row[3],
       department: row[4],
       position: row[5],
-      phone: row[6],
-      size: row[7],
-      chest: row[8],
-      qty: row[9],
-      pricePerUnit: row[10],
-      totalPrice: row[11],
-      paymentMethod: row[12],
-      paymentStatus: row[13],
-      note: row[14]
+      size: row[6],
+      chest: row[7],
+      qty: row[8],
+      pricePerUnit: row[9],
+      totalPrice: row[10],
+      paymentStatus: row[11]
     };
     items.push(item);
     
@@ -296,9 +288,9 @@ function showSummaryDialog() {
   let totalAmount = 0;
   
   for (let i = 1; i < values.length; i++) {
-    const size = values[i][7];
-    const qty = Number(values[i][9]) || 0;
-    const price = Number(values[i][11]) || 0;
+    const size = values[i][6];
+    const qty = Number(values[i][8]) || 0;
+    const price = Number(values[i][10]) || 0;
     if (summary[size] !== undefined) {
       summary[size] += qty;
     } else {
@@ -311,8 +303,8 @@ function showSummaryDialog() {
   let msg = '📊 สรุปยอดการจองเสื้อแจ็กเก็ต PPCH Phichit\n\n';
   msg += `• รวมผู้จอง: ${values.length - 1} คน\n`;
   msg += `• รวมเสื้อทั้งหมด: ${totalQty} ตัว\n`;
-  msg += `• ยอดเงินรวม: ${totalAmount.toLocaleString()} บาท\n\n`;
-  msg += 'จำแนกตามไซส์:\n';
+  msg += `• ยอดเงินประมาณการรวม: ไม่เกิน ${totalAmount.toLocaleString()} บาท\n\n`;
+  msg += 'จำแนกตามไซส์ (รอบอก):\n';
   msg += `  - M (รอบอก 40"): ${summary['M']} ตัว\n`;
   msg += `  - L (รอบอก 42"): ${summary['L']} ตัว\n`;
   msg += `  - XL (รอบอก 44"): ${summary['XL']} ตัว\n`;
@@ -325,7 +317,7 @@ function showSummaryDialog() {
 
 function openWebUrl() {
   const html = HtmlService.createHtmlOutput(
-    '<script>window.open("https://nickasnick.github.io/ppch-jacket-booking-2026/", "_blank");google.script.host.close();</script>'
+    '<script>window.open("' + CONFIG.WEB_URL + '", "_blank");google.script.host.close();</script>'
   ).setWidth(200).setHeight(100);
   SpreadsheetApp.getUi().showModalDialog(html, 'กำลังเปิดเว็บ...');
 }

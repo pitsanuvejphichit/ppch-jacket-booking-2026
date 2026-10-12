@@ -97,12 +97,12 @@
         </div>
       </div>
 
-      <!-- Card 3: Total Sales Amount -->
+      <!-- Card 3: Total Estimated Amount -->
       <div class="kpi-card p-5 flex items-center justify-between">
         <div>
-          <div class="text-xs text-slate-500 font-medium">ยอดเงินสั่งจองรวม</div>
-          <div class="text-3xl font-bold font-inter text-blue-900 mt-1" id="kpiTotalAmount">฿0</div>
-          <div class="text-[11px] text-slate-400 mt-1">ราคาตัวละ 390 บาท</div>
+          <div class="text-xs text-slate-500 font-medium">ยอดเงินประมาณการรวม</div>
+          <div class="text-2xl font-bold font-inter text-blue-900 mt-1" id="kpiTotalAmount">฿0</div>
+          <div class="text-[11px] text-slate-400 mt-1">ราคาไม่เกิน 500 บาท / ตัว</div>
         </div>
         <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center text-2xl">
           <i class="ph ph-currency-circle-dollar"></i>
@@ -212,8 +212,7 @@
               <th class="py-3 px-3 text-center">ไซส์</th>
               <th class="py-3 px-3 text-center">รอบอก</th>
               <th class="py-3 px-3 text-center">จำนวน</th>
-              <th class="py-3 px-3 text-right">ยอดรวม</th>
-              <th class="py-3 px-3">วิธีชำระ</th>
+              <th class="py-3 px-3 text-right">ยอดประมาณการ</th>
               <th class="py-3 px-3">สถานะ</th>
             </tr>
           </thead>
@@ -262,7 +261,7 @@
 
       bookings.forEach(b => {
         const q = Number(b.qty) || 1;
-        const p = Number(b.totalPrice) || (q * 390);
+        const p = Number(b.totalPrice) || (q * 500);
         totalQty += q;
         totalAmount += p;
 
@@ -275,17 +274,17 @@
 
       document.getElementById('kpiTotalQty').innerText = totalQty.toLocaleString();
       document.getElementById('kpiTotalBookings').innerText = bookings.length.toLocaleString();
-      document.getElementById('kpiTotalAmount').innerText = `฿${totalAmount.toLocaleString()}`;
+      document.getElementById('kpiTotalAmount').innerText = `ไม่เกิน ฿${totalAmount.toLocaleString()}`;
 
       // 2. Render Size Bars
       const sizeBarContainer = document.getElementById('sizeBarsContainer');
       const sizeDefs = [
-        { size: 'M', chest: 40, max: 26 },
-        { size: 'L', chest: 42, max: 27 },
-        { size: 'XL', chest: 44, max: 28 },
-        { size: '2XL', chest: 46, max: 29 },
-        { size: '3XL', chest: 48, max: 30 },
-        { size: '4XL', chest: 50, max: 31 }
+        { size: 'M', chest: 40 },
+        { size: 'L', chest: 42 },
+        { size: 'XL', chest: 44 },
+        { size: '2XL', chest: 46 },
+        { size: '3XL', chest: 48 },
+        { size: '4XL', chest: 50 }
       ];
 
       sizeBarContainer.innerHTML = sizeDefs.map(def => {
@@ -350,11 +349,10 @@
           </td>
           <td class="py-2.5 px-3 text-center text-slate-600 font-inter">${b.chest || '-'}"</td>
           <td class="py-2.5 px-3 text-center font-bold font-inter text-slate-900">${b.qty}</td>
-          <td class="py-2.5 px-3 text-right font-bold font-inter text-blue-950">฿${(b.totalPrice || 0).toLocaleString()}</td>
-          <td class="py-2.5 px-3 text-slate-600">${b.paymentMethod || '-'}</td>
+          <td class="py-2.5 px-3 text-right font-bold font-inter text-blue-950">ไม่เกิน ${(b.totalPrice || (b.qty || 1) * 500).toLocaleString()} บ.</td>
           <td class="py-2.5 px-3">
-            <span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-semibold">
-              ${b.paymentStatus || 'รอตรวจสอบ'}
+            <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-semibold">
+              ${b.paymentStatus || 'รอสรุปยอด'}
             </span>
           </td>
         </tr>
@@ -386,24 +384,26 @@
         return;
       }
 
-      const headers = ['รหัสการจอง', 'วันเวลาที่ลงทะเบียน', 'รหัสพนักงาน', 'ชื่อ-นามสกุล', 'แผนก', 'ตำแหน่ง', 'เบอร์โทร', 'ไซส์เสื้อ', 'รอบอก(นิ้ว)', 'จำนวน(ตัว)', 'ราคาต่อตัว', 'ยอดรวม(บาท)', 'วิธีชำระเงิน', 'สถานะ'];
+      const headers = ['รหัสการจอง', 'วันเวลาที่ลงทะเบียน', 'รหัสพนักงาน', 'ชื่อ-นามสกุล', 'แผนก', 'ตำแหน่ง', 'ไซส์เสื้อ', 'รอบอก(นิ้ว)', 'จำนวน(ตัว)', 'ราคาต่อตัว', 'ยอดประมาณการ(บาท)', 'สถานะ'];
       
-      const rows = bookings.map(b => [
-        `"${b.bookingId || ''}"`,
-        `"${b.timestamp || ''}"`,
-        `"${b.empId || ''}"`,
-        `"${b.fullName || ''}"`,
-        `"${b.department || ''}"`,
-        `"${b.position || ''}"`,
-        `"${b.phone || ''}"`,
-        `"${b.size || ''}"`,
-        `"${b.chest || ''}"`,
-        `"${b.qty || 1}"`,
-        `"${b.pricePerUnit || 390}"`,
-        `"${b.totalPrice || 390}"`,
-        `"${b.paymentMethod || ''}"`,
-        `"${b.paymentStatus || ''}"`
-      ]);
+      const rows = bookings.map(b => {
+        const qty = Number(b.qty) || 1;
+        const total = b.totalPrice || (qty * 500);
+        return [
+          `"${b.bookingId || ''}"`,
+          `"${b.timestamp || ''}"`,
+          `"${b.empId || ''}"`,
+          `"${b.fullName || ''}"`,
+          `"${b.department || ''}"`,
+          `"${b.position || ''}"`,
+          `"${b.size || ''}"`,
+          `"${b.chest || ''}"`,
+          `"${qty}"`,
+          `"ไม่เกิน 500 บาท"`,
+          `"ไม่เกิน ${total.toLocaleString()} บาท"`,
+          `"${b.paymentStatus || 'รอสรุปยอด'}"`
+        ];
+      });
 
       const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
