@@ -308,8 +308,6 @@
               <th class="py-3 px-3.5">รหัสพนักงาน</th>
               <th class="py-3 px-3.5">ชื่อ</th>
               <th class="py-3 px-3.5">นามสกุล</th>
-              <th class="py-3 px-3.5">แผนก</th>
-              <th class="py-3 px-3.5">ตำแหน่ง</th>
               <th class="py-3 px-3.5 text-center">ไซส์ที่สั่งจอง</th>
               <th class="py-3 px-3.5 text-center">จำนวนรวม</th>
               <th class="py-3 px-3.5 text-right">ยอดประมาณการ</th>
@@ -537,6 +535,29 @@
       renderData(filtered);
     }
 
+    // ฟังก์ชันแปลงไซส์เสื้อ: ตัดจำนวนรวมท้ายข้อความออก เช่น "ไซส์ L" (ไม่ใช่ "L (1 ตัว)")
+    function formatRosterSize(r) {
+      const sizes = [];
+      const sizeKeys = ['M', 'L', 'XL', '2XL', '3XL', '4XL'];
+      sizeKeys.forEach(s => {
+        const q = Number(r['qty' + s]) || 0;
+        if (q > 0) sizes.push({ size: s, qty: q });
+      });
+
+      if (sizes.length === 1) {
+        return `ไซส์ ${sizes[0].size}`;
+      } else if (sizes.length > 1) {
+        return sizes.map(s => `${s.size} (${s.qty})`).join(', ');
+      }
+
+      // Fallback
+      let raw = String(r.sizeSummary || r.size || '-').trim();
+      raw = raw.replace(/\s*\(\d+\s*ตัว\)$/, '');
+      raw = raw.replace(/\s*\(\d+\)$/, '');
+      if (!raw || raw === '-') return '-';
+      return raw.startsWith('ไซส์') ? raw : `ไซส์ ${raw}`;
+    }
+
     function renderData(list) {
       const tbody = document.getElementById('rosterTableBody');
       const tableWrapper = document.getElementById('tableWrapper');
@@ -549,24 +570,25 @@
       if (!list || list.length === 0) {
         tbody.innerHTML = '';
         mobileCards.innerHTML = '';
-        tableWrapper.classList.add('hidden');
-        mobileCards.classList.add('hidden');
+        tableWrapper.className = 'hidden';
+        mobileCards.className = 'hidden';
         empty.classList.remove('hidden');
         return;
       }
 
       empty.classList.add('hidden');
-      tableWrapper.classList.remove('hidden');
-      mobileCards.classList.remove('hidden');
+      // บนมือถือ (< md) ซ่อนตาราง 100% แสดงเฉพาะการ์ด / บนจอใหญ่ (>= md) ซ่อนการ์ด แสดงเฉพาะตาราง
+      tableWrapper.className = 'hidden md:block overflow-x-auto custom-scroll';
+      mobileCards.className = 'block md:hidden p-3.5 space-y-2.5 divide-y divide-slate-100';
 
-      // 1. Render Mobile Cards View
+      // 1. Render Mobile Cards View (เฉพาะจอมือถือ)
       mobileCards.innerHTML = list.map((r, idx) => {
         const rawEmp = String(r.empId || '').trim();
         const empId6 = /^\d+$/.test(rawEmp) ? rawEmp.padStart(6, '0') : rawEmp;
         let displayName = r.fullName || ((r.firstName || '') + ' ' + (r.lastName || '')).trim();
         const totalQty = Number(r.totalQty || r.qty) || 1;
         const total = Number(r.totalPrice) || (totalQty * 500);
-        const sizeText = r.sizeSummary || (r.size ? `${r.size} (${totalQty} ตัว)` : '-');
+        const sizeText = formatRosterSize(r);
 
         return `
           <div class="p-3.5 bg-slate-50/70 hover:bg-blue-50/50 rounded-2xl border border-slate-200 transition space-y-2">
@@ -598,7 +620,7 @@
         `;
       }).join('');
 
-      // 2. Render Desktop Table View
+      // 2. Render Desktop Table View (เฉพาะจอเดสก์ท็อป - ตัดแผนกและตำแหน่งออก)
       tbody.innerHTML = list.map((r, idx) => {
         const rawEmp = String(r.empId || '').trim();
         const empId6 = /^\d+$/.test(rawEmp) ? rawEmp.padStart(6, '0') : rawEmp;
@@ -613,7 +635,7 @@
 
         const totalQty = Number(r.totalQty || r.qty) || 1;
         const total = Number(r.totalPrice) || (totalQty * 500);
-        const sizeText = r.sizeSummary || (r.size ? `${r.size} (${totalQty} ตัว)` : '-');
+        const sizeText = formatRosterSize(r);
 
         return `
           <tr class="hover:bg-blue-50/40 transition border-b border-slate-100 whitespace-nowrap">
@@ -625,8 +647,6 @@
             </td>
             <td class="py-2.5 px-3.5 font-semibold text-slate-900">${fName || '-'}</td>
             <td class="py-2.5 px-3.5 font-semibold text-slate-900">${lName || '-'}</td>
-            <td class="py-2.5 px-3.5 text-slate-600">${r.department || '-'}</td>
-            <td class="py-2.5 px-3.5 text-slate-500 text-[11px]">${r.position || '-'}</td>
             <td class="py-2.5 px-3.5 text-center font-inter font-semibold text-blue-900">
               ${sizeText}
             </td>

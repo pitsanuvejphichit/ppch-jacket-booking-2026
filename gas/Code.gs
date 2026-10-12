@@ -552,7 +552,12 @@ function handleGetRegistrations() {
     if (q3XL > 0) sizeDetails.push({ size: '3XL', chest: 48, qty: q3XL });
     if (q4XL > 0) sizeDetails.push({ size: '4XL', chest: 50, qty: q4XL });
     
-    const sizeSummaryText = sizeDetails.map(s => `${s.size} (${s.qty} ตัว)`).join(', ') || '-';
+    let sizeSummaryText = '-';
+    if (sizeDetails.length === 1) {
+      sizeSummaryText = `ไซส์ ${sizeDetails[0].size}`;
+    } else if (sizeDetails.length > 1) {
+      sizeSummaryText = sizeDetails.map(s => `${s.size} (${s.qty})`).join(', ');
+    }
     
     summaryBySize['M'] += qM;
     summaryBySize['L'] += qL;

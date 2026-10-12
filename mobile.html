@@ -836,8 +836,8 @@
       } else {
         mExistingBookingRecord = null;
         setMobileBookingMode('new');
+        // ค่าเริ่มต้นเป็น 0 ทุกไซส์ ให้กดบวกเอาเอง
         mSizeQuantities = { M: 0, L: 0, XL: 0, '2XL': 0, '3XL': 0, '4XL': 0 };
-        mSizeQuantities.M = 1; // Default 1 M
         updateAllMobileSizeCardsUI();
         updateMobileTotal();
       }
@@ -1101,8 +1101,8 @@
       mExistingBookingRecord = null;
       document.getElementById('mEmpCardEmpty').classList.remove('hidden');
       document.getElementById('mEmpCardSelected').classList.add('hidden');
+      // ค่าเริ่มต้นเป็น 0 ทุกไซส์ ให้กดบวกเอาเอง
       mSizeQuantities = { M: 0, L: 0, XL: 0, '2XL': 0, '3XL': 0, '4XL': 0 };
-      mSizeQuantities.M = 1; // Default 1 M
       setMobileBookingMode('new');
       updateAllMobileSizeCardsUI();
       updateMobileTotal();

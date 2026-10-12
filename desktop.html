@@ -1037,9 +1037,8 @@
       } else {
         existingBookingRecord = null;
         setBookingMode('new');
-        // Reset sizes to default for new order
+        // Reset sizes to default 0 (ผู้ใช้กดบวกเลือกไซส์เอง)
         sizeQuantities = { M: 0, L: 0, XL: 0, '2XL': 0, '3XL': 0, '4XL': 0 };
-        sizeQuantities.M = 1; // Default 1 M
         updateAllSizeCardsUI();
         updateTotalCalculation();
       }
@@ -1342,8 +1341,8 @@
 
     function resetBookingForm() {
       clearSelectedEmployee();
+      // ค่าเริ่มต้นเป็น 0 ทุกไซส์ ให้กดบวกเอาเอง
       sizeQuantities = { M: 0, L: 0, XL: 0, '2XL': 0, '3XL': 0, '4XL': 0 };
-      sizeQuantities.M = 1; // Default 1 M
       updateAllSizeCardsUI();
       updateTotalCalculation();
     }
