@@ -63,6 +63,10 @@
         window.location.replace('summary.html' + window.location.search);
         return;
       }
+      if (forceView === 'roster') {
+        window.location.replace('roster.html' + window.location.search);
+        return;
+      }
 
       // Auto-detect screen & UA (ตรวจจับอัตโนมัติ 100%)
       var isMobileScreen = window.innerWidth < 1024;

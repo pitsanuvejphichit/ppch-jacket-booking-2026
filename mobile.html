@@ -55,20 +55,48 @@
     .bottom-sheet.closed {
       transform: translateY(100%);
     }
-    /* Print rules */
-    @media print {
-      body * {
-        visibility: hidden;
+    /* CSS Medical Cross Phitsanuvej Logo Loader */
+    .css-logo-loader {
+      width: 58px;
+      height: 58px;
+      position: relative;
+      margin: 0 auto 14px auto;
+    }
+    .logo-petal {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      animation: loadingPulse 1.6s infinite ease-in-out;
+    }
+    .logo-petal.outer {
+      background: #1e5387;
+    }
+    .logo-petal.inner {
+      background: #5faee3;
+    }
+    .logo-petal.top { top: 0; left: 21px; animation-delay: 0s; }
+    .logo-petal.top-right { top: 6px; right: 6px; animation-delay: 0.2s; }
+    .logo-petal.right { top: 21px; right: 0; animation-delay: 0.4s; }
+    .logo-petal.bottom-right { bottom: 6px; right: 6px; animation-delay: 0.6s; }
+    .logo-petal.bottom { bottom: 0; left: 21px; animation-delay: 0.8s; }
+    .logo-petal.bottom-left { bottom: 6px; left: 6px; animation-delay: 1s; }
+    .logo-petal.left { top: 21px; left: 0; animation-delay: 1.2s; }
+    .logo-petal.top-left { top: 6px; left: 6px; animation-delay: 1.4s; }
+
+    @keyframes loadingPulse {
+      0%, 100% {
+        transform: scale(0.65);
+        opacity: 0.35;
       }
-      #mobileSlipContainer, #mobileSlipContainer * {
-        visibility: visible;
+      50% {
+        transform: scale(1.15);
+        opacity: 1;
       }
-      #mobileSlipContainer {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-      }
+    }
+    @keyframes loaderPop {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
     }
   </style>
 </head>
@@ -84,10 +112,16 @@
       </div>
     </div>
 
-    <!-- Simple Active Period Badge -->
-    <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-medium">
-      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-      <span>12-19 ต.ค. 69</span>
+    <!-- Quick Actions -->
+    <div class="flex items-center gap-1.5">
+      <a href="roster.html" class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold border border-slate-200 transition">
+        <i class="ph ph-table text-blue-900"></i>
+        <span>ตรวจสอบรายชื่อ</span>
+      </a>
+      <div class="flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-medium">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>12-19 ต.ค.</span>
+      </div>
     </div>
   </header>
 
@@ -300,58 +334,64 @@
     </div>
   </div>
 
-  <!-- Booking Confirmation Slip Sheet -->
-  <div id="mobileSlipModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex flex-col justify-end hidden">
-    <div class="flex-1" onclick="closeMobileSlipModal()"></div>
-    
-    <div class="bottom-sheet bg-white rounded-t-3xl max-h-[90vh] overflow-y-auto flex flex-col shadow-2xl p-5" id="mobileSlipContainer">
-      <div class="w-10 h-1.5 bg-slate-300 rounded-full mx-auto mb-3"></div>
-      
-      <div class="text-center pb-3 border-b border-slate-100">
-        <div class="w-11 h-11 bg-blue-900 rounded-2xl mx-auto flex items-center justify-center text-white text-xl mb-2">
-          <i class="ph ph-check-fat font-bold"></i>
-        </div>
-        <h3 class="font-bold text-base text-slate-900">ลงทะเบียนจองเสื้อสำเร็จ!</h3>
-        <p class="text-xs text-slate-500">โรงพยาบาลพิษณุเวช พิจิตร (PPCH 2569)</p>
-        <span class="inline-block mt-2 px-3 py-1 bg-blue-50 text-blue-900 rounded-full font-inter font-bold text-xs" id="mSlipId">
-          JK-20261012-0000
-        </span>
+  <!-- Modal: Mobile Success Modal (No Slip) -->
+  <div id="mobileSuccessModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 max-w-xs w-full text-center shadow-2xl border border-slate-100" style="animation: loaderPop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;">
+      <div class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto mb-3 shadow-xs">
+        <i class="ph ph-check-circle-fill"></i>
       </div>
-
-      <!-- Slip Details -->
-      <div class="py-4 space-y-2.5 text-xs text-slate-700">
+      <h3 class="text-base font-bold text-slate-900">บันทึกการจองสำเร็จ!</h3>
+      <p class="text-xs text-slate-500 mt-1">ข้อมูลถูกบันทึกลงในระบบ Google Sheets เรียบร้อยแล้วค่ะ</p>
+      
+      <div class="mt-4 p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-left space-y-1.5">
         <div class="flex justify-between">
           <span class="text-slate-400">ผู้สั่งจอง:</span>
-          <span class="font-bold text-slate-900" id="mSlipName">-</span>
+          <span class="font-bold text-slate-900 truncate max-w-[150px]" id="mSuccessName">-</span>
         </div>
         <div class="flex justify-between">
           <span class="text-slate-400">รหัสพนักงาน:</span>
-          <span class="font-inter font-semibold text-blue-900" id="mSlipEmpId">-</span>
+          <span class="font-inter font-semibold text-blue-900" id="mSuccessEmpId">-</span>
         </div>
         <div class="flex justify-between">
-          <span class="text-slate-400">แผนก:</span>
-          <span id="mSlipDept">-</span>
+          <span class="text-slate-400">ขนาดเสื้อ:</span>
+          <span class="font-bold text-blue-900" id="mSuccessSize">-</span>
         </div>
-        <div class="flex justify-between border-t border-dashed border-slate-200 pt-2 font-bold text-slate-900">
-          <span>ขนาดเสื้อ:</span>
-          <span class="text-blue-900 font-inter" id="mSlipSize">ไซส์ M (อก 40") × 1 ตัว</span>
+        <div class="flex justify-between">
+          <span class="text-slate-400">จำนวน:</span>
+          <span class="font-semibold text-slate-800" id="mSuccessQty">1 ตัว</span>
         </div>
-        <div class="flex justify-between items-center bg-blue-50 p-3 rounded-xl border border-blue-100 font-bold text-xs">
-          <span>ยอดชำระประมาณการ:</span>
-          <span class="text-blue-950 font-inter font-bold text-sm" id="mSlipPrice">ไม่เกิน 500 บาท</span>
+        <div class="flex justify-between border-t border-slate-200 pt-1.5">
+          <span class="text-slate-400">ยอดชำระประมาณการ:</span>
+          <span class="font-bold text-emerald-700" id="mSuccessPrice">ไม่เกิน 500 บาท</span>
         </div>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="pt-2 space-y-2">
-        <button onclick="window.print()" class="w-full py-3 bg-blue-900 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs">
-          <i class="ph ph-printer text-base"></i> บันทึกภาพ / พิมพ์สลิป
-        </button>
-        <button onclick="closeMobileSlipModal()" class="w-full py-2.5 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold">
-          เสร็จสิ้น
+      <div class="mt-5 flex flex-col gap-2">
+        <a href="roster.html" class="w-full py-2.5 bg-blue-900 hover:bg-blue-800 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs transition">
+          <i class="ph ph-table text-base"></i> ตรวจสอบรายชื่อในฐานข้อมูล
+        </a>
+        <button onclick="closeMobileSuccessModal()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition">
+          ปิดหน้าต่าง
         </button>
       </div>
+    </div>
+  </div>
 
+  <!-- Loading Overlay (Phitsanuvej 8-Petal Logo Loader) -->
+  <div id="mobileLoadingOverlay" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 max-w-xs w-full text-center shadow-2xl border border-slate-100" style="animation: loaderPop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;">
+      <div class="css-logo-loader">
+        <div class="logo-petal outer top"></div>
+        <div class="logo-petal inner top-right"></div>
+        <div class="logo-petal outer right"></div>
+        <div class="logo-petal inner bottom-right"></div>
+        <div class="logo-petal outer bottom"></div>
+        <div class="logo-petal inner bottom-left"></div>
+        <div class="logo-petal outer left"></div>
+        <div class="logo-petal inner top-left"></div>
+      </div>
+      <h4 class="font-bold text-blue-950 text-sm mt-1" id="mLoadingTitle">กำลังบันทึกข้อมูลการจอง...</h4>
+      <p class="text-[11px] text-slate-500 mt-1">กำลังส่งข้อมูลเข้าสู่ Google Sheets โรงพยาบาลพิษณุเวช พิจิตร</p>
     </div>
   </div>
 
@@ -528,7 +568,7 @@
         return;
       }
 
-      showMobileToast('กำลังส่งข้อมูลลง Google Sheets...');
+      showMobileLoading(true, 'กำลังบันทึกข้อมูลการจองลง Google Sheets...');
 
       const rawEmpId = String(mSelectedEmployee.id || '').trim();
       const empId6 = /^\d+$/.test(rawEmpId) ? rawEmpId.padStart(6, '0') : rawEmpId;
@@ -575,6 +615,7 @@
         }
 
         if (result && result.success) {
+          showMobileLoading(false);
           const confirmedRecord = {
             bookingId: result.bookingId,
             timestamp: result.timestamp,
@@ -590,31 +631,47 @@
             totalPrice: result.totalPrice || (mQty * 500)
           };
 
-          // แสดงสลิปเมื่อบันทึกลง Google Sheet สำเร็จแล้วเท่านั้น
-          displayMobileSlip(confirmedRecord);
+          showMobileSuccessModal(confirmedRecord);
+          resetMobileForm();
         } else {
           throw new Error((result && result.message) || 'ระบบ Google Sheets ตอบกลับไม่สำเร็จ');
         }
       } catch (err) {
+        showMobileLoading(false);
         alert('❌ บันทึกข้อมูลไม่สำเร็จ!\n\nไม่สามารถบันทึกข้อมูลลง Google Sheets ได้ ข้อมูลจึงยังไม่ถูกบันทึกในระบบ กรุณาลองใหม่อีกครั้ง หรือติดต่อฝ่ายบุคคล (HR)');
         console.error('Mobile submit failed:', err);
       }
     }
 
-    function displayMobileSlip(r) {
-      document.getElementById('mSlipId').innerText = r.bookingId;
-      document.getElementById('mSlipName').innerText = r.fullName;
-      document.getElementById('mSlipEmpId').innerText = r.empId;
-      document.getElementById('mSlipDept').innerText = r.department;
-      document.getElementById('mSlipSize').innerText = `ไซส์ ${r.size} (อก ${r.chest}") × ${r.qty} ตัว`;
-      document.getElementById('mSlipPrice').innerText = `ไม่เกิน ${(r.totalPrice || r.qty * 500).toLocaleString()} บาท`;
-
-      document.getElementById('mobileSlipModal').classList.remove('hidden');
+    function showMobileLoading(show, title = '') {
+      const el = document.getElementById('mobileLoadingOverlay');
+      if (title) document.getElementById('mLoadingTitle').innerText = title;
+      if (show) el.classList.remove('hidden');
+      else el.classList.add('hidden');
     }
 
-    function closeMobileSlipModal() {
-      document.getElementById('mobileSlipModal').classList.add('hidden');
-      showMobileToast('บันทึกการจองเรียบร้อยแล้วค่ะ');
+    function showMobileSuccessModal(r) {
+      document.getElementById('mSuccessName').innerText = r.fullName || '-';
+      document.getElementById('mSuccessEmpId').innerText = r.empId || '-';
+      document.getElementById('mSuccessSize').innerText = `ไซส์ ${r.size} (อก ${r.chest}")`;
+      document.getElementById('mSuccessQty').innerText = `${r.qty} ตัว`;
+      document.getElementById('mSuccessPrice').innerText = `ไม่เกิน ${(r.totalPrice || r.qty * 500).toLocaleString()} บาท`;
+
+      document.getElementById('mobileSuccessModal').classList.remove('hidden');
+    }
+
+    function closeMobileSuccessModal() {
+      document.getElementById('mobileSuccessModal').classList.add('hidden');
+    }
+
+    function resetMobileForm() {
+      mSelectedEmployee = null;
+      document.getElementById('mEmpCardEmpty').classList.remove('hidden');
+      document.getElementById('mEmpCardSelected').classList.add('hidden');
+      mQty = 1;
+      document.getElementById('mQtyInput').value = 1;
+      selectMobileSize('M', 40);
+      updateMobileTotal();
     }
 
     function showMobileToast(msg) {
