@@ -698,9 +698,9 @@ suite.test('F15.4: GAS processBooking sets Col C format to "@" when writing reco
   assert.strictEqual(data.empId, '000023', 'Saved empId must be padded to 6 digits');
 });
 
-suite.test('F15.5: All 209 employees in master dataset have exactly 6-digit IDs', () => {
+suite.test('F15.5: All 210 employees in master dataset have exactly 6-digit IDs', () => {
   const employees = loadEmployees();
-  assert.strictEqual(employees.length, 209);
+  assert.strictEqual(employees.length, 210);
   employees.forEach(emp => {
     assert.match(emp.id, /^\d{6}$/, `Employee ID ${emp.id} must be 6 digits`);
   });

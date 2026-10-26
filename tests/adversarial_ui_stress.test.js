@@ -8,7 +8,7 @@
  * 3. Mobile view isolation (< md, < 768px; desktop table hidden, cards only, no scroll overflow)
  * 4. Mobile bottom sheet (85dvh height property, 90px body padding clearance)
  * 5. Submit button DOM disabled state across dynamic DOM events (totalQty=0, unselected employee, reset)
- * 6. Full 209 employee master dataset search & autocomplete fuzzing (edge, injection, Thai diacritics)
+ * 6. Full 210 employee master dataset search & autocomplete fuzzing (edge, injection, Thai diacritics)
  */
 
 const { TestSuite, assert } = require('./helpers/test_framework');
@@ -488,12 +488,12 @@ suite.test('Task 5.8: Mobile updateMobileTotal() dynamic lifecycle accurately en
 });
 
 // =========================================================================
-// TASK 6: Full 209 Employee Master Dataset Search & Autocomplete Fuzzing
+// TASK 6: Full 210 Employee Master Dataset Search & Autocomplete Fuzzing
 // =========================================================================
 
-suite.test('Task 6.1: Master employee dataset contains exactly 209 valid records with 6-digit plain text IDs', () => {
+suite.test('Task 6.1: Master employee dataset contains exactly 210 valid records with 6-digit plain text IDs', () => {
   const employees = loadEmployees();
-  assert.strictEqual(employees.length, 209, 'Dataset must have exactly 209 employee records');
+  assert.strictEqual(employees.length, 210, 'Dataset must have exactly 210 employee records');
 
   employees.forEach((emp, idx) => {
     assert.ok(emp.id, `Employee at index ${idx} must have id`);
@@ -597,15 +597,15 @@ suite.test('Task 6.3: Mobile filterSheetEmployees() fuzzed across 50 adversarial
 
     assert.ok(listContainer.innerHTML.length > 0, `List container should have rendered content for: "${vec}"`);
 
-    // Verify empty query resets to all 209 employees
+    // Verify empty query resets to all 210 employees
     if (!vec || vec.trim().length === 0) {
       const renderedCards = listContainer.innerHTML.match(/onclick="selectEmployeeMobile/g);
-      assert.strictEqual(renderedCards.length, 209, 'Empty query must reset list to all 209 employees');
+      assert.strictEqual(renderedCards.length, 210, 'Empty query must reset list to all 210 employees');
     }
   });
 });
 
-suite.test('Task 6.4: Full 209 employees search exhaustively yields exact match for every employee ID', () => {
+suite.test('Task 6.4: Full 210 employees search exhaustively yields exact match for every employee ID', () => {
   const { sandbox, document } = createDesktopContext();
   const employees = loadEmployees();
   const results = document.getElementById('autocompleteResults');

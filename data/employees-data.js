@@ -2088,5 +2088,15 @@ window.PPCH_EMPLOYEES = [
     "department": "Intensive Care Unit",
     "position": "Officer 1, Registered Nurse-ICU",
     "type": "Full-Time"
+  },
+  {
+    "id": "015429",
+    "prefix": "นางสาว",
+    "firstName": "ทัศนีย์วรรณ",
+    "lastName": "ทาลา",
+    "fullName": "นางสาวทัศนีย์วรรณ ทาลา",
+    "department": "Ward 2-3 Department",
+    "position": "Officer 1, Registered Nurse-Ward 2-3",
+    "type": "Full-Time"
   }
 ];

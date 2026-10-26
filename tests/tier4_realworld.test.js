@@ -1,6 +1,6 @@
 /**
  * Tier 4: Real-World Scenarios Test Suite
- * Validates the complete 209 employee master dataset, executes simulated booking payloads,
+ * Validates the complete 210 employee master dataset, executes simulated booking payloads,
  * tests the roster rendering pipeline, and validates concurrency queuing simulation.
  */
 
@@ -17,31 +17,31 @@ const {
 const suite = new TestSuite('Tier 4: Real-World Scenarios');
 
 // =========================================================================
-// 1. 209 Employee Master Dataset Audit
+// 1. 210 Employee Master Dataset Audit
 // =========================================================================
-suite.test('R1.1: Master employee dataset contains exactly 209 records', () => {
+suite.test('R1.1: Master employee dataset contains exactly 210 records', () => {
   const employees = loadEmployees();
-  assert.strictEqual(employees.length, 209);
+  assert.strictEqual(employees.length, 210);
 });
 
-suite.test('R1.2: All 209 employee IDs are strictly unique with zero duplicates', () => {
+suite.test('R1.2: All 210 employee IDs are strictly unique with zero duplicates', () => {
   const employees = loadEmployees();
   const idSet = new Set();
   employees.forEach(emp => {
     assert.strictEqual(idSet.has(emp.id), false, `Duplicate employee ID found: ${emp.id}`);
     idSet.add(emp.id);
   });
-  assert.strictEqual(idSet.size, 209);
+  assert.strictEqual(idSet.size, 210);
 });
 
-suite.test('R1.3: All 209 employee IDs adhere strictly to 6-digit Plain Text format (^\\d{6}$)', () => {
+suite.test('R1.3: All 210 employee IDs adhere strictly to 6-digit Plain Text format (^\\d{6}$)', () => {
   const employees = loadEmployees();
   employees.forEach(emp => {
     assert.match(emp.id, /^\d{6}$/, `Employee ID ${emp.id} is not a valid 6-digit string`);
   });
 });
 
-suite.test('R1.4: All 209 employee records possess non-empty firstName, lastName, and fullName', () => {
+suite.test('R1.4: All 210 employee records possess non-empty firstName, lastName, and fullName', () => {
   const employees = loadEmployees();
   employees.forEach(emp => {
     assert.strictEqual(typeof emp.firstName === 'string' && emp.firstName.trim().length > 0, true, `Missing firstName for ID ${emp.id}`);
@@ -50,7 +50,7 @@ suite.test('R1.4: All 209 employee records possess non-empty firstName, lastName
   });
 });
 
-suite.test('R1.5: All 209 employee records possess non-empty department and position', () => {
+suite.test('R1.5: All 210 employee records possess non-empty department and position', () => {
   const employees = loadEmployees();
   employees.forEach(emp => {
     assert.strictEqual(typeof emp.department === 'string' && emp.department.trim().length > 0, true, `Missing department for ID ${emp.id}`);
@@ -67,10 +67,10 @@ suite.test('R1.6: employees-data.js and employees.json are identical in record c
   assert.strictEqual(match !== null, true, 'employees-data.js must export window.PPCH_EMPLOYEES');
   const fromJs = JSON.parse(match[1]);
 
-  assert.strictEqual(fromJs.length, 209);
-  assert.strictEqual(fromJson.length, 209);
+  assert.strictEqual(fromJs.length, 210);
+  assert.strictEqual(fromJson.length, 210);
   assert.strictEqual(fromJs[0].id, fromJson[0].id);
-  assert.strictEqual(fromJs[208].id, fromJson[208].id);
+  assert.strictEqual(fromJs[fromJs.length - 1].id, fromJson[fromJson.length - 1].id);
 });
 
 // =========================================================================
